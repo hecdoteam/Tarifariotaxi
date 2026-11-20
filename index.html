@@ -152,7 +152,7 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
 
   <p class="note" id="note"></p>
 
-  <div class="cost"><span id="tCostLab">Costo total</span><strong id="cost">—</strong><small id="costCardNote" hidden></small></div>
+  <div class="cost"><span id="tCostLab">Costo total</span><strong id="cost">—</strong><span id="costRtNote" style="margin-top:4px;font-weight:600;color:var(--accent)" hidden></span><small id="costCardNote" hidden></small></div>
 
   <label for="fecha" id="tDateLab">Fecha (opcional)</label>
   <div class="date-row">
@@ -486,7 +486,28 @@ var ROAD_OVERRIDES = {
   "Constanza|Bonao": 65,
   "Jarabacoa|La Vega": 28,
   "Jarabacoa|Santiago de los Caballeros": 58,
-  "La Vega|Santiago de los Caballeros": 36
+  "La Vega|Santiago de los Caballeros": 36,
+  "Samaná (ciudad)|Hato Mayor": 215,
+  "Samaná (ciudad)|El Seibo": 235,
+  "Samaná (ciudad)|San Pedro de Macorís": 195,
+  "Samaná (ciudad)|La Romana": 230,
+  "Samaná (ciudad)|Bayahibe": 250,
+  "Samaná (ciudad)|Higüey": 265,
+  "Samaná (ciudad)|Punta Cana / Cap Cana / Aeropuerto": 310,
+  "Samaná (ciudad)|Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito": 325,
+  "Samaná, Las Galeras|Hato Mayor": 242,
+  "Samaná, Las Galeras|El Seibo": 262,
+  "Samaná, Las Galeras|San Pedro de Macorís": 222,
+  "Samaná, Las Galeras|La Romana": 257,
+  "Samaná, Las Galeras|Higüey": 292,
+  "Las Terrenas|Hato Mayor": 205,
+  "Las Terrenas|El Seibo": 225,
+  "Las Terrenas|San Pedro de Macorís": 185,
+  "Puerto Plata|San Francisco de Macorís": 125,
+  "Sosúa|La Vega": 115,
+  "Cabarete|La Vega": 125,
+  "Cabarete|San Francisco de Macorís": 115,
+  "Cabrera|San Francisco de Macorís": 110
 };
 // ========================
 
@@ -663,7 +684,11 @@ var UI = {
     fullDayExtraHours: function(extra){ return "8 horas base + " + extra + " h adicional(es) a US$ 15/h"; },
     rtLongExtra: "Ida y vuelta (+50% en trayecto largo +100 km, incluye espera máxima de 3 horas; tiempo adicional conlleva cargo por espera)",
     rtShortExtra: "Ida y vuelta (trayecto completo de regreso)",
-    owExtra: "Solo ida"
+    owExtra: "Solo ida",
+    rtBreakdownLong: function(go, ret){ return "Ida: " + go + " + Regreso (+50%): " + ret; },
+    rtBreakdownShort: function(go, ret){ return "Ida: " + go + " + Regreso (100%): " + ret; },
+    backLongLegTag: "Regreso trayecto largo +100 km (50%)",
+    backShortLegTag: "Regreso trayecto corto -100 km (100%)"
   },
   en: {
     langBtn: "ES",
@@ -744,7 +769,11 @@ var UI = {
     fullDayExtraHours: function(extra){ return "8 base hours + " + extra + " extra hr(s) at US$ 15/hr"; },
     rtLongExtra: "Round trip (+50% on long route over 100 km, includes 3-hour max wait; extra waiting time incurs additional charge)",
     rtShortExtra: "Round trip (full return fare)",
-    owExtra: "One way"
+    owExtra: "One way",
+    rtBreakdownLong: function(go, ret){ return "Outbound: " + go + " + Return (+50%): " + ret; },
+    rtBreakdownShort: function(go, ret){ return "Outbound: " + go + " + Return (100%): " + ret; },
+    backLongLegTag: "Long-route return >100 km (50%)",
+    backShortLegTag: "Short-route return <100 km (100%)"
   }
 };
 
@@ -794,14 +823,19 @@ function payLabel(id){
 }
 
 function getPrice(obj, v){
-  if(v=="n") return obj.n !== undefined ? obj.n : obj.nPrice;
-  if(v=="v") return obj.v !== undefined ? obj.v : obj.vPrice;
-  return obj.l !== undefined ? obj.l : obj.lPrice;
+  if(!obj) return 0;
+  var val;
+  if(v=="n") val = (obj.nPrice !== undefined) ? obj.nPrice : (obj.a !== undefined ? obj.a : obj.n);
+  else if(v=="v") val = (obj.vPrice !== undefined) ? obj.vPrice : (obj.b !== undefined ? obj.b : obj.v);
+  else val = (obj.lPrice !== undefined) ? obj.lPrice : obj.l;
+  var num = Number(val);
+  return Number.isFinite(num) ? num : 0;
 }
 function getExtraHrPrice(sObj, v){
-  if(v=="n") return sObj.xn;
-  if(v=="v") return sObj.xv;
-  return sObj.xl;
+  if(!sObj) return 0;
+  var val = (v=="n") ? sObj.xn : ((v=="v") ? sObj.xv : sObj.xl);
+  var num = Number(val);
+  return Number.isFinite(num) ? num : 0;
 }
 
 var ITEMS=[];
@@ -875,7 +909,7 @@ btnToday.onclick=function(){ fecha.value=localISO(0); render(); };
 btnTomorrow.onclick=function(){ fecha.value=localISO(1); render(); };
 
 function fmt(n){return M+" "+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function r2(n){return Math.round(n*100)/100;}
+function r2(n){var x=Number(n); return Number.isFinite(x) ? Math.round(x*100)/100 : 0;}
 function mark(id,v){[].forEach.call($(id).children,function(b){var on=b.dataset.v==v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);});}
 
 function roadKm(nameA, nameB){
@@ -1007,7 +1041,8 @@ function resolveStop(st){
       sObj: s
     };
   }
-  var zz = Z[st.zi], d = zz.d[st.di];
+  var zz = Z[st.zi], d = zz ? zz.d[st.di] : null;
+  if(!d) return {t:"z", rawName:"", name:"", zone:"", isLocal:true, isAirport:false, isIntercity:false, isHourly:false, isFullDay:false, basePrice:0, rt:"", zz:zz, dObj:null};
   var isLoc = !!LOCAL_ZONES[zz.n];
   return {
     t: "z",
@@ -1067,19 +1102,36 @@ function evaluateRoute(){
     var oneWayAmt = firstLeg.price;
     var rtMode = firstLeg.rt;
     var amt = oneWayAmt;
+    var retAmtSingle = 0;
     var ex = "";
+    var rtBreakdown = "";
 
     if(rtMode === "L"){
-      if(trip === "2"){ amt = r2(oneWayAmt * 1.5); ex = t.rtLongExtra; }
-      else ex = t.owExtra;
+      if(trip === "2"){
+        retAmtSingle = r2(oneWayAmt * 0.5);
+        amt = r2(oneWayAmt + retAmtSingle);
+        ex = t.rtLongExtra;
+        rtBreakdown = t.rtBreakdownLong(fmt(oneWayAmt), fmt(retAmtSingle));
+      } else {
+        ex = t.owExtra;
+      }
     } else if(rtMode === "R"){
-      if(trip === "2"){ amt = r2(oneWayAmt * 2); ex = t.rtShortExtra; }
-      else ex = t.owExtra;
+      if(trip === "2"){
+        retAmtSingle = r2(oneWayAmt);
+        amt = r2(oneWayAmt + retAmtSingle);
+        ex = t.rtShortExtra;
+        rtBreakdown = t.rtBreakdownShort(fmt(oneWayAmt), fmt(retAmtSingle));
+      } else {
+        ex = t.owExtra;
+      }
     }
 
     return {
       mode: "single",
       items: [{name: one.name, zone: one.zone, price: amt, sub: firstLeg.sub}],
+      oneWayAmt: oneWayAmt,
+      returnAmt: retAmtSingle,
+      rtBreakdown: rtBreakdown,
       subtotal: amt,
       rtMode: rtMode,
       extra: ex,
@@ -1153,7 +1205,14 @@ function evaluateRoute(){
       // Regresando de una provincia del interior hacia Santo Domingo / Aeropuerto
       var backFromPrev = PROVINCE_MAP[prev.rawName];
       if(backFromPrev){
-        legPrice = getPrice(backFromPrev, veh);
+        var fullBack = getPrice(backFromPrev, veh);
+        if(!hasCustomOrigin && (backFromPrev.rt || "L") === "L"){
+          legPrice = r2(fullBack * 0.5);
+          subText = t.backLongLegTag;
+        } else {
+          legPrice = fullBack;
+          if(!hasCustomOrigin) subText = t.backShortLegTag;
+        }
       }
     }
 
@@ -1168,23 +1227,26 @@ function evaluateRoute(){
 
   // Regla de regreso al punto de salida: basada SOLO en la tarifa directa del último destino al origen (NUNCA el acumulado)
   var last = resolved[resolved.length - 1];
-  var returnLegInfo = legFromOrigin(last);
-  var rtModeMulti = returnLegInfo.rt || "R";
+  var alreadyReturnedHome = (!hasCustomOrigin && last.isLocal);
+  var returnLegInfo = alreadyReturnedHome ? {price: 0, rt: ""} : legFromOrigin(last);
+  var rtModeMulti = alreadyReturnedHome ? "" : (returnLegInfo.rt || "R");
   var directLastBase = returnLegInfo.price;
   var retAmt = 0;
   var ex = "";
 
-  if(trip === "2"){
-    if(rtModeMulti === "L"){
-      retAmt = r2(directLastBase * 0.5);
-      ex = t.rtLongExtra;
+  if(rtModeMulti){
+    if(trip === "2"){
+      if(rtModeMulti === "L"){
+        retAmt = r2(directLastBase * 0.5);
+        ex = t.rtLongExtra;
+      } else {
+        retAmt = r2(directLastBase);
+        ex = t.rtShortExtra;
+      }
+      sum = r2(sum + retAmt);
     } else {
-      retAmt = r2(directLastBase);
-      ex = t.rtShortExtra;
+      ex = t.owExtra;
     }
-    sum = r2(sum + retAmt);
-  } else {
-    ex = t.owExtra;
   }
 
   return {
@@ -1319,7 +1381,6 @@ addStopBtn.onclick=function(){
     stops.push(cur);
     zs.value = "";
     mun.length = 0;
-    trip = "1";
     render();
     q.focus();
   }
@@ -1354,6 +1415,7 @@ function buildMessage(includeDate){
     else { L.push(t.waService+": "+it.name); }
     if(it.sub) L.push("  ("+it.sub+")");
     if(ev.extra) L.push(t.waTrip+": "+ev.extra);
+    if(ev.rtBreakdown) L.push("  ("+ev.rtBreakdown+")");
   } else if(ev.mode === "hourly_multi"){
     L.push(t.waService+": "+ev.serviceLabel);
     L.push(t.waRoute+":");
@@ -1510,6 +1572,7 @@ function render(){
   }
 
   var rtMode = ev ? ev.rtMode : "";
+  if(!rtMode) trip = "1";
   $("tripBox").hidden = !rtMode;
   $("tripNote").textContent = rtMode=="L" ? t.longNote : (rtMode=="R" ? t.shortNote : "");
 
@@ -1529,8 +1592,10 @@ function render(){
 
   var isCard = (payId === "card");
 
+  var costRtNote=$("costRtNote");
   if(!ev){
     cost.textContent="—";
+    costRtNote.hidden=true;
     costCardNote.hidden=true;
     cardWarn.hidden=!isCard;
     if(isCard) cardWarn.textContent=t.cardWarnEmpty;
@@ -1540,6 +1605,12 @@ function render(){
       cost.innerHTML="<s>"+fmt(c.base)+"</s>"+fmt(c.finalTotal);
     } else {
       cost.textContent=fmt(c.finalTotal);
+    }
+    if(ev.rtBreakdown){
+      costRtNote.textContent=ev.rtBreakdown;
+      costRtNote.hidden=false;
+    } else {
+      costRtNote.hidden=true;
     }
     if(isCard){
       costCardNote.textContent=t.costCardSub(fmt(c.cardAmt));
@@ -1565,7 +1636,6 @@ $("langBtn").onclick=function(){
 
 zs.onchange=function(){
   mun.length=0;
-  if(stops.length === 0) trip="1";
   var z=zs.value;
   if(z&&z[0]=="s"){
     var sObj = SPECIAL[+z.slice(1)];
@@ -1579,7 +1649,7 @@ zs.onchange=function(){
   }
   render();
 };
-mun.onchange=function(){ if(stops.length === 0) trip="1"; render(); };
+mun.onchange=function(){ render(); };
 hrsInp.oninput=render; fecha.onchange=render; fecha.oninput=render;
 $("veh").onclick=function(e){var b=e.target.closest("button"); if(b){veh=b.dataset.v; render(); if(!qList.hidden) showSearch();}};
 $("trip").onclick=function(e){var b=e.target.closest("button"); if(b){trip=b.dataset.v; render();}};
