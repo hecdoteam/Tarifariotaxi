@@ -14,9 +14,9 @@
 <meta name="twitter:title" content="Tarifario de Transporte — Cotiza y Reserva tu Traslado">
 <meta name="twitter:description" content="Consulta tarifas al instante y solicita tu traslado por WhatsApp.">
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--text:#1b1f24;--muted:#5f6b7a;--line:#d5dae1;--accent:#128c4a;--accent-text:#fff;--err:#d93025;--err-bg:#fdecea;--err-border:#f5c2be;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;color-scheme:dark}
+:root{--bg:#f5f6f8;--card:#fff;--text:#1b1f24;--muted:#5f6b7a;--line:#d5dae1;--accent:#128c4a;--accent-text:#fff;--err:#d93025;--err-bg:#fdecea;--err-border:#f5c2be;--warn-bg:#fff8e6;--warn-border:#f3d27a;--warn-text:#7a5200;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;--warn-bg:#2a2210;--warn-border:#66501a;--warn-text:#ffd666;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;--warn-bg:#2a2210;--warn-border:#66501a;--warn-text:#ffd666;color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center;padding:20px 16px}
@@ -46,6 +46,21 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
 .code-row input{flex:1}
 .btn-sec{padding:0 16px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
 .btn-sec:hover{border-color:var(--accent)}
+.btn-add-stop{width:100%;margin-top:12px;padding:10px 12px;font-size:.9rem;font-weight:600;border:1px dashed var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer}
+.btn-add-stop:hover{background:var(--bg)}
+.stops-box{margin-top:14px;padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.stops-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.82rem;font-weight:700;color:var(--text)}
+.clear-stops{border:0;background:transparent;color:var(--err);font-size:.78rem;font-weight:600;cursor:pointer;padding:2px 4px}
+.stop-item{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.86rem}
+.stop-item:first-of-type{border-top:0;padding-top:2px}
+.stop-info{flex:1;min-width:0}
+.stop-info strong{display:block;color:var(--text);line-height:1.3}
+.stop-info small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px}
+.stop-right{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.stop-price{font-weight:700;color:var(--accent);font-size:.88rem}
+.stop-del{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:6px;width:24px;height:24px;line-height:1;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.stop-del:hover{border-color:var(--err);color:var(--err)}
+.hourly-notice{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-text);font-size:.82rem;line-height:1.45;font-weight:600}
 .code-msg{margin:6px 0 0;font-size:.82rem;min-height:1.1em}
 .code-msg.ok{color:var(--accent);font-weight:600}
 .code-msg.err{color:var(--err)}
@@ -80,6 +95,14 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
   <label id="tVehLab">Vehículo</label>
   <div class="row" id="veh"><button type="button" class="chip on" data-v="n">Normal</button><button type="button" class="chip" data-v="v">Minivan</button></div>
 
+  <div id="stopsBox" class="stops-box" hidden>
+    <div class="stops-head">
+      <span id="tStopsTitle">Itinerario seleccionado</span>
+      <button type="button" class="clear-stops" id="clearStopsBtn">Limpiar ruta</button>
+    </div>
+    <div id="stopsList"></div>
+  </div>
+
   <label for="q"><span id="tSearchLab">Búsqueda rápida de destino</span><span class="req">*</span></label>
   <div class="search-wrap" id="searchWrap">
     <input type="search" id="q" placeholder="Escribe un sector, municipio o aeropuerto (SDQ, JBQ)…" autocomplete="off">
@@ -90,6 +113,10 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
   <select id="zona"><option value="">Selecciona…</option></select>
 
   <div id="munBox" hidden><label for="mun"><span id="munLab">Municipio</span><span class="req">*</span></label><select id="mun"></select></div>
+
+  <button type="button" class="btn-add-stop" id="addStopBtn" hidden>+ Agregar otra parada</button>
+
+  <div id="hourlyNotice" class="hourly-notice" hidden></div>
 
   <div id="hrBox" hidden><label for="hrs" id="tHrsLab">Horas (mínimo 2)</label><input type="number" id="hrs" min="2" step="1" value="2"></div>
 
@@ -144,10 +171,15 @@ var WA = "18093167406";   // tu WhatsApp con código de país
 var M = "US$";            // moneda
 var CARD_FEE = 0.07;      // 7% recargo por pago con tarjeta
 
+// Tarifa interurbana entre pueblos del interior (por km de carretera estimado)
+var INTERCITY_RATE = { n: 1.50, v: 1.75 };
+var INTERCITY_MIN  = { n: 35,   v: 45 };
+
 // Códigos promocionales: código -> porcentaje de descuento
 var CODIGOS_DESCUENTO = {
   "DrRamiro": 20,
-  "10por100to": 10
+  "10por100to": 10,
+  "Helium": 10
 };
 
 var METODOS_PAGO = [
@@ -387,7 +419,59 @@ Toma de San Cristóbal|70|90|R
 Las Matas de Farfán|260|280|L
 Neiba|250|270|L
 `;
+
+// Coordenadas [lat, lon] para cálculo de distancia por carretera entre pueblos del interior
+var COORDS = {
+  "Boca Chica":[18.4500,-69.6067],"Juan Dolio":[18.4264,-69.4189],"San Pedro de Macorís":[18.4539,-69.3086],
+  "La Romana":[18.4273,-68.9728],"Bayahibe":[18.3744,-68.8397],"Higüey":[18.6150,-68.7078],
+  "Punta Cana / Cap Cana / Aeropuerto":[18.5674,-68.3634],"Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito":[18.6819,-68.4556],
+  "Miches":[18.9836,-69.0476],"El Seibo":[18.7656,-69.0389],"Hato Mayor":[18.7628,-69.2568],
+  "Sabana de la Mar":[19.0544,-69.3883],"Guerra":[18.5550,-69.7014],"Bayaguana":[18.7503,-69.6353],
+  "Yamasá":[18.7732,-70.0258],"Monte Plata":[18.8070,-69.7840],
+  "Puerto Plata":[19.7934,-70.6884],"Sosúa":[19.7522,-70.5197],"Cabarete":[19.7498,-70.4083],
+  "Samaná (ciudad)":[19.2056,-69.3369],"Samaná, Las Galeras":[19.2931,-69.2019],"Las Terrenas":[19.3110,-69.5428],
+  "Río San Juan (por Nagua)":[19.6439,-70.0761],"Río San Juan (por Puerto Plata)":[19.6439,-70.0761],
+  "Cabrera":[19.6426,-69.9049],"Nagua":[19.3832,-69.8474],"Luperón":[19.8913,-70.9620],
+  "Restauración":[19.3153,-71.6924],"Monción":[19.4106,-71.1647],"Monte Cristi":[19.8482,-71.6460],"Dajabón":[19.5488,-71.7083],
+  "Jarabacoa":[19.1168,-70.6359],"La Vega":[19.2221,-70.5296],"Bonao":[18.9369,-70.4092],
+  "San Francisco de Macorís":[19.3009,-70.2526],"Rosario Dominicana":[18.9430,-70.1810],"Villa Altagracia":[18.6730,-70.1710],
+  "Mao Valverde":[19.5519,-71.0781],"Santiago Rodríguez":[19.4713,-71.3413],"Santiago de los Caballeros":[19.4517,-70.6970],
+  "San José de las Matas":[19.3392,-70.9382],"Moca":[19.3935,-70.5260],"Cotuí":[19.0527,-70.1494],"Constanza":[18.9092,-70.7450],
+  "San Cristóbal":[18.4167,-70.1000],"Cambita, San Cristóbal":[18.4622,-70.1939],"Nizao":[18.2469,-70.2105],
+  "Baní":[18.2796,-70.3318],"Salinas de Baní":[18.2089,-70.5478],"Ocoa":[18.5466,-70.5063],
+  "Palmar de Ocoa":[18.2964,-70.5861],"Zona Franca de Baní":[18.2850,-70.3550],"Azua":[18.4532,-70.7349],
+  "Puerto Viejo, Azua":[18.3425,-70.8389],"San Juan de la Maguana":[18.8059,-71.2299],"Barahona":[18.2085,-71.1008],
+  "Jimaní":[18.4917,-71.8502],"Playa San Rafael, Barahona":[18.0289,-71.1369],"Enriquillo":[17.9000,-71.2333],
+  "Oviedo":[17.8014,-71.4010],"Pedernales":[18.0384,-71.7440],"Elías Piña":[18.8775,-71.7044],
+  "Playa Palenque":[18.2356,-70.1489],"Toma de San Cristóbal":[18.4550,-70.1300],"Las Matas de Farfán":[18.8731,-71.5166],
+  "Neiba":[18.4814,-71.4197]
+};
+
+// Overrides de distancia real por carretera (km) para tramos separados por bahías o cordilleras
+var ROAD_OVERRIDES = {
+  "Sabana de la Mar|Samaná (ciudad)": 155,
+  "Sabana de la Mar|Samaná, Las Galeras": 182,
+  "Sabana de la Mar|Las Terrenas": 145,
+  "Miches|Samaná (ciudad)": 195,
+  "Miches|Samaná, Las Galeras": 222,
+  "Miches|Las Terrenas": 185,
+  "Constanza|Jarabacoa": 52,
+  "Constanza|Ocoa": 68,
+  "Constanza|Bonao": 65,
+  "Jarabacoa|La Vega": 28,
+  "Jarabacoa|Santiago de los Caballeros": 58,
+  "La Vega|Santiago de los Caballeros": 36
+};
 // ========================
+
+var LOCAL_ZONES = {
+  "Ciudad de Santo Domingo": 1,
+  "Zonas Francas": 1,
+  "Santo Domingo Este": 1,
+  "Santo Domingo Norte": 1,
+  "Santo Domingo Oeste": 1,
+  "Puertos": 1
+};
 
 var DEST_EN = {
   "Agricultura": "Agriculture Ministry (Agricultura)",
@@ -479,9 +563,18 @@ var UI = {
     title: "Solicitar transporte",
     sub: "Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.",
     vehLab: "Vehículo",
+    stopsTitle: "Itinerario seleccionado",
+    clearStops: "Limpiar ruta",
+    addStop: "+ Agregar otra parada",
+    addNextStop: "+ Agregar parada siguiente",
+    hourlyMultiWarn: "Varias paradas dentro de Santo Domingo se cobran como servicio por hora (mínimo 2 h) o se coordinan directamente por WhatsApp.",
+    intercityTag: function(km){ return "Tramo interurbano (~" + km + " km por carretera)"; },
+    stopWord: "Parada",
     searchLab: "Búsqueda rápida de destino",
+    searchLabMore: "Buscar siguiente parada",
     searchPh: "Escribe un sector, municipio o aeropuerto (SDQ, JBQ)…",
     zoneLab: "O selecciona por zona",
+    zoneLabMore: "O selecciona siguiente parada por zona",
     selectPh: "Selecciona…",
     specialGroup: "Aeropuertos y servicios",
     zoneGroup: "Zonas",
@@ -489,8 +582,8 @@ var UI = {
     tripLab: "Tipo de viaje",
     oneWay: "Solo ida",
     roundTrip: "Ida y vuelta",
-    longNote: "Ida y vuelta (viajes a más de 100 km): se suma un 50% al total e incluye una espera máxima de 3 horas; después de ese tiempo se cobrará espera adicional.",
-    shortNote: "Ida y vuelta (menos de 100 km / menos de 2 h): se cobra el trayecto completo de regreso.",
+    longNote: "Ida y vuelta (último destino a más de 100 km): se suma el 50% de la tarifa desde Santo Domingo al último destino e incluye espera máxima de 3 horas; después de ese tiempo se cobrará espera adicional.",
+    shortNote: "Ida y vuelta (último destino a menos de 100 km): se cobra el trayecto completo de regreso desde el último destino.",
     ratePrefix: "La tarifa aplica a cualquier punto dentro ",
     costLab: "Costo total",
     dateLab: "Fecha (opcional)",
@@ -519,6 +612,8 @@ var UI = {
     waVeh: "Vehículo",
     waZone: "Zona",
     waService: "Servicio",
+    waRoute: "Itinerario",
+    waReturnLeg: "Regreso a Santo Domingo",
     waTrip: "Viaje",
     waDate: "Fecha",
     waPay: "Método de pago",
@@ -528,8 +623,8 @@ var UI = {
     waCardFee: "Cargo por pago con tarjeta (7%)",
     waAmt: "Total a pagar",
     hoursWord: "horas",
-    rtLongExtra: "Ida y vuelta (+50%, incluye espera máxima de 3 horas; tiempo adicional conlleva cargo por espera)",
-    rtShortExtra: "Ida y vuelta (trayecto completo)",
+    rtLongExtra: "Ida y vuelta (+50% del último destino desde Santo Domingo, incluye espera máxima de 3 horas; tiempo adicional conlleva cargo por espera)",
+    rtShortExtra: "Ida y vuelta (trayecto completo de regreso desde el último destino)",
     owExtra: "Solo ida"
   },
   en: {
@@ -537,9 +632,18 @@ var UI = {
     title: "Request Transportation",
     sub: "Calculate your rate and send your request. All other details are coordinated via WhatsApp.",
     vehLab: "Vehicle",
+    stopsTitle: "Selected itinerary",
+    clearStops: "Clear route",
+    addStop: "+ Add another stop",
+    addNextStop: "+ Add next stop",
+    hourlyMultiWarn: "Multiple stops within Santo Domingo are billed as hourly service (2-hour minimum) or coordinated directly via WhatsApp.",
+    intercityTag: function(km){ return "Intercity leg (~" + km + " km by road)"; },
+    stopWord: "Stop",
     searchLab: "Quick destination search",
+    searchLabMore: "Search next stop",
     searchPh: "Type a neighborhood, town, or airport (SDQ, JBQ)…",
     zoneLab: "Or select by zone",
+    zoneLabMore: "Or select next stop by zone",
     selectPh: "Select…",
     specialGroup: "Airports & hourly services",
     zoneGroup: "Zones",
@@ -547,8 +651,8 @@ var UI = {
     tripLab: "Trip type",
     oneWay: "One way",
     roundTrip: "Round trip",
-    longNote: "Round trip (over 100 km): adds 50% to the total and includes a maximum 3-hour wait; additional waiting time will be charged afterward.",
-    shortNote: "Round trip (under 100 km / under 2 hrs): full return fare applies.",
+    longNote: "Round trip (last stop over 100 km): adds 50% of the Santo Domingo rate to the last destination and includes a 3-hour max wait; additional waiting time is charged afterward.",
+    shortNote: "Round trip (last stop under 100 km): full return fare from the last destination applies.",
     ratePrefix: "Rate applies to any point ",
     costLab: "Total Cost",
     dateLab: "Date (optional)",
@@ -577,6 +681,8 @@ var UI = {
     waVeh: "Vehicle",
     waZone: "Zone",
     waService: "Service",
+    waRoute: "Itinerary",
+    waReturnLeg: "Return to Santo Domingo",
     waTrip: "Trip",
     waDate: "Date",
     waPay: "Payment method",
@@ -586,8 +692,8 @@ var UI = {
     waCardFee: "Card processing fee (7%)",
     waAmt: "Total to pay",
     hoursWord: "hours",
-    rtLongExtra: "Round trip (+50%, includes 3-hour max wait; extra waiting time incurs additional charge)",
-    rtShortExtra: "Round trip (full return fare)",
+    rtLongExtra: "Round trip (+50% of last stop from Santo Domingo, includes 3-hour max wait; extra waiting time incurs additional charge)",
+    rtShortExtra: "Round trip (full return fare from last stop)",
     owExtra: "One way"
   }
 };
@@ -606,9 +712,11 @@ RAW.split("\n").forEach(function(l){
 var $=function(i){return document.getElementById(i)};
 var zs=$("zona"), mun=$("mun"), fecha=$("fecha"), send=$("send"), copyBtn=$("copyBtn"), cost=$("cost"), q=$("q"), qList=$("qList");
 var codeInp=$("codeInp"), codeMsg=$("codeMsg"), cardWarn=$("cardWarn"), costCardNote=$("costCardNote"), sendHint=$("sendHint");
-var btnToday=$("btnToday"), btnTomorrow=$("btnTomorrow");
+var btnToday=$("btnToday"), btnTomorrow=$("btnTomorrow"), addStopBtn=$("addStopBtn"), stopsBox=$("stopsBox"), stopsList=$("stopsList"), hourlyNotice=$("hourlyNotice");
 var lang="es", veh="n", trip="1", disc=0, appliedCode="", payId=METODOS_PAGO[0].id;
 var codeState="none";
+var stops = []; // paradas fijadas [{t:"z"|"s", zi, di, i}]
+var addingMode = false;
 
 var CODES_NORM={};
 Object.keys(CODIGOS_DESCUENTO).forEach(function(k){
@@ -683,6 +791,185 @@ btnTomorrow.onclick=function(){ fecha.value=localISO(1); render(); };
 function fmt(n){return M+" "+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function r2(n){return Math.round(n*100)/100;}
 function mark(id,v){[].forEach.call($(id).children,function(b){var on=b.dataset.v==v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);});}
+
+function roadKm(nameA, nameB){
+  if(!nameA || !nameB || nameA === nameB) return 0;
+  var k1 = nameA + "|" + nameB, k2 = nameB + "|" + nameA;
+  if(ROAD_OVERRIDES[k1]) return ROAD_OVERRIDES[k1];
+  if(ROAD_OVERRIDES[k2]) return ROAD_OVERRIDES[k2];
+  var c1 = COORDS[nameA], c2 = COORDS[nameB];
+  if(!c1 || !c2) return 0;
+  var R = 6371, toRad = Math.PI / 180;
+  var dLat = (c2[0] - c1[0]) * toRad;
+  var dLon = (c2[1] - c1[1]) * toRad;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+          Math.cos(c1[0]*toRad)*Math.cos(c2[0]*toRad)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  var straight = 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.max(10, Math.round(straight * 1.38));
+}
+
+function currentStopObj(){
+  var z=zs.value; if(!z) return null;
+  var idx=+z.slice(1);
+  if(z[0]=="s") return {t:"s", i:idx};
+  if(mun.value==="") return null;
+  return {t:"z", zi:idx, di:+mun.value};
+}
+
+function resolveStop(st){
+  if(st.t=="s"){
+    var s = SPECIAL[st.i];
+    return {
+      t: "s",
+      rawName: s.k,
+      name: sName(s),
+      zone: "",
+      isLocal: !s.rt,
+      isIntercity: false,
+      isHourly: !!s.h,
+      basePrice: veh=="n" ? s.n : s.v,
+      rt: s.rt ? "R" : "",
+      sObj: s
+    };
+  }
+  var zz = Z[st.zi], d = zz.d[st.di];
+  var isLoc = !!LOCAL_ZONES[zz.n];
+  return {
+    t: "z",
+    rawName: d.n,
+    name: dName(d.n),
+    zone: zName(zz),
+    isLocal: isLoc,
+    isIntercity: !isLoc,
+    isHourly: false,
+    basePrice: veh=="n" ? d.a : d.b,
+    rt: d.rt || "",
+    zz: zz,
+    dObj: d
+  };
+}
+
+function getEffectiveStops(){
+  var list = stops.slice();
+  var cur = currentStopObj();
+  if(cur) list.push(cur);
+  return list;
+}
+
+function evaluateRoute(){
+  var t = UI[lang];
+  var eff = getEffectiveStops();
+  if(!eff.length) return null;
+
+  var resolved = eff.map(resolveStop);
+  var h = Math.max(2, Math.floor(+$("hrs").value) || 2);
+
+  // Caso 1: 1 solo destino/servicio
+  if(resolved.length === 1){
+    var one = resolved[0];
+    var amt = one.basePrice;
+    var ex = "";
+    if(one.isHourly){
+      amt += (h - 2) * (veh=="n" ? one.sObj.xn : one.sObj.xv);
+    }
+    if(one.rt === "L"){
+      if(trip=="2"){ amt = r2(amt * 1.5); ex = t.rtLongExtra; }
+      else ex = t.owExtra;
+    } else if(one.rt === "R"){
+      if(trip=="2"){ amt = r2(amt * 2); ex = t.rtShortExtra; }
+      else ex = t.owExtra;
+    }
+    var dispName = one.name + (one.isHourly ? " (" + h + " " + t.hoursWord + ")" : "");
+    return {
+      mode: "single",
+      items: [{name: dispName, zone: one.zone, price: amt, sub: ""}],
+      subtotal: amt,
+      rtMode: one.rt,
+      extra: ex,
+      hourlyMulti: false,
+      showHours: one.isHourly
+    };
+  }
+
+  // Caso 2: Múltiples paradas — verificar si todas son locales dentro del Gran Santo Domingo
+  var allLocal = resolved.every(function(x){ return x.isLocal && !x.isHourly; });
+  if(allLocal){
+    var hrSpec = SPECIAL[0]; // Taxi por hora
+    var hrAmt = (veh=="n" ? hrSpec.n : hrSpec.v) + (h - 2) * (veh=="n" ? hrSpec.xn : hrSpec.xv);
+    var locItems = resolved.map(function(x){
+      return {name: x.name, zone: x.zone, price: null, sub: ""};
+    });
+    return {
+      mode: "hourly_multi",
+      items: locItems,
+      subtotal: hrAmt,
+      rtMode: "",
+      extra: "",
+      hourlyMulti: true,
+      showHours: true,
+      hoursUsed: h
+    };
+  }
+
+  // Caso 3: Múltiples paradas con al menos un destino interurbano / aeropuerto / puerto
+  var legs = [];
+  var sum = 0;
+  for(var i = 0; i < resolved.length; i++){
+    var cur = resolved[i];
+    var prev = i > 0 ? resolved[i - 1] : null;
+    var legPrice = cur.basePrice;
+    var subText = "";
+
+    if(cur.isHourly){
+      legPrice += (h - 2) * (veh=="n" ? cur.sObj.xn : cur.sObj.xv);
+    } else if(prev && prev.isIntercity && cur.isIntercity){
+      var km = roadKm(prev.rawName, cur.rawName);
+      if(km > 0){
+        var calcKm = Math.round(km * INTERCITY_RATE[veh]);
+        legPrice = Math.max(INTERCITY_MIN[veh], calcKm);
+        subText = t.intercityTag(km);
+      }
+    }
+
+    sum = r2(sum + legPrice);
+    legs.push({
+      name: cur.name + (cur.isHourly ? " (" + h + " " + t.hoursWord + ")" : ""),
+      zone: cur.zone,
+      price: legPrice,
+      sub: subText
+    });
+  }
+
+  // Regla de regreso a Santo Domingo: basada en la tarifa desde SDQ del ÚLTIMO destino de la ruta
+  var last = resolved[resolved.length - 1];
+  var rtMode = last.rt || "R";
+  var retAmt = 0;
+  var ex = "";
+  if(trip === "2"){
+    if(rtMode === "L"){
+      retAmt = r2(last.basePrice * 0.5);
+      ex = t.rtLongExtra;
+    } else {
+      retAmt = r2(last.basePrice);
+      ex = t.rtShortExtra;
+    }
+    sum = r2(sum + retAmt);
+  } else {
+    ex = t.owExtra;
+  }
+
+  return {
+    mode: "multi",
+    items: legs,
+    returnAmt: retAmt,
+    lastName: last.name,
+    subtotal: sum,
+    rtMode: rtMode,
+    extra: ex,
+    hourlyMulti: false,
+    showHours: resolved.some(function(x){ return x.isHourly; })
+  };
+}
 
 function updateCodeMsg(){
   var t=UI[lang];
@@ -763,35 +1050,30 @@ document.addEventListener("click",function(e){
   if(!$("searchWrap").contains(e.target)) qList.hidden=true;
 });
 
-function info(){
-  var t=UI[lang];
-  var z=zs.value; if(!z) return null;
-  var i=+z.slice(1), amt, ex="";
-  if(z[0]=="s"){
-    var s=SPECIAL[i], h=Math.max(2,Math.floor(+$("hrs").value)||2);
-    amt=veh=="n"?s.n:s.v;
-    if(s.h) amt+=(h-2)*(veh=="n"?s.xn:s.xv);
-    if(s.rt){
-      if(trip=="2"){ amt=r2(amt*2); ex=t.rtShortExtra; }
-      else ex=t.owExtra;
-    }
-    return {t:amt,lab:t.waService,zone:"",dest:sName(s)+(s.h?" ("+h+" "+t.hoursWord+")":""),extra:ex};
+addStopBtn.onclick=function(){
+  var cur = currentStopObj();
+  if(cur){
+    stops.push(cur);
+    zs.value = "";
+    mun.length = 0;
+    trip = "1";
+    addingMode = true;
+    render();
+    q.focus();
   }
-  if(mun.value==="") return null;
-  var zz=Z[i], d=zz.d[+mun.value];
-  amt=veh=="n"?d.a:d.b;
-  if(d.rt=="L"){
-    if(trip=="2"){ amt=r2(amt*1.5); ex=t.rtLongExtra; }
-    else ex=t.owExtra;
-  } else if(d.rt=="R"){
-    if(trip=="2"){ amt=r2(amt*2); ex=t.rtShortExtra; }
-    else ex=t.owExtra;
-  }
-  return {t:amt,lab:zLab(zz),zone:zName(zz),dest:dName(d.n),extra:ex};
-}
+};
 
-function calcTotals(r){
-  var base = r.t;
+$("clearStopsBtn").onclick=function(){
+  stops = [];
+  addingMode = false;
+  zs.value = "";
+  mun.length = 0;
+  trip = "1";
+  render();
+};
+
+function calcTotals(ev){
+  var base = ev.subtotal;
   var afterDisc = disc ? r2(base * (100 - disc) / 100) : base;
   var cardAmt = (payId === "card") ? r2(afterDisc * CARD_FEE) : 0;
   var finalTotal = r2(afterDisc + cardAmt);
@@ -799,13 +1081,35 @@ function calcTotals(r){
 }
 
 function buildMessage(includeDate){
-  var r=info(); if(!r) return "";
+  var ev=evaluateRoute(); if(!ev) return "";
   var t=UI[lang];
-  var c=calcTotals(r);
+  var c=calcTotals(ev);
   var L=[t.waIntro, t.waVeh+": "+(veh=="n"?"Normal":"Minivan")];
-  if(r.zone){ L.push(t.waZone+": "+r.zone); L.push(r.lab+": "+r.dest); }
-  else { L.push(t.waService+": "+r.dest); }
-  if(r.extra) L.push(t.waTrip+": "+r.extra);
+
+  if(ev.mode === "single"){
+    var it = ev.items[0];
+    if(it.zone){ L.push(t.waZone+": "+it.zone); L.push(t.waService+": "+it.name); }
+    else { L.push(t.waService+": "+it.name); }
+    if(ev.extra) L.push(t.waTrip+": "+ev.extra);
+  } else if(ev.mode === "hourly_multi"){
+    L.push(t.waService+": "+sName(SPECIAL[0]).split("(")[0].trim()+" ("+ev.hoursUsed+" "+t.hoursWord+")");
+    L.push(t.waRoute+":");
+    ev.items.forEach(function(it, idx){
+      L.push("  "+(idx+1)+". "+it.name+(it.zone?" ("+it.zone+")":""));
+    });
+  } else {
+    L.push(t.waRoute+":");
+    ev.items.forEach(function(it, idx){
+      var line = "  "+(idx+1)+". "+it.name+" — "+fmt(it.price);
+      if(it.sub) line += " ["+it.sub+"]";
+      L.push(line);
+    });
+    if(trip === "2" && ev.returnAmt > 0){
+      L.push("  "+(ev.items.length+1)+". "+t.waReturnLeg+" — "+fmt(ev.returnAmt));
+    }
+    if(ev.extra) L.push(t.waTrip+": "+ev.extra);
+  }
+
   if(includeDate && fecha.value){
     L.push(t.waDate+": "+fecha.value.split("-").reverse().join("/"));
   }
@@ -830,9 +1134,9 @@ function applyLang(){
   $("tTitle").textContent=t.title;
   $("tSub").textContent=t.sub;
   $("tVehLab").textContent=t.vehLab;
-  $("tSearchLab").textContent=t.searchLab;
+  $("tStopsTitle").textContent=t.stopsTitle;
+  $("clearStopsBtn").textContent=t.clearStops;
   q.placeholder=t.searchPh;
-  $("tZoneLab").textContent=t.zoneLab;
   $("tHrsLab").textContent=t.hrsLab;
   $("tTripLab").textContent=t.tripLab;
   $("tOneWay").textContent=t.oneWay;
@@ -865,34 +1169,91 @@ function applyLang(){
   render();
 }
 
+function renderStopsBox(ev){
+  var t = UI[lang];
+  var eff = getEffectiveStops();
+  if(eff.length < 2 && stops.length === 0){
+    stopsBox.hidden = true;
+    return;
+  }
+  stopsBox.hidden = false;
+  stopsList.innerHTML = "";
+  var items = ev ? ev.items : [];
+  items.forEach(function(it, idx){
+    var row = document.createElement("div");
+    row.className = "stop-item";
+    var priceHtml = (it.price !== null && it.price !== undefined) ? '<span class="stop-price">'+fmt(it.price)+'</span>' : '';
+    var subHtml = it.sub ? '<small>'+it.sub+'</small>' : (it.zone ? '<small>'+it.zone+'</small>' : '');
+    row.innerHTML = '<div class="stop-info"><strong>'+(idx+1)+'. '+it.name+'</strong>'+subHtml+'</div>' +
+                    '<div class="stop-right">'+priceHtml+'<button type="button" class="stop-del" data-idx="'+idx+'" aria-label="Eliminar">✕</button></div>';
+    row.querySelector(".stop-del").onclick = function(){
+      if(idx < stops.length){
+        stops.splice(idx, 1);
+      } else {
+        zs.value = "";
+        mun.length = 0;
+      }
+      if(stops.length === 0) addingMode = false;
+      render();
+    };
+    stopsList.appendChild(row);
+  });
+
+  if(ev && ev.mode === "multi" && trip === "2" && ev.returnAmt > 0){
+    var retRow = document.createElement("div");
+    retRow.className = "stop-item";
+    retRow.innerHTML = '<div class="stop-info"><strong>'+(items.length+1)+'. '+t.waReturnLeg+'</strong><small>'+ev.lastName+'</small></div>' +
+                       '<div class="stop-right"><span class="stop-price">'+fmt(ev.returnAmt)+'</span></div>';
+    stopsList.appendChild(retRow);
+  }
+}
+
 function render(){
   var t=UI[lang];
   var z=zs.value, sp=z&&z[0]=="s", d=null, zz=null, sObj=null;
   if(z&&sp){ sObj=SPECIAL[+z.slice(1)]; }
   if(z&&!sp){ zz=Z[+z.slice(1)]; if(mun.value!=="") d=zz.d[+mun.value]; }
 
-  var rtMode = sp ? (sObj && sObj.rt ? "R" : "") : (d ? d.rt : "");
-  $("munBox").hidden=!(z&&!sp);
-  $("hrBox").hidden=!(sp&&sObj&&sObj.h);
-  $("tripBox").hidden=!rtMode;
+  var cur = currentStopObj();
+  var ev = evaluateRoute();
+
+  $("tSearchLab").textContent = (stops.length > 0) ? t.searchLabMore : t.searchLab;
+  $("tZoneLab").textContent   = (stops.length > 0) ? t.zoneLabMore   : t.zoneLab;
+
+  $("munBox").hidden = !(z && !sp);
+  addStopBtn.hidden = !cur;
+  addStopBtn.textContent = (stops.length > 0) ? t.addNextStop : t.addStop;
+
+  var showHrs = ev ? ev.showHours : (sp && sObj && sObj.h);
+  $("hrBox").hidden = !showHrs;
+
+  if(ev && ev.hourlyMulti){
+    hourlyNotice.textContent = t.hourlyMultiWarn;
+    hourlyNotice.hidden = false;
+  } else {
+    hourlyNotice.hidden = true;
+  }
+
+  var rtMode = ev ? ev.rtMode : "";
+  $("tripBox").hidden = !rtMode;
   $("tripNote").textContent = rtMode=="L" ? t.longNote : (rtMode=="R" ? t.shortNote : "");
-  $("note").textContent=d?(t.ratePrefix+zNote(zz)+"."):"";
+  $("note").textContent = d ? (t.ratePrefix + zNote(zz) + ".") : "";
 
   btnToday.classList.toggle("on", fecha.value === localISO(0));
   btnTomorrow.classList.toggle("on", fecha.value === localISO(1));
 
   mark("veh",veh); mark("trip",trip); mark("pay",payId);
+  renderStopsBox(ev);
 
-  var r=info();
   var isCard = (payId === "card");
 
-  if(!r){
+  if(!ev){
     cost.textContent="—";
     costCardNote.hidden=true;
     cardWarn.hidden=!isCard;
     if(isCard) cardWarn.textContent=t.cardWarnEmpty;
   } else {
-    var c=calcTotals(r);
+    var c=calcTotals(ev);
     if(disc){
       cost.innerHTML="<s>"+fmt(c.base)+"</s>"+fmt(c.finalTotal);
     } else {
@@ -909,9 +1270,9 @@ function render(){
     }
   }
 
-  send.disabled=!r;
-  copyBtn.disabled=!r;
-  sendHint.hidden=!!r;
+  send.disabled=!ev;
+  copyBtn.disabled=!ev;
+  sendHint.hidden=!!ev;
 }
 
 $("langBtn").onclick=function(){
@@ -921,7 +1282,8 @@ $("langBtn").onclick=function(){
 };
 
 zs.onchange=function(){
-  mun.length=0; trip="1";
+  mun.length=0;
+  if(stops.length === 0) trip="1";
   var z=zs.value;
   if(z&&z[0]=="z"){
     var zz=Z[+z.slice(1)];
@@ -930,7 +1292,7 @@ zs.onchange=function(){
   }
   render();
 };
-mun.onchange=function(){ trip="1"; render(); };
+mun.onchange=function(){ if(stops.length === 0) trip="1"; render(); };
 $("hrs").oninput=render; fecha.onchange=render; fecha.oninput=render;
 $("veh").onclick=function(e){var b=e.target.closest("button"); if(b){veh=b.dataset.v; render(); if(!qList.hidden) showSearch();}};
 $("trip").onclick=function(e){var b=e.target.closest("button"); if(b){trip=b.dataset.v; render();}};
