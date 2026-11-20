@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tarifario de Transporte | Solicitar Traslado</title>
+<meta name="description" content="Consulta tarifas oficiales de transporte en República Dominicana y solicita tu traslado al instante por WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tarifario de Transporte — Cotiza y Reserva tu Traslado">
+<meta property="og:description" content="Selecciona tu destino, vehículo (Normal o Minivan) y método de pago. Calcula tu tarifa al instante y coordina tu viaje por WhatsApp.">
+<meta property="og:locale" content="es_DO">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tarifario de Transporte — Cotiza y Reserva tu Traslado">
+<meta name="twitter:description" content="Consulta tarifas al instante y solicita tu traslado por WhatsApp.">
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--text:#1b1f24;--muted:#5f6b7a;--line:#d5dae1;--accent:#128c4a;--accent-text:#fff;--err:#d93025;--err-bg:#fdecea;--err-border:#f5c2be;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center;padding:20px 16px}
+main{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.top-bar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px}
+h1{font-size:1.3rem;margin:0}
+.lang-btn{padding:6px 10px;font-size:.8rem;font-weight:700;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap;letter-spacing:.3px}
+.lang-btn:hover{border-color:var(--accent)}
+p.sub{margin:0 0 12px;color:var(--muted);font-size:.95rem;line-height:1.4}
+p.note{margin:8px 0 0;color:var(--muted);font-size:.82rem;line-height:1.4}
+label{display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px}
+select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+.search-wrap{position:relative}
+.q-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:240px;overflow-y:auto}
+.q-item{width:100%;text-align:left;padding:10px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.92rem}
+.q-item:last-child{border-bottom:0}
+.q-item:hover,.q-item:focus{background:var(--bg);outline:none}
+.q-item small{display:block;font-size:.76rem;color:var(--muted);margin-top:2px}
+.q-item strong{font-size:.9rem;color:var(--accent);white-space:nowrap}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.code-row{display:flex;gap:8px}
+.code-row input{flex:1}
+.btn-sec{padding:0 16px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
+.btn-sec:hover{border-color:var(--accent)}
+.code-msg{margin:6px 0 0;font-size:.82rem;min-height:1.1em}
+.code-msg.ok{color:var(--accent);font-weight:600}
+.code-msg.err{color:var(--err)}
+.chip{flex:1;min-width:64px;padding:10px;font-size:.95rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sm{flex:1 1 calc(50% - 4px);font-size:.86rem;padding:9px 8px}
+.chip.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.card-warn{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--err-bg);border:1px solid var(--err-border);color:var(--err);font-size:.83rem;line-height:1.45;font-weight:600}
+.cost{margin-top:18px;padding:14px;border-radius:10px;border:1px dashed var(--line);text-align:center}
+.cost span{display:block;font-size:.8rem;color:var(--muted)}
+.cost strong{font-size:1.6rem}
+.cost s{font-size:1rem;color:var(--muted);margin-right:8px;font-weight:400}
+.cost small{display:block;font-size:.78rem;color:var(--err);margin-top:4px;font-weight:600}
+.actions{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+#send{width:100%;padding:14px;font-size:1rem;font-weight:600;border:0;border-radius:10px;background:var(--accent);color:var(--accent-text);cursor:pointer}
+#send:disabled{opacity:.45;cursor:not-allowed}
+#copyBtn{width:100%;padding:11px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer}
+#copyBtn:hover:not(:disabled){border-color:var(--accent)}
+#copyBtn:disabled{opacity:.45;cursor:not-allowed}
+.info-box{margin-top:14px;padding:12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:.82rem;color:var(--muted);line-height:1.45}
+.info-box strong{color:var(--text);display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+<main>
+  <div class="top-bar">
+    <h1 id="tTitle">Solicitar transporte</h1>
+    <button type="button" class="lang-btn" id="langBtn" aria-label="Cambiar idioma">EN</button>
+  </div>
+  <p class="sub" id="tSub">Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.</p>
+
+  <label id="tVehLab">Vehículo</label>
+  <div class="row" id="veh"><button type="button" class="chip on" data-v="n">Normal</button><button type="button" class="chip" data-v="v">Minivan</button></div>
+
+  <label for="q" id="tSearchLab">Búsqueda rápida de destino</label>
+  <div class="search-wrap" id="searchWrap">
+    <input type="search" id="q" placeholder="Escribe un sector, municipio o aeropuerto…" autocomplete="off">
+    <div class="q-list" id="qList" hidden></div>
+  </div>
+
+  <label for="zona" id="tZoneLab">O selecciona por zona</label>
+  <select id="zona"><option value="">Selecciona…</option></select>
+
+  <div id="munBox" hidden><label for="mun" id="munLab">Municipio</label><select id="mun"></select></div>
+
+  <div id="hrBox" hidden><label for="hrs" id="tHrsLab">Horas (mínimo 2)</label><input type="number" id="hrs" min="2" step="1" value="2"></div>
+
+  <div id="tripBox" hidden>
+    <label id="tTripLab">Tipo de viaje</label>
+    <div class="row" id="trip"><button type="button" class="chip on" data-v="1" id="tOneWay">Solo ida</button><button type="button" class="chip" data-v="2" id="tRoundTrip">Ida y vuelta</button></div>
+    <p class="note" id="tripNote"></p>
+  </div>
+
+  <p class="note" id="note"></p>
+
+  <div class="cost"><span id="tCostLab">Costo total</span><strong id="cost">—</strong><small id="costCardNote" hidden></small></div>
+
+  <label for="fecha" id="tDateLab">Fecha</label>
+  <input type="date" id="fecha">
+
+  <label id="tPayLab">Método de pago</label>
+  <div class="row" id="pay"></div>
+  <div class="card-warn" id="cardWarn" hidden></div>
+
+  <label for="codeInp" id="tCodeLab">Código de descuento (opcional)</label>
+  <div class="code-row">
+    <input type="text" id="codeInp" placeholder="Ingresa tu código" autocomplete="off" autocapitalize="off">
+    <button type="button" class="btn-sec" id="applyCode">Aplicar</button>
+  </div>
+  <p class="code-msg" id="codeMsg" hidden></p>
+
+  <div class="actions">
+    <button id="send" disabled>Enviar por WhatsApp</button>
+    <button type="button" id="copyBtn" disabled>Copiar cotización</button>
+  </div>
+
+  <div class="info-box">
+    <strong id="tCoordTitle">Coordinación por WhatsApp:</strong>
+    <span id="tCoordBody">Hora de recogida, dirección exacta, número de vuelo y cualquier otro detalle del traslado se coordinan directamente por WhatsApp al enviar tu solicitud.</span>
+  </div>
+
+  <div class="info-box">
+    <strong id="tPayInfoTitle">Métodos de pago aceptados:</strong>
+    <span id="tPayInfoBody">Efectivo, Tarjeta, Cripto, Transferencias (bancos locales y en Estados Unidos) y PayPal.</span>
+  </div>
+</main>
+
+<script>
+// ====== EDITA AQUÍ ======
+var WA = "18093167406";   // tu WhatsApp con código de país
+var M = "US$";            // moneda
+var CARD_FEE = 0.07;      // 7% recargo por pago con tarjeta
+
+// Códigos promocionales: código -> porcentaje de descuento
+var CODIGOS_DESCUENTO = {
+  "DrRamiro": 20,
+  "10por100to": 10
+};
+
+var METODOS_PAGO = [
+  {id:"cash", es:"Efectivo", en:"Cash"},
+  {id:"card", es:"Tarjeta", en:"Card"},
+  {id:"crypto", es:"Cripto", en:"Crypto"},
+  {id:"local", es:"Transf. banco local", en:"Local bank transfer"},
+  {id:"us", es:"Transf. EE. UU.", en:"US bank transfer"},
+  {id:"paypal", es:"PayPal", en:"PayPal"}
+];
+
+// Servicios sin zona. n = normal, v = minivan, xn/xv = hora adicional, h = pide horas, rt = permite ida y vuelta (tarifa doble)
+var SPECIAL = [
+  {k:"Taxi por hora (mínimo 2 horas, dentro de la ciudad de Santo Domingo)",en:"Hourly taxi (minimum 2 hours, within Santo Domingo city)",n:40,v:50,xn:15,xv:20,h:1},
+  {k:"Taxi mínimo",en:"Minimum fare taxi",n:10,v:15},
+  {k:"Taxi por día",en:"Full-day taxi",n:120,v:160},
+  {k:"Aeropuerto Las Américas / El Higüero",en:"Las Américas / El Higüero Airport",n:45,v:50,rt:1}
+];
+
+// #Zona|Etiqueta del campo|texto de aclaración.
+// Destino|Normal|Minivan|Tipo
+// Tipo: L = más de 100 km / +2h (ida y vuelta suma +50% e incluye espera máxima de 3 horas)
+//       R = menos de 100 km / -2h (ida y vuelta cobra trayecto completo de regreso, sin descuento del 50%)
+var RAW = `
+#Ciudad de Santo Domingo|Sector|del sector seleccionado
+Agricultura|15|20
+Ágora Mall|15|20
+Arroyo Hondo I|15|20
+Arroyo Hondo II|25|30
+Arroyo Manzano|30|35
+Av. Duarte|20|25
+Av. Independencia (hasta Av. Luperón)|20|25
+Av. Mella|20|25
+Banco Central|10|15
+Banco de Reservas|15|20
+Bella Vista|15|20
+Caribe Tours|15|20
+Casa España|20|25
+Centro de los Héroes|15|20
+Cervecería|20|25
+Coca Cola|15|20
+Congreso|15|20
+Corripio (hasta parada Km. 9 Autopista Duarte)|15|20
+Country Club|20|25
+Cristo Rey|20|25
+Cuesta Hermosa I-II-III|25|30
+DGII|10|15
+DHL|15|20
+Diamond Mall|15|20
+Dirección de Pasaportes|15|20
+Downtown Center|15|20
+El Millón|15|20
+Embajada Americana|25|30
+Ens. Espaillat|20|25
+Estadio Quisqueya|15|20
+Evaristo Morales|10|15
+Galería 360|15|20
+Gazcue (hasta Av. Independencia y Av. Delgado)|10|15
+Hacienda|10|15
+Honduras|20|25
+Hotel Barcelona|10|15
+Hotel Dominican Fiesta|15|20
+Hoteles Malecón|20|25
+Ikea|15|20
+Instituto Postal Dominicano (INPOSDOM)|15|20
+Jardín Botánico|20|25
+Julieta|10|15
+Las Praderas|15|20
+Los Cacicazgos|15|20
+Los Jardines|15|20
+Los Prados|15|20
+Lotería|15|20
+Manganagua|15|20
+Manoguayabo, Ciudad|30|35
+Mesón de la Cava|15|20
+Metaldom|20|25
+Ministerio de Defensa y oficinas gubernamentales (27 con Av. Luperón)|15|20
+Ministerio de Medio Ambiente|20|25
+Ministerio de Turismo|20|25
+Mirador Sur|15|20
+MOPC|15|20
+Naco (después de la Av. Tiradentes)|10|15
+Naco (hasta la Av. Tiradentes)|10|15
+Palacio Presidencial|20|25
+Paraíso|10|15
+Parque Mirador|15|20
+Piantini|10|15
+Plaza de la Salud|15|20
+Plaza Luperón|20|25
+Policía Nacional|10|15
+Pueblo San Isidro|45|60
+Puerta de Hierro|30|35
+Quisqueya|10|15
+Salud Pública|15|20
+Sambil|15|20
+San Gerónimo|15|20
+Serrallés|10|15
+SIB|10|15
+SIS|10|15
+Supermercado Nacional (Arroyo Hondo)|20|25
+Torre Popular (Av. Kennedy)|15|20
+Transporte del Metro|20|25
+Transporte Espinal Platinum|15|20
+Universidad del Caribe|20|25
+V-Centenario|20|25
+Villa Agrícola|20|25
+Villa Consuelo|20|25
+Villa Francisca|20|25
+Villa Isabel|25|30
+Villa Juana|20|25
+Zona Colonial|20|25
+Zoológico Nacional|20|25
+#Zonas Francas|Zona franca|de la zona franca seleccionada
+Zona Franca de San Isidro|30|35
+Zona Franca de Hainamosa y zonas aledañas|35|40
+Zona Franca de Los Alcarrizos|40|50
+Zona Franca de Haina, Refinería de Petróleo, Nigua|45|50
+Zona Franca de Villa Mella, Buena Vista|35|40
+Zona Franca La Isabela, El Polvorín|25|30
+Zona Franca de Las Américas, Cartones del Caribe, Ladom|40|45
+Parque Industrial Duarte Km. 23|40|50
+Zona Franca Hato Nuevo|45|50
+Zona Industrial de Herrera|25|30
+#Santo Domingo Este|Sector|del sector seleccionado
+Acuario Nacional|25|30
+Alma Rosa|25|30
+Ens. Ozama|25|30
+Faro a Colón|25|30
+Hipódromo V-Centenario|35|40
+La Isabelita|25|30
+Los Frailes I y II|30|35
+Los Mina|25|30
+Lucerna|25|30
+Megacentro|25|30
+Parque Los Tres Ojos|25|30
+Pueblo de San Isidro|45|60
+#Santo Domingo Norte|Sector|del sector seleccionado
+El Edén|30|35
+El Primaveral|30|35
+La Victoria|50|60
+Sabana Perdida (antes de la Charles)|30|35
+Sabana Perdida (después de la Charles)|35|40
+Urb. Buena Vista|25|30
+Urb. Máximo Gómez|25|30
+Villa Mella Pueblo|35|40
+#Santo Domingo Oeste|Sector|del sector seleccionado
+Alameda|20|25
+Banco Promerica|20|25
+Carrefour|20|25
+Cerinca|30|35
+Cristo Redentor|25|30
+Herrera|20|25
+Km 13 Autopista Duarte|20|25
+La Sirena|20|25
+Las Caobas|25|30
+Las Palmas|20|25
+Los Alcarrizos|30|35
+Los Girasoles|25|30
+Olé|30|35
+Pantoja|30|35
+Pedro Brand|55|70
+Tricom|20|25
+#Puertos|Puerto|del puerto seleccionado
+Puerto Turístico Don Diego|20|25|R
+Puerto Turístico San Souci|25|30|R
+Puerto de Haina Oriental|30|35|R
+Puerto de Haina Occidental|40|45|R
+#Región Este|Municipio|del municipio seleccionado
+Boca Chica|60|70|R
+Juan Dolio|80|90|R
+San Pedro de Macorís|100|110|R
+La Romana|140|160|L
+Bayahibe|160|170|L
+Higüey|170|185|L
+Punta Cana / Cap Cana / Aeropuerto|230|250|L
+Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito|250|270|L
+Miches|215|230|L
+El Seibo|150|170|L
+Hato Mayor|130|145|L
+Sabana de la Mar|210|230|L
+Guerra|60|75|R
+Bayaguana|100|115|R
+Yamasá|100|120|R
+Monte Plata|120|135|R
+#Región Noroeste / Norte|Municipio|del municipio seleccionado
+Puerto Plata|240|260|L
+Sosúa|255|275|L
+Cabarete|255|275|L
+Samaná (ciudad)|240|260|L
+Samaná, Las Galeras|270|290|L
+Las Terrenas|250|270|L
+Río San Juan (por Nagua)|240|260|L
+Río San Juan (por Puerto Plata)|275|290|L
+Cabrera|240|260|L
+Nagua|200|220|L
+Luperón|265|285|L
+Restauración|345|365|L
+Monción|250|270|L
+Monte Cristi|300|350|L
+Dajabón|330|350|L
+#Región Cibao Central|Municipio|del municipio seleccionado
+Jarabacoa|180|200|L
+La Vega|150|170|L
+Bonao|125|145|R
+San Francisco de Macorís|160|180|L
+Rosario Dominicana|125|140|R
+Villa Altagracia|70|85|R
+Mao Valverde|250|270|L
+Santiago Rodríguez|270|290|L
+Santiago de los Caballeros|180|200|L
+San José de las Matas|220|240|L
+Moca|150|170|L
+Cotuí|130|150|L
+Constanza|230|250|L
+#Región Sur|Municipio|del municipio seleccionado
+San Cristóbal|60|80|R
+Cambita, San Cristóbal|70|90|R
+Nizao|90|110|R
+Baní|100|120|R
+Salinas de Baní|120|140|R
+Ocoa|120|140|R
+Palmar de Ocoa|130|150|R
+Zona Franca de Baní|110|130|R
+Azua|140|160|L
+Puerto Viejo, Azua|160|180|L
+San Juan de la Maguana|240|260|L
+Barahona|220|240|L
+Jimaní|350|370|L
+Playa San Rafael, Barahona|240|260|L
+Enriquillo|260|280|L
+Oviedo|280|300|L
+Pedernales|380|400|L
+Elías Piña|300|320|L
+Playa Palenque|100|120|R
+Toma de San Cristóbal|70|90|R
+Las Matas de Farfán|260|280|L
+Neiba|250|270|L
+`;
+// ========================
+
+var DEST_EN = {
+  "Agricultura": "Agriculture Ministry (Agricultura)",
+  "Av. Duarte": "Duarte Ave.",
+  "Av. Independencia (hasta Av. Luperón)": "Independencia Ave. (up to Luperón Ave.)",
+  "Av. Mella": "Mella Ave.",
+  "Banco Central": "Central Bank (Banco Central)",
+  "Banco de Reservas": "Banreservas (Banco de Reservas)",
+  "Centro de los Héroes": "Centro de los Héroes (Government Center)",
+  "Cervecería": "Cervecería (National Brewery)",
+  "Congreso": "National Congress (Congreso)",
+  "Corripio (hasta parada Km. 9 Autopista Duarte)": "Corripio (up to Km. 9 Duarte Hwy. stop)",
+  "Dirección de Pasaportes": "Passport Office (Dirección de Pasaportes)",
+  "Embajada Americana": "U.S. Embassy (Embajada Americana)",
+  "Estadio Quisqueya": "Quisqueya Stadium",
+  "Gazcue (hasta Av. Independencia y Av. Delgado)": "Gazcue (up to Independencia & Delgado Ave.)",
+  "Hacienda": "Ministry of Finance (Hacienda)",
+  "Hoteles Malecón": "Malecón Hotels",
+  "Instituto Postal Dominicano (INPOSDOM)": "Dominican Postal Institute (INPOSDOM)",
+  "Jardín Botánico": "National Botanical Garden",
+  "Lotería": "National Lottery (Lotería)",
+  "Manoguayabo, Ciudad": "Manoguayabo City",
+  "Ministerio de Defensa y oficinas gubernamentales (27 con Av. Luperón)": "Ministry of Defense & Gov. Offices (27 de Febrero & Luperón)",
+  "Ministerio de Medio Ambiente": "Ministry of Environment",
+  "Ministerio de Turismo": "Ministry of Tourism",
+  "Naco (después de la Av. Tiradentes)": "Naco (past Tiradentes Ave.)",
+  "Naco (hasta la Av. Tiradentes)": "Naco (up to Tiradentes Ave.)",
+  "Palacio Presidencial": "Presidential Palace",
+  "Parque Mirador": "Mirador Park",
+  "Plaza de la Salud": "Plaza de la Salud Hospital",
+  "Policía Nacional": "National Police HQ",
+  "Pueblo San Isidro": "San Isidro Town",
+  "Salud Pública": "Ministry of Public Health",
+  "Supermercado Nacional (Arroyo Hondo)": "Nacional Supermarket (Arroyo Hondo)",
+  "Torre Popular (Av. Kennedy)": "Torre Popular (Kennedy Ave.)",
+  "Transporte del Metro": "Metro Bus Terminal",
+  "Universidad del Caribe": "UNICARIBE University",
+  "Zona Colonial": "Colonial Zone (Zona Colonial)",
+  "Zoológico Nacional": "National Zoo",
+  "Zona Franca de San Isidro": "San Isidro Free Zone",
+  "Zona Franca de Hainamosa y zonas aledañas": "Hainamosa Free Zone & surrounding areas",
+  "Zona Franca de Los Alcarrizos": "Los Alcarrizos Free Zone",
+  "Zona Franca de Haina, Refinería de Petróleo, Nigua": "Haina Free Zone, Oil Refinery, Nigua",
+  "Zona Franca de Villa Mella, Buena Vista": "Villa Mella Free Zone, Buena Vista",
+  "Zona Franca La Isabela, El Polvorín": "La Isabela Free Zone, El Polvorín",
+  "Zona Franca de Las Américas, Cartones del Caribe, Ladom": "Las Américas Free Zone, Cartones del Caribe, Ladom",
+  "Parque Industrial Duarte Km. 23": "Duarte Industrial Park Km. 23",
+  "Zona Franca Hato Nuevo": "Hato Nuevo Free Zone",
+  "Zona Industrial de Herrera": "Herrera Industrial Zone",
+  "Acuario Nacional": "National Aquarium",
+  "Faro a Colón": "Columbus Lighthouse (Faro a Colón)",
+  "Hipódromo V-Centenario": "V Centenario Racetrack",
+  "Parque Los Tres Ojos": "Los Tres Ojos National Park",
+  "Pueblo de San Isidro": "San Isidro Town",
+  "Sabana Perdida (antes de la Charles)": "Sabana Perdida (before Charles de Gaulle Ave.)",
+  "Sabana Perdida (después de la Charles)": "Sabana Perdida (past Charles de Gaulle Ave.)",
+  "Villa Mella Pueblo": "Villa Mella Town",
+  "Km 13 Autopista Duarte": "Km. 13 Duarte Highway",
+  "Puerto Turístico Don Diego": "Don Diego Cruise Terminal",
+  "Puerto Turístico San Souci": "Sans Souci Cruise Terminal",
+  "Puerto de Haina Oriental": "Haina Oriental Port",
+  "Puerto de Haina Occidental": "Haina Occidental Port",
+  "Punta Cana / Cap Cana / Aeropuerto": "Punta Cana / Cap Cana / Airport",
+  "Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito": "Bávaro, Uvero Alto, Macao, Friusa, Cortecito Beach",
+  "Samaná (ciudad)": "Samaná (city)",
+  "Río San Juan (por Nagua)": "Río San Juan (via Nagua)",
+  "Río San Juan (por Puerto Plata)": "Río San Juan (via Puerto Plata)",
+  "Zona Franca de Baní": "Baní Free Zone",
+  "Playa San Rafael, Barahona": "San Rafael Beach, Barahona",
+  "Playa Palenque": "Palenque Beach"
+};
+
+var ZONE_TR = {
+  "Ciudad de Santo Domingo": {en:"Santo Domingo City", lab:"Sector", note:"within the selected sector"},
+  "Zonas Francas": {en:"Free Zones", lab:"Free zone", note:"within the selected free zone"},
+  "Santo Domingo Este": {en:"Santo Domingo East", lab:"Sector", note:"within the selected sector"},
+  "Santo Domingo Norte": {en:"Santo Domingo North", lab:"Sector", note:"within the selected sector"},
+  "Santo Domingo Oeste": {en:"Santo Domingo West", lab:"Sector", note:"within the selected sector"},
+  "Puertos": {en:"Ports", lab:"Port", note:"within the selected port"},
+  "Región Este": {en:"East Region", lab:"Municipality", note:"within the selected municipality"},
+  "Región Noroeste / Norte": {en:"Northwest / North Region", lab:"Municipality", note:"within the selected municipality"},
+  "Región Cibao Central": {en:"Central Cibao Region", lab:"Municipality", note:"within the selected municipality"},
+  "Región Sur": {en:"South Region", lab:"Municipality", note:"within the selected municipality"}
+};
+
+var UI = {
+  es: {
+    langBtn: "EN",
+    title: "Solicitar transporte",
+    sub: "Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.",
+    vehLab: "Vehículo",
+    searchLab: "Búsqueda rápida de destino",
+    searchPh: "Escribe un sector, municipio o aeropuerto…",
+    zoneLab: "O selecciona por zona",
+    selectPh: "Selecciona…",
+    specialGroup: "Servicios sin zona",
+    zoneGroup: "Zonas",
+    hrsLab: "Horas (mínimo 2)",
+    tripLab: "Tipo de viaje",
+    oneWay: "Solo ida",
+    roundTrip: "Ida y vuelta",
+    longNote: "Ida y vuelta (viajes a más de 100 km): se suma un 50% al total e incluye una espera máxima de 3 horas; después de ese tiempo se cobrará espera adicional.",
+    shortNote: "Ida y vuelta (menos de 100 km / menos de 2 h): se cobra el trayecto completo de regreso.",
+    ratePrefix: "La tarifa aplica a cualquier punto dentro ",
+    costLab: "Costo total",
+    dateLab: "Fecha",
+    payLab: "Método de pago",
+    cardWarnEmpty: "El pago con tarjeta tiene un cargo adicional del 7% por procesamiento.",
+    cardWarnDetail: function(sub, fee, tot){
+      return "Cargo por pago con tarjeta (+7%): +" + fee + " sobre " + sub + " (Total: " + tot + ").";
+    },
+    costCardSub: function(fee){ return "Incluye +" + fee + " (7% cargo por tarjeta)"; },
+    codeLab: "Código de descuento (opcional)",
+    codePh: "Ingresa tu código",
+    applyBtn: "Aplicar",
+    codeOk: function(c, p){ return 'Código "' + c + '" aplicado: ' + p + '% de descuento.'; },
+    codeErr: "Código no válido.",
+    sendBtn: "Enviar por WhatsApp",
+    copyBtn: "Copiar cotización",
+    copiedBtn: "¡Cotización copiada!",
+    coordTitle: "Coordinación por WhatsApp:",
+    coordBody: "Hora de recogida, dirección exacta, número de vuelo y cualquier otro detalle del traslado se coordinan directamente por WhatsApp al enviar tu solicitud.",
+    payInfoTitle: "Métodos de pago aceptados:",
+    payInfoBody: "Efectivo, Tarjeta, Cripto, Transferencias (bancos locales y en Estados Unidos) y PayPal.",
+    waIntro: "Hola, quiero solicitar un servicio de transporte.",
+    waVeh: "Vehículo",
+    waZone: "Zona",
+    waService: "Servicio",
+    waTrip: "Viaje",
+    waDate: "Fecha",
+    waPay: "Método de pago",
+    waOrig: "Monto sin descuento",
+    waCode: "Código aplicado",
+    waDiscAmt: "Subtotal con descuento",
+    waCardFee: "Cargo por pago con tarjeta (7%)",
+    waAmt: "Total a pagar",
+    hoursWord: "horas",
+    rtLongExtra: "Ida y vuelta (+50%, incluye espera máxima de 3 horas; tiempo adicional conlleva cargo por espera)",
+    rtShortExtra: "Ida y vuelta (trayecto completo)",
+    owExtra: "Solo ida"
+  },
+  en: {
+    langBtn: "ES",
+    title: "Request Transportation",
+    sub: "Calculate your rate and send your request. All other details are coordinated via WhatsApp.",
+    vehLab: "Vehicle",
+    searchLab: "Quick destination search",
+    searchPh: "Type a neighborhood, town, or airport…",
+    zoneLab: "Or select by zone",
+    selectPh: "Select…",
+    specialGroup: "Flat-rate / Hourly services",
+    zoneGroup: "Zones",
+    hrsLab: "Hours (minimum 2)",
+    tripLab: "Trip type",
+    oneWay: "One way",
+    roundTrip: "Round trip",
+    longNote: "Round trip (over 100 km): adds 50% to the total and includes a maximum 3-hour wait; additional waiting time will be charged afterward.",
+    shortNote: "Round trip (under 100 km / under 2 hrs): full return fare applies.",
+    ratePrefix: "Rate applies to any point ",
+    costLab: "Total Cost",
+    dateLab: "Date",
+    payLab: "Payment method",
+    cardWarnEmpty: "Card payments include an additional 7% processing fee.",
+    cardWarnDetail: function(sub, fee, tot){
+      return "Card processing fee (+7%): +" + fee + " on " + sub + " (Total: " + tot + ").";
+    },
+    costCardSub: function(fee){ return "Includes +" + fee + " (7% card processing fee)"; },
+    codeLab: "Promo code (optional)",
+    codePh: "Enter your code",
+    applyBtn: "Apply",
+    codeOk: function(c, p){ return 'Code "' + c + '" applied: ' + p + '% discount.'; },
+    codeErr: "Invalid promo code.",
+    sendBtn: "Send via WhatsApp",
+    copyBtn: "Copy quote",
+    copiedBtn: "Quote copied!",
+    coordTitle: "WhatsApp Coordination:",
+    coordBody: "Pickup time, exact address, flight number, and any other trip details are coordinated directly via WhatsApp once you send your request.",
+    payInfoTitle: "Accepted payment methods:",
+    payInfoBody: "Cash, Card, Crypto, Bank Transfers (local Dominican banks & US banks), and PayPal.",
+    waIntro: "Hello, I would like to request a transportation service.",
+    waVeh: "Vehicle",
+    waZone: "Zone",
+    waService: "Service",
+    waTrip: "Trip",
+    waDate: "Date",
+    waPay: "Payment method",
+    waOrig: "Original amount",
+    waCode: "Promo code",
+    waDiscAmt: "Discounted subtotal",
+    waCardFee: "Card processing fee (7%)",
+    waAmt: "Total to pay",
+    hoursWord: "hours",
+    rtLongExtra: "Round trip (+50%, includes 3-hour max wait; extra waiting time incurs additional charge)",
+    rtShortExtra: "Round trip (full return fare)",
+    owExtra: "One way"
+  }
+};
+
+var Z = [];
+RAW.split("\n").forEach(function(l){
+  l = l.trim(); if(!l) return;
+  if(l[0]=="#"){ var p=l.slice(1).split("|"); Z.push({n:p[0],lab:p[1],note:p[2],d:[]}); }
+  else {
+    var q=l.split("|");
+    var rtType = q[3]=="L" ? "L" : (q[3]=="R" ? "R" : "");
+    Z[Z.length-1].d.push({n:q[0],a:+q[1],b:+q[2],rt:rtType});
+  }
+});
+
+var $=function(i){return document.getElementById(i)};
+var zs=$("zona"), mun=$("mun"), fecha=$("fecha"), send=$("send"), copyBtn=$("copyBtn"), cost=$("cost"), q=$("q"), qList=$("qList");
+var codeInp=$("codeInp"), codeMsg=$("codeMsg"), cardWarn=$("cardWarn"), costCardNote=$("costCardNote");
+var lang="es", veh="n", trip="1", disc=0, appliedCode="", payId=METODOS_PAGO[0].id;
+var codeState="none";
+
+var CODES_NORM={};
+Object.keys(CODIGOS_DESCUENTO).forEach(function(k){
+  CODES_NORM[k.trim().toLowerCase()]={code:k.trim(),pct:CODIGOS_DESCUENTO[k]};
+});
+
+function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
+function zName(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].en : z.n; }
+function zLab(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].lab : z.lab; }
+function zNote(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].note : z.note; }
+function sName(s){ return lang=="en" && s.en ? s.en : s.k; }
+function dName(n){ return lang=="en" && DEST_EN[n] ? DEST_EN[n] : n; }
+function payLabel(id){
+  var m=METODOS_PAGO.filter(function(x){return x.id==id;})[0];
+  return m ? m[lang] : id;
+}
+
+var ITEMS=[];
+SPECIAL.forEach(function(s,i){
+  ITEMS.push({t:"s",i:i,s:s,a:s.n,b:s.v,key:norm(s.k+" "+(s.en||""))});
+});
+Z.forEach(function(z,zi){
+  var znEn = ZONE_TR[z.n] ? ZONE_TR[z.n].en : "";
+  z.d.forEach(function(d,di){
+    var dnEn = DEST_EN[d.n] || "";
+    ITEMS.push({t:"z",zi:zi,di:di,n:d.n,z:z,a:d.a,b:d.b,key:norm(d.n+" "+dnEn+" "+z.n+" "+znEn)});
+  });
+});
+
+function buildZones(){
+  var prev=zs.value;
+  zs.innerHTML="";
+  zs.add(new Option(UI[lang].selectPh,""));
+  var g1=document.createElement("optgroup"); g1.label=UI[lang].specialGroup;
+  SPECIAL.forEach(function(s,i){ g1.appendChild(new Option(sName(s),"s"+i)); });
+  var g2=document.createElement("optgroup"); g2.label=UI[lang].zoneGroup;
+  Z.forEach(function(z,i){ g2.appendChild(new Option(zName(z),"z"+i)); });
+  zs.appendChild(g1); zs.appendChild(g2);
+  zs.value=prev;
+}
+
+function buildMunOptions(zz, selectedVal){
+  mun.length=0;
+  mun.add(new Option(UI[lang].selectPh,""));
+  zz.d.forEach(function(d,i){ mun.add(new Option(dName(d.n),i)); });
+  if(selectedVal !== undefined) mun.value=selectedVal;
+}
+
+function buildPay(){
+  var box=$("pay");
+  box.innerHTML="";
+  METODOS_PAGO.forEach(function(m){
+    var b=document.createElement("button");
+    b.type="button";
+    b.className="chip sm";
+    b.dataset.v=m.id;
+    b.textContent=m[lang];
+    box.appendChild(b);
+  });
+}
+
+fecha.min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+
+function fmt(n){return M+" "+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function r2(n){return Math.round(n*100)/100;}
+function mark(id,v){[].forEach.call($(id).children,function(b){var on=b.dataset.v==v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);});}
+
+function updateCodeMsg(){
+  var t=UI[lang];
+  if(codeState=="ok"){
+    codeMsg.textContent=t.codeOk(appliedCode,disc);
+    codeMsg.className="code-msg ok";
+    codeMsg.hidden=false;
+  } else if(codeState=="err"){
+    codeMsg.textContent=t.codeErr;
+    codeMsg.className="code-msg err";
+    codeMsg.hidden=false;
+  } else {
+    codeMsg.hidden=true;
+  }
+}
+
+function checkCode(silent){
+  var raw=codeInp.value.trim().toLowerCase();
+  if(!raw){
+    disc=0; appliedCode=""; codeState="none";
+    updateCodeMsg();
+    render();
+    return;
+  }
+  var found=CODES_NORM[raw];
+  if(found){
+    disc=found.pct;
+    appliedCode=found.code;
+    codeState="ok";
+  } else {
+    disc=0;
+    appliedCode="";
+    codeState=silent?"none":"err";
+  }
+  updateCodeMsg();
+  render();
+}
+
+$("applyCode").onclick=function(){ checkCode(false); };
+codeInp.oninput=function(){ checkCode(true); };
+codeInp.onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); checkCode(false); } };
+
+function showSearch(){
+  var val=norm(q.value.trim());
+  qList.innerHTML="";
+  if(val.length<2){ qList.hidden=true; return; }
+  var matches=ITEMS.filter(function(it){return it.key.indexOf(val)!==-1;}).slice(0,8);
+  if(!matches.length){ qList.hidden=true; return; }
+  matches.forEach(function(it){
+    var b=document.createElement("button");
+    b.type="button";
+    b.className="q-item";
+    var price=veh=="n"?it.a:it.b;
+    var title=it.t=="s"?sName(it.s):dName(it.n);
+    var sub=it.t=="s"?UI[lang].specialGroup:zName(it.z);
+    b.innerHTML='<span>'+title+'<small>'+sub+'</small></span><strong>'+fmt(price)+'</strong>';
+    b.onclick=function(){
+      if(it.t=="s"){
+        zs.value="s"+it.i;
+        zs.onchange();
+      } else {
+        zs.value="z"+it.zi;
+        zs.onchange();
+        mun.value=String(it.di);
+        mun.onchange();
+      }
+      q.value="";
+      qList.hidden=true;
+    };
+    qList.appendChild(b);
+  });
+  qList.hidden=false;
+}
+
+q.oninput=showSearch;
+q.onfocus=showSearch;
+document.addEventListener("click",function(e){
+  if(!$("searchWrap").contains(e.target)) qList.hidden=true;
+});
+
+function info(){
+  var t=UI[lang];
+  var z=zs.value; if(!z) return null;
+  var i=+z.slice(1), amt, ex="";
+  if(z[0]=="s"){
+    var s=SPECIAL[i], h=Math.max(2,Math.floor(+$("hrs").value)||2);
+    amt=veh=="n"?s.n:s.v;
+    if(s.h) amt+=(h-2)*(veh=="n"?s.xn:s.xv);
+    if(s.rt){
+      if(trip=="2"){ amt=r2(amt*2); ex=t.rtShortExtra; }
+      else ex=t.owExtra;
+    }
+    return {t:amt,lab:t.waService,zone:"",dest:sName(s)+(s.h?" ("+h+" "+t.hoursWord+")":""),extra:ex};
+  }
+  if(mun.value==="") return null;
+  var zz=Z[i], d=zz.d[+mun.value];
+  amt=veh=="n"?d.a:d.b;
+  if(d.rt=="L"){
+    if(trip=="2"){ amt=r2(amt*1.5); ex=t.rtLongExtra; }
+    else ex=t.owExtra;
+  } else if(d.rt=="R"){
+    if(trip=="2"){ amt=r2(amt*2); ex=t.rtShortExtra; }
+    else ex=t.owExtra;
+  }
+  return {t:amt,lab:zLab(zz),zone:zName(zz),dest:dName(d.n),extra:ex};
+}
+
+function calcTotals(r){
+  var base = r.t;
+  var afterDisc = disc ? r2(base * (100 - disc) / 100) : base;
+  var cardAmt = (payId === "card") ? r2(afterDisc * CARD_FEE) : 0;
+  var finalTotal = r2(afterDisc + cardAmt);
+  return {base: base, afterDisc: afterDisc, cardAmt: cardAmt, finalTotal: finalTotal};
+}
+
+function buildMessage(includeDate){
+  var r=info(); if(!r) return "";
+  var t=UI[lang];
+  var c=calcTotals(r);
+  var L=[t.waIntro, t.waVeh+": "+(veh=="n"?"Normal":"Minivan")];
+  if(r.zone){ L.push(t.waZone+": "+r.zone); L.push(r.lab+": "+r.dest); }
+  else { L.push(t.waService+": "+r.dest); }
+  if(r.extra) L.push(t.waTrip+": "+r.extra);
+  if(includeDate && fecha.value){
+    L.push(t.waDate+": "+fecha.value.split("-").reverse().join("/"));
+  }
+  L.push(t.waPay+": "+payLabel(payId));
+  if(disc){
+    L.push(t.waOrig+": "+fmt(c.base));
+    L.push(t.waCode+": "+appliedCode+" ("+disc+"%)");
+    L.push(t.waDiscAmt+": "+fmt(c.afterDisc));
+  }
+  if(payId === "card"){
+    if(!disc) L.push(t.waOrig+": "+fmt(c.base));
+    L.push(t.waCardFee+": +"+fmt(c.cardAmt));
+  }
+  L.push(t.waAmt+": "+fmt(c.finalTotal));
+  return L.join("\n");
+}
+
+function applyLang(){
+  var t=UI[lang];
+  document.documentElement.lang=lang;
+  $("langBtn").textContent=t.langBtn;
+  $("tTitle").textContent=t.title;
+  $("tSub").textContent=t.sub;
+  $("tVehLab").textContent=t.vehLab;
+  $("tSearchLab").textContent=t.searchLab;
+  q.placeholder=t.searchPh;
+  $("tZoneLab").textContent=t.zoneLab;
+  $("tHrsLab").textContent=t.hrsLab;
+  $("tTripLab").textContent=t.tripLab;
+  $("tOneWay").textContent=t.oneWay;
+  $("tRoundTrip").textContent=t.roundTrip;
+  $("tCostLab").textContent=t.costLab;
+  $("tDateLab").textContent=t.dateLab;
+  $("tPayLab").textContent=t.payLab;
+  $("tCodeLab").textContent=t.codeLab;
+  codeInp.placeholder=t.codePh;
+  $("applyCode").textContent=t.applyBtn;
+  send.textContent=t.sendBtn;
+  copyBtn.textContent=t.copyBtn;
+  $("tCoordTitle").textContent=t.coordTitle;
+  $("tCoordBody").textContent=t.coordBody;
+  $("tPayInfoTitle").textContent=t.payInfoTitle;
+  $("tPayInfoBody").textContent=t.payInfoBody;
+
+  var prevMun=mun.value;
+  buildZones();
+  if(zs.value && zs.value[0]=="z"){
+    var zz=Z[+zs.value.slice(1)];
+    $("munLab").textContent=zLab(zz);
+    buildMunOptions(zz, prevMun);
+  }
+  buildPay();
+  updateCodeMsg();
+  render();
+}
+
+function render(){
+  var t=UI[lang];
+  var z=zs.value, sp=z&&z[0]=="s", d=null, zz=null, sObj=null;
+  if(z&&sp){ sObj=SPECIAL[+z.slice(1)]; }
+  if(z&&!sp){ zz=Z[+z.slice(1)]; if(mun.value!=="") d=zz.d[+mun.value]; }
+
+  var rtMode = sp ? (sObj && sObj.rt ? "R" : "") : (d ? d.rt : "");
+  $("munBox").hidden=!(z&&!sp);
+  $("hrBox").hidden=!(sp&&sObj&&sObj.h);
+  $("tripBox").hidden=!rtMode;
+  $("tripNote").textContent = rtMode=="L" ? t.longNote : (rtMode=="R" ? t.shortNote : "");
+  $("note").textContent=d?(t.ratePrefix+zNote(zz)+"."):"";
+
+  mark("veh",veh); mark("trip",trip); mark("pay",payId);
+
+  var r=info();
+  var isCard = (payId === "card");
+
+  if(!r){
+    cost.textContent="—";
+    costCardNote.hidden=true;
+    cardWarn.hidden=!isCard;
+    if(isCard) cardWarn.textContent=t.cardWarnEmpty;
+  } else {
+    var c=calcTotals(r);
+    if(disc){
+      cost.innerHTML="<s>"+fmt(c.base)+"</s>"+fmt(c.finalTotal);
+    } else {
+      cost.textContent=fmt(c.finalTotal);
+    }
+    if(isCard){
+      costCardNote.textContent=t.costCardSub(fmt(c.cardAmt));
+      costCardNote.hidden=false;
+      cardWarn.textContent=t.cardWarnDetail(fmt(c.afterDisc), fmt(c.cardAmt), fmt(c.finalTotal));
+      cardWarn.hidden=false;
+    } else {
+      costCardNote.hidden=true;
+      cardWarn.hidden=true;
+    }
+  }
+
+  send.disabled=!(r&&fecha.value);
+  copyBtn.disabled=!r;
+}
+
+$("langBtn").onclick=function(){
+  lang=(lang=="es"?"en":"es");
+  applyLang();
+  if(!qList.hidden) showSearch();
+};
+
+zs.onchange=function(){
+  mun.length=0; trip="1";
+  var z=zs.value;
+  if(z&&z[0]=="z"){
+    var zz=Z[+z.slice(1)];
+    $("munLab").textContent=zLab(zz);
+    buildMunOptions(zz, "");
+  }
+  render();
+};
+mun.onchange=function(){ trip="1"; render(); };
+$("hrs").oninput=render; fecha.onchange=render;
+$("veh").onclick=function(e){var b=e.target.closest("button"); if(b){veh=b.dataset.v; render(); if(!qList.hidden) showSearch();}};
+$("trip").onclick=function(e){var b=e.target.closest("button"); if(b){trip=b.dataset.v; render();}};
+$("pay").onclick=function(e){var b=e.target.closest("button"); if(b){payId=b.dataset.v; render();}};
+
+send.onclick=function(){
+  var msg=buildMessage(true); if(!msg) return;
+  window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(msg),"_blank");
+};
+
+copyBtn.onclick=function(){
+  var msg=buildMessage(true); if(!msg) return;
+  function done(){
+    copyBtn.textContent=UI[lang].copiedBtn;
+    setTimeout(function(){ copyBtn.textContent=UI[lang].copyBtn; }, 2000);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(done).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+  function fallbackCopy(){
+    var ta=document.createElement("textarea");
+    ta.value=msg;
+    ta.style.position="fixed";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); done(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+};
+
+applyLang();
+</script>
+</body>
+</html>
