@@ -28,6 +28,7 @@ h1{font-size:1.3rem;margin:0}
 p.sub{margin:0 0 12px;color:var(--muted);font-size:.95rem;line-height:1.4}
 p.note{margin:8px 0 0;color:var(--muted);font-size:.82rem;line-height:1.4}
 label{display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px}
+.req{color:var(--err);font-weight:700;margin-left:2px}
 select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
 .search-wrap{position:relative}
 .q-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:240px;overflow-y:auto}
@@ -37,6 +38,10 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
 .q-item small{display:block;font-size:.76rem;color:var(--muted);margin-top:2px}
 .q-item strong{font-size:.9rem;color:var(--accent);white-space:nowrap}
 .row{display:flex;gap:8px;flex-wrap:wrap}
+.date-row{display:flex;gap:8px;align-items:stretch}
+.date-row input{flex:1;min-width:0}
+.btn-quick{padding:0 12px;font-size:.82rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
+.btn-quick:hover,.btn-quick.on{border-color:var(--accent);color:var(--accent)}
 .code-row{display:flex;gap:8px}
 .code-row input{flex:1}
 .btn-sec{padding:0 16px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
@@ -59,6 +64,7 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
 #copyBtn{width:100%;padding:11px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer}
 #copyBtn:hover:not(:disabled){border-color:var(--accent)}
 #copyBtn:disabled{opacity:.45;cursor:not-allowed}
+.send-hint{margin:4px 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
 .info-box{margin-top:14px;padding:12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:.82rem;color:var(--muted);line-height:1.45}
 .info-box strong{color:var(--text);display:block;margin-bottom:2px}
 </style>
@@ -74,16 +80,16 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
   <label id="tVehLab">Vehículo</label>
   <div class="row" id="veh"><button type="button" class="chip on" data-v="n">Normal</button><button type="button" class="chip" data-v="v">Minivan</button></div>
 
-  <label for="q" id="tSearchLab">Búsqueda rápida de destino</label>
+  <label for="q"><span id="tSearchLab">Búsqueda rápida de destino</span><span class="req">*</span></label>
   <div class="search-wrap" id="searchWrap">
-    <input type="search" id="q" placeholder="Escribe un sector, municipio o aeropuerto…" autocomplete="off">
+    <input type="search" id="q" placeholder="Escribe un sector, municipio o aeropuerto (SDQ, JBQ)…" autocomplete="off">
     <div class="q-list" id="qList" hidden></div>
   </div>
 
-  <label for="zona" id="tZoneLab">O selecciona por zona</label>
+  <label for="zona"><span id="tZoneLab">O selecciona por zona</span><span class="req">*</span></label>
   <select id="zona"><option value="">Selecciona…</option></select>
 
-  <div id="munBox" hidden><label for="mun" id="munLab">Municipio</label><select id="mun"></select></div>
+  <div id="munBox" hidden><label for="mun"><span id="munLab">Municipio</span><span class="req">*</span></label><select id="mun"></select></div>
 
   <div id="hrBox" hidden><label for="hrs" id="tHrsLab">Horas (mínimo 2)</label><input type="number" id="hrs" min="2" step="1" value="2"></div>
 
@@ -97,8 +103,12 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
 
   <div class="cost"><span id="tCostLab">Costo total</span><strong id="cost">—</strong><small id="costCardNote" hidden></small></div>
 
-  <label for="fecha" id="tDateLab">Fecha</label>
-  <input type="date" id="fecha">
+  <label for="fecha" id="tDateLab">Fecha (opcional)</label>
+  <div class="date-row">
+    <input type="date" id="fecha">
+    <button type="button" class="btn-quick" id="btnToday">Hoy</button>
+    <button type="button" class="btn-quick" id="btnTomorrow">Mañana</button>
+  </div>
 
   <label id="tPayLab">Método de pago</label>
   <div class="row" id="pay"></div>
@@ -114,6 +124,7 @@ select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line)
   <div class="actions">
     <button id="send" disabled>Enviar por WhatsApp</button>
     <button type="button" id="copyBtn" disabled>Copiar cotización</button>
+    <p class="send-hint" id="sendHint">* Selecciona un destino o servicio para habilitar el envío.</p>
   </div>
 
   <div class="info-box">
@@ -148,12 +159,13 @@ var METODOS_PAGO = [
   {id:"paypal", es:"PayPal", en:"PayPal"}
 ];
 
-// Servicios sin zona. n = normal, v = minivan, xn/xv = hora adicional, h = pide horas, rt = permite ida y vuelta (tarifa doble)
+// Servicios sin zona. n = normal, v = minivan, xn/xv = hora adicional, h = pide horas, rt = permite ida y vuelta (tarifa doble), tags = sinónimos de búsqueda
 var SPECIAL = [
-  {k:"Taxi por hora (mínimo 2 horas, dentro de la ciudad de Santo Domingo)",en:"Hourly taxi (minimum 2 hours, within Santo Domingo city)",n:40,v:50,xn:15,xv:20,h:1},
-  {k:"Taxi mínimo",en:"Minimum fare taxi",n:10,v:15},
-  {k:"Taxi por día",en:"Full-day taxi",n:120,v:160},
-  {k:"Aeropuerto Las Américas / El Higüero",en:"Las Américas / El Higüero Airport",n:45,v:50,rt:1}
+  {k:"Taxi por hora (mínimo 2 horas, dentro de la ciudad de Santo Domingo)",en:"Hourly taxi (minimum 2 hours, within Santo Domingo city)",n:40,v:50,xn:15,xv:20,h:1,tags:"por hora horas hourly"},
+  {k:"Taxi mínimo",en:"Minimum fare taxi",n:10,v:15,tags:"minimo corta distancia short"},
+  {k:"Taxi por día",en:"Full-day taxi",n:120,v:160,tags:"dia completo full day"},
+  {k:"Aeropuerto Las Américas (AILA / SDQ)",en:"Las Américas Airport (AILA / SDQ)",n:45,v:50,rt:1,tags:"aeropuerto internacional jose francisco pena gomez santo domingo boca chica airport"},
+  {k:"Aeropuerto El Higüero / La Isabela (JBQ)",en:"El Higüero / La Isabela Airport (JBQ)",n:45,v:50,rt:1,tags:"aeropuerto internacional dr joaquin balaguer norte santo domingo airport"}
 ];
 
 // #Zona|Etiqueta del campo|texto de aclaración.
@@ -438,7 +450,7 @@ var DEST_EN = {
   "Puerto Turístico San Souci": "Sans Souci Cruise Terminal",
   "Puerto de Haina Oriental": "Haina Oriental Port",
   "Puerto de Haina Occidental": "Haina Occidental Port",
-  "Punta Cana / Cap Cana / Aeropuerto": "Punta Cana / Cap Cana / Airport",
+  "Punta Cana / Cap Cana / Aeropuerto": "Punta Cana / Cap Cana / Airport (PUJ)",
   "Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito": "Bávaro, Uvero Alto, Macao, Friusa, Cortecito Beach",
   "Samaná (ciudad)": "Samaná (city)",
   "Río San Juan (por Nagua)": "Río San Juan (via Nagua)",
@@ -468,10 +480,10 @@ var UI = {
     sub: "Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.",
     vehLab: "Vehículo",
     searchLab: "Búsqueda rápida de destino",
-    searchPh: "Escribe un sector, municipio o aeropuerto…",
+    searchPh: "Escribe un sector, municipio o aeropuerto (SDQ, JBQ)…",
     zoneLab: "O selecciona por zona",
     selectPh: "Selecciona…",
-    specialGroup: "Servicios sin zona",
+    specialGroup: "Aeropuertos y servicios",
     zoneGroup: "Zonas",
     hrsLab: "Horas (mínimo 2)",
     tripLab: "Tipo de viaje",
@@ -481,7 +493,9 @@ var UI = {
     shortNote: "Ida y vuelta (menos de 100 km / menos de 2 h): se cobra el trayecto completo de regreso.",
     ratePrefix: "La tarifa aplica a cualquier punto dentro ",
     costLab: "Costo total",
-    dateLab: "Fecha",
+    dateLab: "Fecha (opcional)",
+    todayBtn: "Hoy",
+    tomorrowBtn: "Mañana",
     payLab: "Método de pago",
     cardWarnEmpty: "El pago con tarjeta tiene un cargo adicional del 7% por procesamiento.",
     cardWarnDetail: function(sub, fee, tot){
@@ -496,6 +510,7 @@ var UI = {
     sendBtn: "Enviar por WhatsApp",
     copyBtn: "Copiar cotización",
     copiedBtn: "¡Cotización copiada!",
+    sendHint: "* Selecciona un destino o servicio para habilitar el envío.",
     coordTitle: "Coordinación por WhatsApp:",
     coordBody: "Hora de recogida, dirección exacta, número de vuelo y cualquier otro detalle del traslado se coordinan directamente por WhatsApp al enviar tu solicitud.",
     payInfoTitle: "Métodos de pago aceptados:",
@@ -523,10 +538,10 @@ var UI = {
     sub: "Calculate your rate and send your request. All other details are coordinated via WhatsApp.",
     vehLab: "Vehicle",
     searchLab: "Quick destination search",
-    searchPh: "Type a neighborhood, town, or airport…",
+    searchPh: "Type a neighborhood, town, or airport (SDQ, JBQ)…",
     zoneLab: "Or select by zone",
     selectPh: "Select…",
-    specialGroup: "Flat-rate / Hourly services",
+    specialGroup: "Airports & hourly services",
     zoneGroup: "Zones",
     hrsLab: "Hours (minimum 2)",
     tripLab: "Trip type",
@@ -536,7 +551,9 @@ var UI = {
     shortNote: "Round trip (under 100 km / under 2 hrs): full return fare applies.",
     ratePrefix: "Rate applies to any point ",
     costLab: "Total Cost",
-    dateLab: "Date",
+    dateLab: "Date (optional)",
+    todayBtn: "Today",
+    tomorrowBtn: "Tomorrow",
     payLab: "Payment method",
     cardWarnEmpty: "Card payments include an additional 7% processing fee.",
     cardWarnDetail: function(sub, fee, tot){
@@ -551,6 +568,7 @@ var UI = {
     sendBtn: "Send via WhatsApp",
     copyBtn: "Copy quote",
     copiedBtn: "Quote copied!",
+    sendHint: "* Select a destination or service to enable sending.",
     coordTitle: "WhatsApp Coordination:",
     coordBody: "Pickup time, exact address, flight number, and any other trip details are coordinated directly via WhatsApp once you send your request.",
     payInfoTitle: "Accepted payment methods:",
@@ -587,7 +605,8 @@ RAW.split("\n").forEach(function(l){
 
 var $=function(i){return document.getElementById(i)};
 var zs=$("zona"), mun=$("mun"), fecha=$("fecha"), send=$("send"), copyBtn=$("copyBtn"), cost=$("cost"), q=$("q"), qList=$("qList");
-var codeInp=$("codeInp"), codeMsg=$("codeMsg"), cardWarn=$("cardWarn"), costCardNote=$("costCardNote");
+var codeInp=$("codeInp"), codeMsg=$("codeMsg"), cardWarn=$("cardWarn"), costCardNote=$("costCardNote"), sendHint=$("sendHint");
+var btnToday=$("btnToday"), btnTomorrow=$("btnTomorrow");
 var lang="es", veh="n", trip="1", disc=0, appliedCode="", payId=METODOS_PAGO[0].id;
 var codeState="none";
 
@@ -609,7 +628,7 @@ function payLabel(id){
 
 var ITEMS=[];
 SPECIAL.forEach(function(s,i){
-  ITEMS.push({t:"s",i:i,s:s,a:s.n,b:s.v,key:norm(s.k+" "+(s.en||""))});
+  ITEMS.push({t:"s",i:i,s:s,a:s.n,b:s.v,key:norm(s.k+" "+(s.en||"")+" "+(s.tags||""))});
 });
 Z.forEach(function(z,zi){
   var znEn = ZONE_TR[z.n] ? ZONE_TR[z.n].en : "";
@@ -651,7 +670,15 @@ function buildPay(){
   });
 }
 
-fecha.min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+function localISO(offsetDays){
+  var d=new Date(Date.now() + (offsetDays||0)*86400000 - new Date().getTimezoneOffset()*60000);
+  return d.toISOString().slice(0,10);
+}
+
+fecha.min=localISO(0);
+
+btnToday.onclick=function(){ fecha.value=localISO(0); render(); };
+btnTomorrow.onclick=function(){ fecha.value=localISO(1); render(); };
 
 function fmt(n){return M+" "+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function r2(n){return Math.round(n*100)/100;}
@@ -812,12 +839,15 @@ function applyLang(){
   $("tRoundTrip").textContent=t.roundTrip;
   $("tCostLab").textContent=t.costLab;
   $("tDateLab").textContent=t.dateLab;
+  btnToday.textContent=t.todayBtn;
+  btnTomorrow.textContent=t.tomorrowBtn;
   $("tPayLab").textContent=t.payLab;
   $("tCodeLab").textContent=t.codeLab;
   codeInp.placeholder=t.codePh;
   $("applyCode").textContent=t.applyBtn;
   send.textContent=t.sendBtn;
   copyBtn.textContent=t.copyBtn;
+  sendHint.textContent=t.sendHint;
   $("tCoordTitle").textContent=t.coordTitle;
   $("tCoordBody").textContent=t.coordBody;
   $("tPayInfoTitle").textContent=t.payInfoTitle;
@@ -848,6 +878,9 @@ function render(){
   $("tripNote").textContent = rtMode=="L" ? t.longNote : (rtMode=="R" ? t.shortNote : "");
   $("note").textContent=d?(t.ratePrefix+zNote(zz)+"."):"";
 
+  btnToday.classList.toggle("on", fecha.value === localISO(0));
+  btnTomorrow.classList.toggle("on", fecha.value === localISO(1));
+
   mark("veh",veh); mark("trip",trip); mark("pay",payId);
 
   var r=info();
@@ -876,8 +909,9 @@ function render(){
     }
   }
 
-  send.disabled=!(r&&fecha.value);
+  send.disabled=!r;
   copyBtn.disabled=!r;
+  sendHint.hidden=!!r;
 }
 
 $("langBtn").onclick=function(){
@@ -897,7 +931,7 @@ zs.onchange=function(){
   render();
 };
 mun.onchange=function(){ trip="1"; render(); };
-$("hrs").oninput=render; fecha.onchange=render;
+$("hrs").oninput=render; fecha.onchange=render; fecha.oninput=render;
 $("veh").onclick=function(e){var b=e.target.closest("button"); if(b){veh=b.dataset.v; render(); if(!qList.hidden) showSearch();}};
 $("trip").onclick=function(e){var b=e.target.closest("button"); if(b){trip=b.dataset.v; render();}};
 $("pay").onclick=function(e){var b=e.target.closest("button"); if(b){payId=b.dataset.v; render();}};
