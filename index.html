@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Calculadora de Tarifas de Transporte · RD</title>
+  <title>HecdoCorp · Cotizador de Transporte</title>
   <style>
     :root {
       --bg: #111315;
@@ -382,6 +382,82 @@
       cursor: pointer;
     }
 
+
+    /* Modalidad Solo ida / Ida y vuelta */
+    .trip-mode-wrap {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .trip-mode-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .trip-mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mode-btn {
+      background: #1a1e24;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 10px;
+      border-radius: 9px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-btn.active {
+      border-color: var(--green);
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .mode-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .return-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+      border-radius: 9px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      gap: 8px;
+    }
+
+    .return-row-title {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .return-row-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .return-row-price {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
     /* Paso 3: Resumen con tipografía proporcionada */
     .summary-box {
       background: var(--card-inner);
@@ -515,8 +591,8 @@
 <body>
   <div class="app">
     <header class="header">
-      <h1>Cotizador de Transporte</h1>
-      <p>Calcula tu tarifa paso a paso y coordina por WhatsApp.</p>
+      <h1>HecdoCorp</h1>
+      <p>Cotizador de transporte · Calcula tu tarifa paso a paso y coordina por WhatsApp.</p>
     </header>
 
     <!-- PASO 1: VEHÍCULO Y SALIDA -->
@@ -600,6 +676,28 @@
           <button type="button" class="clear-btn" id="clearRouteBtn">Limpiar ruta</button>
         </div>
         <div id="stopsContainer"></div>
+
+        <!-- Fila informativa del regreso cuando Ida y vuelta está activo -->
+        <div class="return-row hidden" id="returnRowBox">
+          <div>
+            <div class="return-row-title" id="returnRowTitle">↩ Regreso</div>
+            <div class="return-row-sub" id="returnRowSub"></div>
+          </div>
+          <div class="return-row-price" id="returnRowPrice">US$ 0.00</div>
+        </div>
+
+        <!-- Selector Solo ida / Ida y vuelta -->
+        <div class="trip-mode-wrap" id="tripModeWrap">
+          <div class="trip-mode-label">
+            <span>Modalidad del viaje</span>
+            <span id="tripModeHint"></span>
+          </div>
+          <div class="trip-mode-grid" id="tripModeGrid">
+            <button type="button" class="mode-btn active" data-mode="oneway">Solo ida</button>
+            <button type="button" class="mode-btn" data-mode="roundtrip" id="roundTripBtn">Ida y vuelta</button>
+          </div>
+        </div>
+
         <button type="button" class="add-stop-btn" id="addStopFocusBtn">+ Agregar parada siguiente</button>
       </div>
     </section>
@@ -662,7 +760,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Naco",
@@ -673,7 +772,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Paraíso",
@@ -684,7 +784,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Serrallés",
@@ -695,7 +796,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Evaristo Morales",
@@ -706,7 +808,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Julieta Morales",
@@ -717,7 +820,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Castellana",
@@ -728,7 +832,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Millón",
@@ -739,7 +844,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Prados",
@@ -750,7 +856,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Quisqueya",
@@ -761,7 +868,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bella Vista",
@@ -772,7 +880,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Mirador Norte",
@@ -783,7 +892,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Mirador Sur",
@@ -794,7 +904,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Cacicazgos",
@@ -805,7 +916,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Renacimiento",
@@ -816,7 +928,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Julia",
@@ -827,7 +940,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Esperilla",
@@ -838,7 +952,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Gerónimo",
@@ -849,7 +964,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Las Praderas",
@@ -860,7 +976,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Restauradores",
@@ -871,7 +988,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ciudad Colonial",
@@ -882,7 +1000,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ciudad Nueva",
@@ -893,7 +1012,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Gascue",
@@ -904,7 +1024,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Carlos",
@@ -915,7 +1036,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Juan Bosco",
@@ -926,7 +1048,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Miraflores",
@@ -937,7 +1060,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Don Bosco",
@@ -948,7 +1072,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ciudad Universitaria",
@@ -959,7 +1084,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Zona Universitaria",
@@ -970,7 +1096,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Cacique",
@@ -981,7 +1108,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Centro de los Héroes (La Feria)",
@@ -992,7 +1120,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Mata Hambre",
@@ -1003,7 +1132,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Honduras",
@@ -1014,7 +1144,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Atala",
@@ -1025,7 +1156,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Jardines del Sur",
@@ -1036,7 +1168,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Miramar",
@@ -1047,7 +1180,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "30 de Mayo",
@@ -1058,7 +1192,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "General Antonio Duvergé",
@@ -1069,7 +1204,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Altos de Arroyo Hondo",
@@ -1080,7 +1216,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Viejo Arroyo Hondo",
@@ -1091,7 +1228,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cerros de Arroyo Hondo",
@@ -1102,7 +1240,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Nuevo Arroyo Hondo",
@@ -1113,7 +1252,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Arroyo Manzano",
@@ -1124,7 +1264,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Ríos",
@@ -1135,7 +1276,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Jardines del Norte",
@@ -1146,7 +1288,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cristo Rey",
@@ -1157,7 +1300,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche La Fe",
@@ -1168,7 +1312,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Kennedy",
@@ -1179,7 +1324,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Juana",
@@ -1190,7 +1336,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Consuelo",
@@ -1201,7 +1348,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Francisca",
@@ -1212,7 +1360,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Mejoramiento Social",
@@ -1223,7 +1372,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "María Auxiliadora",
@@ -1234,7 +1384,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Luperón",
@@ -1245,7 +1396,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Espaillat",
@@ -1256,7 +1408,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Capotillo",
@@ -1267,7 +1420,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Simón Bolívar",
@@ -1278,7 +1432,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Gualey",
@@ -1289,7 +1444,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "24 de Abril",
@@ -1300,7 +1456,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Zurza",
@@ -1311,7 +1468,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villas Agrícolas",
@@ -1322,7 +1480,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Domingo Savio (La Ciénaga y Los Guandules)",
@@ -1333,7 +1492,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Palma Real",
@@ -1344,7 +1504,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Peralejos",
@@ -1355,7 +1516,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Girasoles",
@@ -1366,7 +1528,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Ozama",
@@ -1377,7 +1540,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Alma Rosa I y II",
@@ -1388,7 +1552,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Duarte",
@@ -1399,7 +1564,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Mameyes",
@@ -1410,7 +1576,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Isabelita",
@@ -1421,7 +1588,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Tres Ojos",
@@ -1432,7 +1600,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Faro",
@@ -1443,7 +1612,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Mendoza",
@@ -1454,7 +1624,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Mina (Norte y Sur)",
@@ -1465,7 +1636,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Lucerna",
@@ -1476,7 +1648,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cancino",
@@ -1487,7 +1660,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Invivienda",
@@ -1498,7 +1672,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Hainamosa",
@@ -1509,7 +1684,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Almirante",
@@ -1520,7 +1696,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Isidro",
@@ -1531,7 +1708,8 @@
       "Normal": 45,
       "Minivan": 60,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Brisa Oriental",
@@ -1542,7 +1720,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Prado Oriental",
@@ -1553,7 +1732,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ciudad Juan Bosch",
@@ -1564,7 +1744,8 @@
       "Normal": 45,
       "Minivan": 60,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Luis",
@@ -1575,7 +1756,8 @@
       "Normal": 45,
       "Minivan": 60,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Mella",
@@ -1586,7 +1768,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sabana Perdida (antes de Av. Charles de Gaulle)",
@@ -1597,7 +1780,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sabana Perdida (después de Av. Charles de Gaulle)",
@@ -1608,7 +1792,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Guaricano",
@@ -1619,7 +1804,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Guaricanos",
@@ -1630,7 +1816,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Higüero",
@@ -1641,7 +1828,8 @@
       "Normal": 50,
       "Minivan": 60,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Casabes",
@@ -1652,7 +1840,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Punta",
@@ -1663,7 +1852,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santa Cruz",
@@ -1674,7 +1864,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Victoria",
@@ -1685,7 +1876,8 @@
       "Normal": 50,
       "Minivan": 60,
       "Luxury": 80
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Herrera",
@@ -1696,7 +1888,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Buenos Aires de Herrera",
@@ -1707,7 +1900,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Las Caobas",
@@ -1718,7 +1912,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ensanche Altagracia",
@@ -1729,7 +1924,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bayona",
@@ -1740,7 +1936,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Manoguayabo",
@@ -1751,7 +1948,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Hato Nuevo",
@@ -1762,7 +1960,8 @@
       "Normal": 45,
       "Minivan": 50,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Engombe",
@@ -1773,7 +1972,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Café",
@@ -1784,7 +1984,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Venta",
@@ -1795,7 +1996,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Alameda",
@@ -1806,7 +2008,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Andrés",
@@ -1817,7 +2020,8 @@
       "Normal": 60,
       "Minivan": 70,
       "Luxury": 110
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Caleta",
@@ -1828,7 +2032,8 @@
       "Normal": 50,
       "Minivan": 60,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Jubey",
@@ -1839,7 +2044,8 @@
       "Normal": 60,
       "Minivan": 70,
       "Luxury": 110
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Monte Adentro",
@@ -1850,7 +2056,8 @@
       "Normal": 60,
       "Minivan": 70,
       "Luxury": 110
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Alcarrizos",
@@ -1861,7 +2068,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Pantoja",
@@ -1872,7 +2080,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Palmarejo-Villa Linda",
@@ -1883,7 +2092,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Savica",
@@ -1894,7 +2104,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Los Americanos",
@@ -1905,7 +2116,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Pedro Brand",
@@ -1916,7 +2128,8 @@
       "Normal": 55,
       "Minivan": 70,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Guáyiga",
@@ -1927,7 +2140,8 @@
       "Normal": 40,
       "Minivan": 50,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Cuaba",
@@ -1938,7 +2152,8 @@
       "Normal": 55,
       "Minivan": 70,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "El Coco",
@@ -1949,7 +2164,8 @@
       "Normal": 55,
       "Minivan": 70,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Pedregal",
@@ -1960,7 +2176,8 @@
       "Normal": 55,
       "Minivan": 70,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Guerra",
@@ -1971,7 +2188,8 @@
       "Normal": 60,
       "Minivan": 75,
       "Luxury": 120
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Hato Viejo",
@@ -1982,7 +2200,8 @@
       "Normal": 60,
       "Minivan": 75,
       "Luxury": 120
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Plaza de la Cultura Juan Pablo Duarte",
@@ -1993,7 +2212,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Malecón de Santo Domingo",
@@ -2004,7 +2224,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Faro a Colón",
@@ -2015,7 +2236,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Nacional Los Tres Ojos",
@@ -2026,7 +2248,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Acuario Nacional",
@@ -2037,7 +2260,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Playa de Boca Chica",
@@ -2048,7 +2272,8 @@
       "Normal": 60,
       "Minivan": 70,
       "Luxury": 110
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ágora Mall",
@@ -2059,7 +2284,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "BlueMall Santo Domingo",
@@ -2070,7 +2296,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sambil Santo Domingo",
@@ -2081,7 +2308,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Galería 360",
@@ -2092,7 +2320,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Downtown Center",
@@ -2103,7 +2332,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Acrópolis Business Mall",
@@ -2114,7 +2344,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Plaza Central",
@@ -2125,7 +2356,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bella Vista Mall",
@@ -2136,7 +2368,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Silver Sun Gallery",
@@ -2147,7 +2380,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Megacentro",
@@ -2158,7 +2392,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Coral Mall",
@@ -2169,7 +2404,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 70
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Colina Centro",
@@ -2180,7 +2416,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Occidental Mall",
@@ -2191,7 +2428,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "IKEA Santo Domingo",
@@ -2202,7 +2440,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "PriceSmart (Arroyo Hondo)",
@@ -2213,7 +2452,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Casa Cuesta (27 de Febrero)",
@@ -2224,7 +2464,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Plaza Lama (27 de Febrero)",
@@ -2235,7 +2476,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Almacenes Unidos (Kennedy)",
@@ -2246,7 +2488,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Sirena (Santo Domingo Oeste)",
@@ -2257,7 +2500,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Jumbo (Ágora Mall)",
@@ -2268,7 +2512,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Supermercados Nacional (Arroyo Hondo)",
@@ -2279,7 +2524,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Mirador Sur",
@@ -2290,7 +2536,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Jardín Botánico Nacional Dr. Rafael M. Moscoso",
@@ -2301,7 +2548,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Zoológico Nacional",
@@ -2312,7 +2560,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Mirador del Este (Parque del Este)",
@@ -2323,7 +2572,8 @@
       "Normal": 30,
       "Minivan": 35,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Mirador Norte (SD Norte)",
@@ -2334,7 +2584,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Centro Olímpico Juan Pablo Duarte",
@@ -2345,7 +2596,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Iberoamérica",
@@ -2356,7 +2608,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Parque Eugenio María de Hostos",
@@ -2367,7 +2620,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Palacio Nacional",
@@ -2378,7 +2632,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Congreso Nacional",
@@ -2389,7 +2644,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Suprema Corte de Justicia y Procuraduría General",
@@ -2400,7 +2656,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Centro de los Héroes",
@@ -2411,7 +2668,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Edificio de Oficinas Gubernamentales (El Huacal)",
@@ -2422,7 +2680,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Banco Central de la República Dominicana",
@@ -2433,7 +2692,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ministerio de Relaciones Exteriores (MIREX)",
@@ -2444,7 +2704,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Ministerio de Defensa (MIDE)",
@@ -2455,7 +2716,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Junta Central Electoral (JCE) y Tribunal Constitucional",
@@ -2466,7 +2728,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Dirección General de Impuestos Internos (DGII)",
@@ -2477,7 +2740,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Dirección General de Aduanas (DGA)",
@@ -2488,7 +2752,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puntos GOB (Sambil)",
@@ -2499,7 +2764,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Torre Popular (Banco Popular Dominicano)",
@@ -2510,7 +2776,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Torre Banreservas (Banco de Reservas)",
@@ -2521,7 +2788,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Torre BHD",
@@ -2532,7 +2800,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Asociación Popular de Ahorros y Préstamos (APAP)",
@@ -2543,7 +2812,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Banco Promerica (Santo Domingo Oeste)",
@@ -2554,7 +2824,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Claro Dominicana (Edificio Corporativo)",
@@ -2565,7 +2836,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Altice Dominicana (Santo Domingo Oeste)",
@@ -2576,7 +2848,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Viva (Sede principal)",
@@ -2587,7 +2860,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cervecería Nacional Dominicana (CND)",
@@ -2598,7 +2872,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Grupo Ramos",
@@ -2609,7 +2884,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Centro Cuesta Nacional (CCN)",
@@ -2620,7 +2896,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Grupo SID",
@@ -2631,7 +2908,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Grupo Corripio",
@@ -2642,7 +2920,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Grupo Rica",
@@ -2653,7 +2932,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Grupo Universal",
@@ -2664,7 +2944,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Humano Seguros",
@@ -2675,7 +2956,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "AES Dominicana e InterEnergy",
@@ -2686,7 +2968,8 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santo Domingo Motors y Grupo Viamar",
@@ -2697,10 +2980,11 @@
       "Normal": 15,
       "Minivan": 20,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
-    "name": "Aeropuerto Internacional de Las Américas (AILA / SDQ) — Ida",
+    "name": "Aeropuerto Internacional de Las Américas (AILA / SDQ)",
     "zone": "Aeropuertos",
     "ref": "Una vía (Ida)",
     "local": true,
@@ -2708,21 +2992,11 @@
       "Normal": 50,
       "Minivan": 60,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
-    "name": "Aeropuerto Internacional de Las Américas (AILA / SDQ) — Ida y Vuelta",
-    "zone": "Aeropuertos",
-    "ref": "Doble vía (Ida y Vuelta)",
-    "local": true,
-    "prices": {
-      "Normal": 50,
-      "Minivan": 100,
-      "Luxury": 200
-    }
-  },
-  {
-    "name": "Aeropuerto Internacional La Isabela / El Higüero (JBQ) — Ida",
+    "name": "Aeropuerto Internacional La Isabela / El Higüero (JBQ)",
     "zone": "Aeropuertos",
     "ref": "Una vía (Ida)",
     "local": true,
@@ -2730,18 +3004,8 @@
       "Normal": 50,
       "Minivan": 60,
       "Luxury": 100
-    }
-  },
-  {
-    "name": "Aeropuerto Internacional La Isabela / El Higüero (JBQ) — Ida y Vuelta",
-    "zone": "Aeropuertos",
-    "ref": "Doble vía (Ida y Vuelta)",
-    "local": true,
-    "prices": {
-      "Normal": 50,
-      "Minivan": 100,
-      "Luxury": 200
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional de La Romana (LRM)",
@@ -2752,7 +3016,8 @@
       "Normal": 150,
       "Minivan": 160,
       "Luxury": 230
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional del Cibao / Santiago (STI)",
@@ -2763,7 +3028,8 @@
       "Normal": 180,
       "Minivan": 200,
       "Luxury": 250
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional Gregorio Luperón / Puerto Plata (POP)",
@@ -2774,7 +3040,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional Presidente Juan Bosch / Samaná (AZS)",
@@ -2785,7 +3052,8 @@
       "Normal": 250,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional de Punta Cana (PUJ)",
@@ -2796,7 +3064,8 @@
       "Normal": 250,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Aeropuerto Internacional María Montez / Barahona (BRX)",
@@ -2807,7 +3076,8 @@
       "Normal": 220,
       "Minivan": 240,
       "Luxury": 320
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puerto Turístico Don Diego",
@@ -2818,7 +3088,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puerto Turístico Sans Soucí",
@@ -2829,7 +3100,8 @@
       "Normal": 25,
       "Minivan": 30,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puerto de Haina Oriental",
@@ -2840,7 +3112,8 @@
       "Normal": 35,
       "Minivan": 40,
       "Luxury": 50
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puerto de Haina Occidental",
@@ -2851,7 +3124,8 @@
       "Normal": 45,
       "Minivan": 50,
       "Luxury": 60
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Servicio de Taxi por Hora (Mínimo 2 horas)",
@@ -2862,7 +3136,8 @@
       "Normal": 40,
       "Minivan": 50,
       "Luxury": 80
-    }
+    },
+    "roundTripEligible": false
   },
   {
     "name": "Hora Adicional (Santo Domingo)",
@@ -2873,7 +3148,8 @@
       "Normal": 20,
       "Minivan": 25,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": false
   },
   {
     "name": "Servicio de Taxi Mínimo",
@@ -2884,7 +3160,8 @@
       "Normal": 10,
       "Minivan": 15,
       "Luxury": 40
-    }
+    },
+    "roundTripEligible": false
   },
   {
     "name": "Servicio de Taxi por Día",
@@ -2895,7 +3172,8 @@
       "Normal": 120,
       "Minivan": 160,
       "Luxury": 240
-    }
+    },
+    "roundTripEligible": false
   },
   {
     "name": "Punta Cana",
@@ -2906,7 +3184,8 @@
       "Normal": 230,
       "Minivan": 250,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bávaro / Uvero Alto / Macao / Playa El Cortecito",
@@ -2917,7 +3196,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cap Cana",
@@ -2928,7 +3208,8 @@
       "Normal": 230,
       "Minivan": 250,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bayahíbe",
@@ -2939,7 +3220,8 @@
       "Normal": 160,
       "Minivan": 170,
       "Luxury": 250
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Juan Dolio",
@@ -2950,7 +3232,8 @@
       "Normal": 80,
       "Minivan": 90,
       "Luxury": 125
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cabarete",
@@ -2961,7 +3244,8 @@
       "Normal": 270,
       "Minivan": 290,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Las Galeras",
@@ -2972,7 +3256,8 @@
       "Normal": 270,
       "Minivan": 290,
       "Luxury": 370
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Playa San Rafael",
@@ -2983,7 +3268,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Salinas de Baní",
@@ -2994,7 +3280,8 @@
       "Normal": 120,
       "Minivan": 140,
       "Luxury": 200
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Palmar de Ocoa",
@@ -3005,7 +3292,8 @@
       "Normal": 130,
       "Minivan": 150,
       "Luxury": 160
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Puerto Viejo",
@@ -3016,7 +3304,8 @@
       "Normal": 160,
       "Minivan": 180,
       "Luxury": 250
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Azua",
@@ -3027,7 +3316,8 @@
       "Normal": 140,
       "Minivan": 160,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bahoruco",
@@ -3038,7 +3328,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 330
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santa Cruz de Barahona (Barahona)",
@@ -3049,7 +3340,8 @@
       "Normal": 240,
       "Minivan": 240,
       "Luxury": 320
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Enriquillo (Barahona)",
@@ -3060,7 +3352,8 @@
       "Normal": 260,
       "Minivan": 280,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Dajabón",
@@ -3071,7 +3364,8 @@
       "Normal": 330,
       "Minivan": 350,
       "Luxury": 450
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Restauración (Dajabón)",
@@ -3082,7 +3376,8 @@
       "Normal": 345,
       "Minivan": 365,
       "Luxury": 450
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Duarte",
@@ -3093,7 +3388,8 @@
       "Normal": 160,
       "Minivan": 180,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santa Cruz del Seibo (El Seibo)",
@@ -3104,7 +3400,8 @@
       "Normal": 150,
       "Minivan": 170,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Miches (El Seibo)",
@@ -3115,7 +3412,8 @@
       "Normal": 215,
       "Minivan": 230,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Elías Piña",
@@ -3126,7 +3424,8 @@
       "Normal": 300,
       "Minivan": 320,
       "Luxury": 380
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Espaillat",
@@ -3137,7 +3436,8 @@
       "Normal": 160,
       "Minivan": 170,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Hato Mayor del Rey (Hato Mayor)",
@@ -3148,7 +3448,8 @@
       "Normal": 130,
       "Minivan": 145,
       "Luxury": 200
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sabana de la Mar (Hato Mayor)",
@@ -3159,7 +3460,8 @@
       "Normal": 210,
       "Minivan": 230,
       "Luxury": 300
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Independencia",
@@ -3170,7 +3472,8 @@
       "Normal": 350,
       "Minivan": 370,
       "Luxury": 450
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Altagracia",
@@ -3181,7 +3484,8 @@
       "Normal": 170,
       "Minivan": 185,
       "Luxury": 260
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Romana",
@@ -3192,7 +3496,8 @@
       "Normal": 140,
       "Minivan": 160,
       "Luxury": 225
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "La Concepción de La Vega (La Vega)",
@@ -3203,7 +3508,8 @@
       "Normal": 150,
       "Minivan": 170,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Constanza (La Vega)",
@@ -3214,7 +3520,8 @@
       "Normal": 230,
       "Minivan": 250,
       "Luxury": 330
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Jarabacoa (La Vega)",
@@ -3225,7 +3532,8 @@
       "Normal": 180,
       "Minivan": 200,
       "Luxury": 250
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Nagua (María Trinidad Sánchez)",
@@ -3236,7 +3544,8 @@
       "Normal": 200,
       "Minivan": 220,
       "Luxury": 300
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cabrera (María Trinidad Sánchez)",
@@ -3247,7 +3556,8 @@
       "Normal": 240,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Río San Juan (vía Nagua) (María Trinidad Sánchez)",
@@ -3258,7 +3568,8 @@
       "Normal": 240,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Río San Juan (vía Puerto Plata) (María Trinidad Sánchez)",
@@ -3269,7 +3580,8 @@
       "Normal": 275,
       "Minivan": 290,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Monseñor Nouel",
@@ -3280,7 +3592,8 @@
       "Normal": 125,
       "Minivan": 145,
       "Luxury": 180
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Monte Cristi",
@@ -3291,7 +3604,8 @@
       "Normal": 300,
       "Minivan": 350,
       "Luxury": 400
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Monte Plata",
@@ -3302,7 +3616,8 @@
       "Normal": 120,
       "Minivan": 135,
       "Luxury": 170
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Bayaguana (Monte Plata)",
@@ -3313,7 +3628,8 @@
       "Normal": 100,
       "Minivan": 115,
       "Luxury": 170
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Yamasá (Monte Plata)",
@@ -3324,7 +3640,8 @@
       "Normal": 100,
       "Minivan": 120,
       "Luxury": 170
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Pedernales",
@@ -3335,7 +3652,8 @@
       "Normal": 380,
       "Minivan": 400,
       "Luxury": 420
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Oviedo (Pedernales)",
@@ -3346,7 +3664,8 @@
       "Normal": 300,
       "Minivan": 320,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Baní (Peravia)",
@@ -3357,7 +3676,8 @@
       "Normal": 100,
       "Minivan": 120,
       "Luxury": 180
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Nizao (Peravia)",
@@ -3368,7 +3688,8 @@
       "Normal": 90,
       "Minivan": 110,
       "Luxury": 150
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Felipe de Puerto Plata (Puerto Plata)",
@@ -3379,7 +3700,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Luperón (Puerto Plata)",
@@ -3390,7 +3712,8 @@
       "Normal": 265,
       "Minivan": 285,
       "Luxury": 370
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sosúa (Puerto Plata)",
@@ -3401,7 +3724,8 @@
       "Normal": 260,
       "Minivan": 280,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santa Bárbara de Samaná (Samaná)",
@@ -3412,7 +3736,8 @@
       "Normal": 240,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Las Terrenas (Samaná)",
@@ -3423,7 +3748,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Cristóbal",
@@ -3434,7 +3760,8 @@
       "Normal": 60,
       "Minivan": 80,
       "Luxury": 100
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Cambita Garabitos (San Cristóbal)",
@@ -3445,7 +3772,8 @@
       "Normal": 70,
       "Minivan": 90,
       "Luxury": 130
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Villa Altagracia (San Cristóbal)",
@@ -3456,7 +3784,8 @@
       "Normal": 70,
       "Minivan": 85,
       "Luxury": 130
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San José de Ocoa",
@@ -3467,7 +3796,8 @@
       "Normal": 130,
       "Minivan": 150,
       "Luxury": 220
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Juan de la Maguana (San Juan)",
@@ -3478,7 +3808,8 @@
       "Normal": 240,
       "Minivan": 260,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Las Matas de Farfán (San Juan)",
@@ -3489,7 +3820,8 @@
       "Normal": 260,
       "Minivan": 280,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Pedro de Macorís",
@@ -3500,7 +3832,8 @@
       "Normal": 100,
       "Minivan": 120,
       "Luxury": 150
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Sánchez Ramírez",
@@ -3511,7 +3844,8 @@
       "Normal": 130,
       "Minivan": 150,
       "Luxury": 200
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Santiago de los Caballeros (Santiago)",
@@ -3522,7 +3856,8 @@
       "Normal": 180,
       "Minivan": 200,
       "Luxury": 250
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San José de las Matas (Santiago)",
@@ -3533,7 +3868,8 @@
       "Normal": 230,
       "Minivan": 245,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "San Ignacio de Sabaneta (Santiago Rodríguez) (Santiago Rodríguez)",
@@ -3544,7 +3880,8 @@
       "Normal": 270,
       "Minivan": 290,
       "Luxury": 380
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Monción (Santiago Rodríguez)",
@@ -3555,7 +3892,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   },
   {
     "name": "Valverde",
@@ -3566,7 +3904,8 @@
       "Normal": 250,
       "Minivan": 270,
       "Luxury": 350
-    }
+    },
+    "roundTripEligible": true
   }
 ];
 
@@ -3606,6 +3945,7 @@
       vehicle: "Normal",
       origin: "Santo Domingo / Hotel",
       stops: [],
+      roundTrip: false,
       payment: "Efectivo",
       promoCode: ""
     };
@@ -3629,6 +3969,13 @@
 
     const itineraryBox = document.getElementById("itineraryBox");
     const stopsContainer = document.getElementById("stopsContainer");
+    const returnRowBox = document.getElementById("returnRowBox");
+    const returnRowTitle = document.getElementById("returnRowTitle");
+    const returnRowSub = document.getElementById("returnRowSub");
+    const returnRowPrice = document.getElementById("returnRowPrice");
+    const tripModeGrid = document.getElementById("tripModeGrid");
+    const roundTripBtn = document.getElementById("roundTripBtn");
+    const tripModeHint = document.getElementById("tripModeHint");
     const clearRouteBtn = document.getElementById("clearRouteBtn");
     const addStopFocusBtn = document.getElementById("addStopFocusBtn");
 
@@ -3707,9 +4054,39 @@
       return PROMO_CODES[code] || 0;
     }
 
+    function isRoundTripAllowed() {
+      if (state.stops.length === 0) return false;
+      const lastStop = state.stops[state.stops.length - 1];
+      return lastStop.roundTripEligible !== false;
+    }
+
     function computeTotals() {
       const computedStops = calculateStops();
-      const baseSubtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
+      const stopsSubtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
+
+      // Validar compatibilidad de Ida y vuelta con la última parada seleccionada
+      const allowed = isRoundTripAllowed();
+      if (!allowed && state.roundTrip) {
+        state.roundTrip = false;
+      }
+
+      let returnInfo = null;
+      if (state.roundTrip && computedStops.length > 0) {
+        const lastStop = computedStops[computedStops.length - 1];
+        const lastBase = lastStop.prices[state.vehicle];
+        // Menor de 100 USD -> 100% del servicio de ida; 100 USD o más -> 50%
+        const rate = lastBase >= 100 ? 0.5 : 1.0;
+        const cost = lastBase * rate;
+        returnInfo = {
+          from: lastStop.name,
+          to: state.origin,
+          rate,
+          cost
+        };
+      }
+
+      const returnCost = returnInfo ? returnInfo.cost : 0;
+      const baseSubtotal = stopsSubtotal + returnCost;
       const discountRate = getDiscountRate();
       const discountAmount = baseSubtotal * discountRate;
       const afterDiscount = baseSubtotal - discountAmount;
@@ -3718,6 +4095,8 @@
 
       return {
         computedStops,
+        allowed,
+        returnInfo,
         baseSubtotal,
         discountRate,
         discountAmount,
@@ -3728,12 +4107,13 @@
 
     // Renderizar interfaz completa
     function render() {
-      const { computedStops, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
+      const { computedStops, allowed, returnInfo, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
 
       destinationHeading.textContent =
         state.stops.length === 0 ? "¿A dónde te llevamos?" : "¿Cuál es la siguiente parada?";
 
       if (computedStops.length === 0) {
+        state.roundTrip = false;
         itineraryBox.classList.add("hidden");
         step3.classList.add("hidden");
         return;
@@ -3760,14 +4140,43 @@
         stopsContainer.appendChild(row);
       });
 
+      // Actualizar estado visual del botón Solo ida / Ida y vuelta
+      roundTripBtn.disabled = !allowed;
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        const isRt = btn.dataset.mode === "roundtrip";
+        btn.classList.toggle("active", isRt ? state.roundTrip : !state.roundTrip);
+      });
+
+      if (!allowed) {
+        tripModeHint.textContent = "No aplica para este servicio";
+      } else {
+        const lastBase = computedStops[computedStops.length - 1].prices[state.vehicle];
+        tripModeHint.textContent = lastBase >= 100 ? "Regreso al 50%" : "Regreso al 100%";
+      }
+
+      // Mostrar/ocultar detalle del regreso en el itinerario
+      if (returnInfo) {
+        returnRowTitle.textContent = `↩ Regreso: ${returnInfo.from} → ${returnInfo.to}`;
+        returnRowSub.textContent = `Tarifa de retorno (${Math.round(returnInfo.rate * 100)}%)`;
+        returnRowPrice.textContent = `+US$ ${returnInfo.cost.toFixed(2)}`;
+        returnRowBox.classList.remove("hidden");
+      } else {
+        returnRowBox.classList.add("hidden");
+      }
+
       // Resumen limpio y proporcionado
-      const routeChain = [state.origin, ...computedStops.map(s => s.name)].join(" → ");
-      summaryRouteText.innerHTML = `<strong>Ruta:</strong> ${routeChain}`;
+      const routePoints = [state.origin, ...computedStops.map(s => s.name)];
+      if (returnInfo) {
+        routePoints.push(state.origin);
+      }
+      const routeChain = routePoints.join(" → ");
+      const modeTag = returnInfo ? "Ida y vuelta" : "Solo ida";
+      summaryRouteText.innerHTML = `<strong>${modeTag}:</strong> ${routeChain}`;
 
       // Desglose opcional si hay descuento o cargo por tarjeta
       const notes = [];
       if (discountRate > 0 || cardFee > 0) {
-        notes.push(`Subtotal ruta: US$ ${baseSubtotal.toFixed(2)}`);
+        notes.push(`Subtotal servicio: US$ ${baseSubtotal.toFixed(2)}`);
       }
       if (discountRate > 0) {
         notes.push(`Descuento aplicado (-${Math.round(discountRate * 100)}%): -US$ ${discountAmount.toFixed(2)}`);
@@ -3929,8 +4338,16 @@
       render();
     });
 
+    tripModeGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".mode-btn");
+      if (!btn || btn.disabled) return;
+      state.roundTrip = btn.dataset.mode === "roundtrip";
+      render();
+    });
+
     clearRouteBtn.addEventListener("click", () => {
       state.stops = [];
+      state.roundTrip = false;
       render();
     });
 
@@ -3971,11 +4388,12 @@
     });
 
     function buildSummaryMessage() {
-      const { computedStops, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
+      const { computedStops, returnInfo, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
 
       const lines = [
         `*Solicitud de Transporte*`,
         `• *Vehículo:* ${state.vehicle}`,
+        `• *Modalidad:* ${returnInfo ? "Ida y vuelta" : "Solo ida"}`,
         `• *Salida:* ${state.origin}`,
         `• *Itinerario:*`
       ];
@@ -3983,6 +4401,10 @@
       computedStops.forEach((s, i) => {
         lines.push(`   ${i + 1}. ${s.name} (US$ ${s.legPrice.toFixed(2)})`);
       });
+
+      if (returnInfo) {
+        lines.push(`   ↩ Regreso a ${returnInfo.to} (${Math.round(returnInfo.rate * 100)}%: US$ ${returnInfo.cost.toFixed(2)})`);
+      }
 
       if (tripDate.value) lines.push(`• *Fecha:* ${tripDate.value}`);
       lines.push(`• *Pago:* ${state.payment}${state.payment === "Tarjeta" ? " (+7%)" : ""}`);
