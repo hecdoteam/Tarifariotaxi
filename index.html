@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Calculadora de Tarifas de Transporte</title>
+  <title>Calculadora de Tarifas de Transporte · RD</title>
   <style>
     :root {
       --bg: #111315;
@@ -210,6 +210,29 @@
       border-color: var(--green);
     }
 
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      padding-right: 36px;
+    }
+
+    .clear-search {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #232830;
+      border: none;
+      color: var(--muted);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
     /* Autocomplete */
     .suggestions {
       position: absolute;
@@ -220,10 +243,10 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       margin-top: 4px;
-      max-height: 220px;
+      max-height: 250px;
       overflow-y: auto;
       z-index: 30;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
     }
 
     .suggestion-item {
@@ -250,7 +273,7 @@
     }
 
     .suggestion-zone {
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       color: var(--muted);
     }
 
@@ -382,6 +405,15 @@
       font-weight: 600;
     }
 
+    .breakdown-lines {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
     .total-label {
       font-size: 0.78rem;
       color: var(--muted);
@@ -429,9 +461,9 @@
       background: var(--card-inner);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 11px;
+      padding: 11px 8px;
       border-radius: 10px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
     }
@@ -440,6 +472,12 @@
       border-color: var(--green);
       background: var(--green-bg);
       color: var(--green);
+    }
+
+    .card-note {
+      font-size: 0.75rem;
+      color: var(--gold);
+      margin-top: 6px;
     }
 
     .cta-group {
@@ -497,19 +535,25 @@
         <span class="pill" id="originBadge">Salida habitual</span>
       </div>
 
-      <button type="button" class="link-btn" id="toggleOriginBtn">¿Sales desde otra provincia?</button>
+      <button type="button" class="link-btn" id="toggleOriginBtn">¿Sales desde otra provincia o aeropuerto?</button>
 
       <div class="field-group hidden" id="originSelectorBox">
         <select id="originSelect">
-          <option value="Santo Domingo / Hotel" data-interurban="false">Santo Domingo / Hotel (Salida habitual)</option>
-          <option value="Aeropuerto Las Américas (AILA)" data-interurban="false">Aeropuerto Las Américas (AILA)</option>
-          <option value="Boca Chica" data-interurban="true">Boca Chica</option>
-          <option value="Juan Dolio" data-interurban="true">Juan Dolio</option>
-          <option value="San Pedro de Macorís" data-interurban="true">San Pedro de Macorís</option>
-          <option value="La Romana / Casa de Campo" data-interurban="true">La Romana / Casa de Campo</option>
-          <option value="Punta Cana / Bávaro" data-interurban="true">Punta Cana / Bávaro</option>
-          <option value="Santiago" data-interurban="true">Santiago</option>
-          <option value="Puerto Plata" data-interurban="true">Puerto Plata</option>
+          <option value="Santo Domingo / Hotel">Santo Domingo / Hotel (Salida habitual)</option>
+          <option value="Aeropuerto Las Américas (AILA / SDQ)">Aeropuerto Las Américas (AILA / SDQ)</option>
+          <option value="Aeropuerto La Isabela / El Higüero (JBQ)">Aeropuerto La Isabela / El Higüero (JBQ)</option>
+          <option value="Boca Chica">Boca Chica</option>
+          <option value="Juan Dolio">Juan Dolio</option>
+          <option value="San Pedro de Macorís">San Pedro de Macorís</option>
+          <option value="La Romana / Casa de Campo">La Romana / Casa de Campo</option>
+          <option value="Bayahíbe">Bayahíbe</option>
+          <option value="Punta Cana / Bávaro">Punta Cana / Bávaro</option>
+          <option value="Samaná / Las Terrenas">Samaná / Las Terrenas</option>
+          <option value="Jarabacoa / Constanza">Jarabacoa / Constanza</option>
+          <option value="Santiago de los Caballeros">Santiago de los Caballeros</option>
+          <option value="Puerto Plata / Sosúa / Cabarete">Puerto Plata / Sosúa / Cabarete</option>
+          <option value="Baní">Baní</option>
+          <option value="Barahona">Barahona</option>
         </select>
       </div>
     </section>
@@ -519,13 +563,14 @@
       <div class="step-badge">Paso 2 de 3 · Destino</div>
       <div class="section-title" id="destinationHeading">¿A dónde te llevamos?</div>
 
-      <div class="field-group" style="margin-top: 0;">
+      <div class="field-group search-wrap" style="margin-top: 0;">
         <input
           type="text"
           id="searchInput"
-          placeholder="Buscar sector, municipio o aeropuerto..."
+          placeholder="Buscar sector, lugar, municipio o aeropuerto..."
           autocomplete="off"
         />
+        <button type="button" class="clear-search hidden" id="clearSearchBtn" aria-label="Limpiar búsqueda">✕</button>
         <div class="suggestions hidden" id="suggestionsList"></div>
       </div>
 
@@ -533,7 +578,7 @@
 
       <div id="zoneSelectors" class="hidden">
         <div class="field-group">
-          <label class="field-label">Zona</label>
+          <label class="field-label">Zona / Categoría</label>
           <select id="zoneSelect">
             <option value="">Selecciona una zona...</option>
           </select>
@@ -546,7 +591,7 @@
         </div>
       </div>
 
-      <p class="helper-note">La tarifa aplica a cualquier punto dentro del sector seleccionado.</p>
+      <p class="helper-note">La tarifa aplica a cualquier punto dentro del sector o destino seleccionado.</p>
 
       <!-- Itinerario (aparece al agregar la primera parada) -->
       <div class="itinerary-box hidden" id="itineraryBox">
@@ -565,6 +610,7 @@
 
       <div class="summary-box">
         <div class="summary-route" id="summaryRouteText"></div>
+        <div class="breakdown-lines hidden" id="breakdownLines"></div>
         <div class="total-label">Costo total</div>
         <div class="total-amount" id="totalAmountText">US$ 0.00</div>
       </div>
@@ -582,8 +628,9 @@
         <label class="field-label">Método de pago</label>
         <div class="pay-grid" id="payGrid">
           <button type="button" class="pay-btn active" data-pay="Efectivo">Efectivo</button>
-          <button type="button" class="pay-btn" data-pay="Tarjeta">Tarjeta</button>
+          <button type="button" class="pay-btn" data-pay="Tarjeta">Tarjeta (+7%)</button>
         </div>
+        <p class="card-note hidden" id="cardFeeNote">Incluye recargo administrativo del 7% por pago con tarjeta.</p>
       </div>
 
       <button type="button" class="link-btn" id="togglePromoBtn">¿Tienes un código promocional?</button>
@@ -600,47 +647,2957 @@
 
   <script>
     // =========================================================================
-    // CONFIGURACIÓN DE TELÉFONO Y TARIFAS (Edita o amplía tus sectores aquí)
+    // CONFIGURACIÓN DE TELÉFONO, RECARGOS Y BASE DE DATOS MAESTRA RD
     // =========================================================================
     const WHATSAPP_NUMBER = "18093167406";
+    const CARD_SURCHARGE_RATE = 0.07; // 7% adicional por pago con tarjeta
 
     const DESTINATIONS = [
-      // Ciudad de Santo Domingo (local: true)
-      { name: "Piantini / Naco / Serrallés", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
-      { name: "Gazcue (hasta Av. Independencia y Av. Delgado)", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
-      { name: "Zona Colonial", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
-      { name: "Blue Mall / Acrópolis", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
-      { name: "Novo Centro / Bella Vista", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
-      { name: "Ágora Mall / Galería 360", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 20, Minivan: 25, Luxury: 35 } },
-      { name: "Mirador Sur / El Millón", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 18, Minivan: 23, Luxury: 33 } },
-      { name: "Los Cacicazgos / Anacaona", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 18, Minivan: 23, Luxury: 33 } },
-      { name: "Arroyo Hondo / Jardín Botánico", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 20, Minivan: 25, Luxury: 35 } },
-      { name: "Santo Domingo Este (Zona Oriental)", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 25, Minivan: 30, Luxury: 45 } },
-
-      // Aeropuertos
-      { name: "Aeropuerto Internacional Las Américas (AILA)", zone: "Aeropuertos", local: true, prices: { Normal: 45, Minivan: 55, Luxury: 75 } },
-      { name: "Aeropuerto La Isabela (El Higüero)", zone: "Aeropuertos", local: true, prices: { Normal: 35, Minivan: 45, Luxury: 65 } },
-
-      // Interior / Provincias (local: false -> aplica regla de retorno al volver a SD)
-      { name: "Boca Chica", zone: "Interior / Este", local: false, prices: { Normal: 55, Minivan: 65, Luxury: 90 } },
-      { name: "Juan Dolio", zone: "Interior / Este", local: false, prices: { Normal: 75, Minivan: 90, Luxury: 120 } },
-      { name: "San Pedro de Macorís", zone: "Interior / Este", local: false, prices: { Normal: 100, Minivan: 120, Luxury: 160 } },
-      { name: "La Romana / Casa de Campo", zone: "Interior / Este", local: false, prices: { Normal: 140, Minivan: 165, Luxury: 220 } },
-      { name: "Punta Cana / Bávaro", zone: "Interior / Este", local: false, prices: { Normal: 190, Minivan: 225, Luxury: 290 } },
-      { name: "Bonao", zone: "Interior / Cibao", local: false, prices: { Normal: 110, Minivan: 130, Luxury: 175 } },
-      { name: "La Vega", zone: "Interior / Cibao", local: false, prices: { Normal: 145, Minivan: 170, Luxury: 225 } },
-      { name: "Santiago de los Caballeros", zone: "Interior / Cibao", local: false, prices: { Normal: 175, Minivan: 205, Luxury: 270 } },
-      { name: "Puerto Plata", zone: "Interior / Norte", local: false, prices: { Normal: 230, Minivan: 270, Luxury: 350 } },
-      { name: "Samaná / Las Terrenas", zone: "Interior / Nordeste", local: false, prices: { Normal: 240, Minivan: 280, Luxury: 360 } },
-      { name: "Baní", zone: "Interior / Sur", local: false, prices: { Normal: 85, Minivan: 100, Luxury: 135 } },
-      { name: "Barahona", zone: "Interior / Sur", local: false, prices: { Normal: 195, Minivan: 230, Luxury: 300 } }
-    ];
+  {
+    "name": "Piantini",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Piantini",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Naco",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Naco",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Paraíso",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Paraíso",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Serrallés",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Serrallés",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Evaristo Morales",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Evaristo Morales",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Julieta Morales",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Julieta",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "La Castellana",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Evaristo Morales (~0.8 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "El Millón",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "El Millón",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Los Prados",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Prados",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Quisqueya",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Quisqueya",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Bella Vista",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Bella Vista",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Mirador Norte",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Mirador Sur (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Mirador Sur",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Mirador Sur",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Los Cacicazgos",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Cacicazgos",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Renacimiento",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Cacicazgos (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "La Julia",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Policía Nacional / Gascue (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "La Esperilla",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Policía Nacional / Hotel Barceló (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "San Gerónimo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "San Gerónimo",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Las Praderas",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Las Praderas",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Los Restauradores",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "El Millón / Las Praderas (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ciudad Colonial",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Zona Colonial",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ciudad Nueva",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Zona Colonial (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Gascue",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Gazcue",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "San Carlos",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Palacio Presidencial / Zona Colonial (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "San Juan Bosco",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Gazcue (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Miraflores",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "MOPC / Plaza de la Salud (~0.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Don Bosco",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Gazcue / Ministerio de Hacienda (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ciudad Universitaria",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Policía Nacional / Gazcue (~0.8 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Zona Universitaria",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Policía Nacional / Gazcue (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "El Cacique",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Centro de los Héroes (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Centro de los Héroes (La Feria)",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Centro de los Héroes (La Feria)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Mata Hambre",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Centro de los Héroes (~0.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Honduras",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Honduras",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Atala",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Honduras (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Jardines del Sur",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Honduras / Cervecería Nacional (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Miramar",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Cervecería Nacional / UNICARIBE (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "30 de Mayo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "UNICARIBE (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "General Antonio Duvergé",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Av. Independencia hasta Luperón (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Altos de Arroyo Hondo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Arroyo Hondo II (~0.4 km) · Tarifa base desde US$ 25",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Viejo Arroyo Hondo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Supermercado Nacional Arroyo Hondo (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Cerros de Arroyo Hondo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Cuesta Hermosa I, II y III (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Nuevo Arroyo Hondo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Zoológico Nacional (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Arroyo Manzano",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Arroyo Manzano",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Ríos",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Jardín Botánico (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Los Jardines del Norte",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Jardines",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Cristo Rey",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Cristo Rey",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche La Fe",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Estadio Quisqueya (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Kennedy",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ágora Mall / Estadio Quisqueya (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Villa Juana",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Juana",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Villa Consuelo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Consuelo",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Villa Francisca",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Francisca",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Mejoramiento Social",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Francisca / Av. Duarte (~0.8 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "María Auxiliadora",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Francisca / V Centenario (~1.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Luperón",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Espaillat",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ensanche Capotillo",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Simón Bolívar",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~1.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Gualey",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~1.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "24 de Abril",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~1.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "La Zurza",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Ensanche Espaillat (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Villas Agrícolas",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Agrícola",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Domingo Savio (La Ciénaga y Los Guandules)",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Villa Francisca (~1.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Palma Real",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Girasoles (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Peralejos",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Girasoles (~0.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Girasoles",
+    "zone": "Gran SD · Distrito Nacional",
+    "ref": "Los Girasoles",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Ensanche Ozama",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Ensanche Ozama",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Alma Rosa I y II",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Alma Rosa",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Villa Duarte",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Faro a Colón / Ensanche Ozama (~0.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Mameyes",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Faro a Colón / Acuario Nacional (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "La Isabelita",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "La Isabelita",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Tres Ojos",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Parque Los Tres Ojos",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Villa Faro",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Megacentro / Lucerna (~1.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Mendoza",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Lucerna / Megacentro (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Mina (Norte y Sur)",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Los Mina",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Lucerna",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Lucerna",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Cancino",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Los Mina / Megacentro (~2.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Invivienda",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Zona Franca de Hainamosa (~1.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Hainamosa",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Zona Franca de Hainamosa (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "El Almirante",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Zona Franca de Hainamosa (~2.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "San Isidro",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Pueblo de San Isidro",
+    "local": true,
+    "prices": {
+      "Normal": 45,
+      "Minivan": 60,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Brisa Oriental",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Hipódromo V Centenario (~1.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Prado Oriental",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Hipódromo V Centenario (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Ciudad Juan Bosch",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Pueblo de San Isidro (~2.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 45,
+      "Minivan": 60,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "San Luis",
+    "zone": "Gran SD · Santo Domingo Este",
+    "ref": "Pueblo de San Isidro (~3.0 km)",
+    "local": true,
+    "prices": {
+      "Normal": 45,
+      "Minivan": 60,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Villa Mella",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Villa Mella Pueblo",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Sabana Perdida (antes de Av. Charles de Gaulle)",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Sabana Perdida (Antes Charles de Gaulle)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Sabana Perdida (después de Av. Charles de Gaulle)",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Sabana Perdida (Después Charles de Gaulle)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Guaricano",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Urb. Buena Vista / Máximo Gómez (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Guaricanos",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Urb. Buena Vista / Máximo Gómez (~1.0 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "El Higüero",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Aeropuerto La Isabela / El Higüero (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 60,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Los Casabes",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Villa Mella Pueblo (~3.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Punta",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Villa Mella Pueblo (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Santa Cruz",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "Villa Mella Pueblo (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "La Victoria",
+    "zone": "Gran SD · Santo Domingo Norte",
+    "ref": "La Victoria",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 60,
+      "Luxury": 80
+    }
+  },
+  {
+    "name": "Herrera",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Herrera",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Buenos Aires de Herrera",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Herrera (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Las Caobas",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Las Caobas",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Ensanche Altagracia",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Las Caobas (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Bayona",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Las Caobas (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Manoguayabo",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Manoguayabo (Ciudad)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Hato Nuevo",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Zona Franca Hato Nuevo (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 45,
+      "Minivan": 50,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Engombe",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Las Caobas (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "El Café",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Zona Industrial de Herrera (~0.9 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "La Venta",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Residencial Alameda / Km. 13 (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Alameda",
+    "zone": "Gran SD · Santo Domingo Oeste",
+    "ref": "Residencial Alameda",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Andrés",
+    "zone": "Gran SD · Boca Chica",
+    "ref": "Boca Chica (~2.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 70,
+      "Luxury": 110
+    }
+  },
+  {
+    "name": "La Caleta",
+    "zone": "Gran SD · Boca Chica",
+    "ref": "Aeropuerto Las Américas - AILA (~2.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 60,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Jubey",
+    "zone": "Gran SD · Boca Chica",
+    "ref": "Boca Chica (~3.0 km)",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 70,
+      "Luxury": 110
+    }
+  },
+  {
+    "name": "Monte Adentro",
+    "zone": "Gran SD · Boca Chica",
+    "ref": "Boca Chica (~2.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 70,
+      "Luxury": 110
+    }
+  },
+  {
+    "name": "Los Alcarrizos",
+    "zone": "Gran SD · Los Alcarrizos",
+    "ref": "Los Alcarrizos",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Pantoja",
+    "zone": "Gran SD · Los Alcarrizos",
+    "ref": "Pantoja",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Palmarejo-Villa Linda",
+    "zone": "Gran SD · Los Alcarrizos",
+    "ref": "Los Alcarrizos (~2.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Savica",
+    "zone": "Gran SD · Los Alcarrizos",
+    "ref": "Los Alcarrizos (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Los Americanos",
+    "zone": "Gran SD · Los Alcarrizos",
+    "ref": "Los Alcarrizos (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Pedro Brand",
+    "zone": "Gran SD · Pedro Brand",
+    "ref": "Pedro Brand",
+    "local": true,
+    "prices": {
+      "Normal": 55,
+      "Minivan": 70,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "La Guáyiga",
+    "zone": "Gran SD · Pedro Brand",
+    "ref": "Parque Industrial Duarte Km. 22-23 (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 40,
+      "Minivan": 50,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "La Cuaba",
+    "zone": "Gran SD · Pedro Brand",
+    "ref": "Pedro Brand (~5.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 55,
+      "Minivan": 70,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "El Coco",
+    "zone": "Gran SD · Pedro Brand",
+    "ref": "Pedro Brand (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 55,
+      "Minivan": 70,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Pedregal",
+    "zone": "Gran SD · Pedro Brand",
+    "ref": "Pedro Brand (~3.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 55,
+      "Minivan": 70,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Guerra",
+    "zone": "Gran SD · San Antonio de Guerra",
+    "ref": "Guerra",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 75,
+      "Luxury": 120
+    }
+  },
+  {
+    "name": "Hato Viejo",
+    "zone": "Gran SD · San Antonio de Guerra",
+    "ref": "Guerra (~1.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 75,
+      "Luxury": 120
+    }
+  },
+  {
+    "name": "Plaza de la Cultura Juan Pablo Duarte",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Policía Nacional / Gazcue (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Malecón de Santo Domingo",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Hoteles del Malecón",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Faro a Colón",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Faro a Colón",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Parque Nacional Los Tres Ojos",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Parque Los Tres Ojos",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Acuario Nacional",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Acuario Nacional",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Playa de Boca Chica",
+    "zone": "Lugares SD · Lugares Turísticos y Culturales",
+    "ref": "Boca Chica",
+    "local": true,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 70,
+      "Luxury": 110
+    }
+  },
+  {
+    "name": "Ágora Mall",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Ágora Mall",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "BlueMall Santo Domingo",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Piantini / Plaza Acrópolis (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Sambil Santo Domingo",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Sambil",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Galería 360",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Galería 360",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Downtown Center",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Downtown Center",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Acrópolis Business Mall",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Plaza Acrópolis",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Plaza Central",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Plaza Central",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Bella Vista Mall",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Bella Vista / Downtown Center (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Silver Sun Gallery",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Naco (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Megacentro",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Megacentro",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Coral Mall",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Zona Franca de Hainamosa (~2.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 70
+    }
+  },
+  {
+    "name": "Colina Centro",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Urb. Buena Vista (~2.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Occidental Mall",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Las Caobas (~0.7 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "IKEA Santo Domingo",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "IKEA",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "PriceSmart (Arroyo Hondo)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Supermercado Nacional Arroyo Hondo (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Casa Cuesta (27 de Febrero)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Plaza Central (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Plaza Lama (27 de Febrero)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Plaza Central / Piantini (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Almacenes Unidos (Kennedy)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Galería 360 / IKEA (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "La Sirena (Santo Domingo Oeste)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "La Sirena",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Jumbo (Ágora Mall)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Ágora Mall (0.0 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Supermercados Nacional (Arroyo Hondo)",
+    "zone": "Lugares SD · Grandes Malls, Plazas y Tiendas Ancla",
+    "ref": "Supermercado Nacional (Arroyo Hondo)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Parque Mirador Sur",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Parque Mirador / Mirador Sur",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Jardín Botánico Nacional Dr. Rafael M. Moscoso",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Jardín Botánico",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Parque Zoológico Nacional",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Zoológico Nacional",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Parque Mirador del Este (Parque del Este)",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Faro a Colón / Los Tres Ojos (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 30,
+      "Minivan": 35,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Parque Mirador Norte (SD Norte)",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Urb. Buena Vista (~1.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Centro Olímpico Juan Pablo Duarte",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Estadio Quisqueya / Torre Popular (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Parque Iberoamérica",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Policía Nacional / Gazcue (~0.6 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Parque Eugenio María de Hostos",
+    "zone": "Lugares SD · Parques Grandes y Áreas Verdes",
+    "ref": "Hoteles del Malecón (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Palacio Nacional",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Palacio Presidencial",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Congreso Nacional",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Congreso Nacional",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Suprema Corte de Justicia y Procuraduría General",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Centro de los Héroes (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Centro de los Héroes",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Centro de los Héroes (La Feria)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Edificio de Oficinas Gubernamentales (El Huacal)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Ministerio de Hacienda / DGII (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Banco Central de la República Dominicana",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Banco Central",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ministerio de Relaciones Exteriores (MIREX)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Policía Nacional / Gazcue (~0.8 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Ministerio de Defensa (MIDE)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Ministerio de Defensa",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Junta Central Electoral (JCE) y Tribunal Constitucional",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Ministerio de Defensa (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Dirección General de Impuestos Internos (DGII)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "DGII",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Dirección General de Aduanas (DGA)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Naco / Piantini (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Puntos GOB (Sambil)",
+    "zone": "Lugares SD · Lugares Gubernamentales Principales",
+    "ref": "Sambil (0.0 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Torre Popular (Banco Popular Dominicano)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Torre Popular Av. Kennedy",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Torre Banreservas (Banco de Reservas)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Banco de Reservas",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Torre BHD",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Piantini / Evaristo Morales (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Asociación Popular de Ahorros y Préstamos (APAP)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Policía Nacional / Hotel Barceló (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Banco Promerica (Santo Domingo Oeste)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Banco Promerica",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Claro Dominicana (Edificio Corporativo)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "El Millón / Los Prados (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Altice Dominicana (Santo Domingo Oeste)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Tricom (Altice)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Viva (Sede principal)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Ensanche Quisqueya / Naco (~0.3 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Cervecería Nacional Dominicana (CND)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Cervecería Nacional",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Grupo Ramos",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Piantini (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Centro Cuesta Nacional (CCN)",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Herrera / Ministerio de Defensa (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Grupo SID",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Villas Agrícolas / Estadio Quisqueya (~0.2 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Grupo Corripio",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Corripio",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Grupo Rica",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Los Prados / San Gerónimo (~0.4 km)",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Grupo Universal",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Piantini (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Humano Seguros",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Naco / Piantini (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "AES Dominicana e InterEnergy",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Piantini / Paraíso (~0.1 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Santo Domingo Motors y Grupo Viamar",
+    "zone": "Lugares SD · Oficinas Principales de Grandes Empresas",
+    "ref": "Galería 360 / Ágora Mall (~0.5 km)",
+    "local": true,
+    "prices": {
+      "Normal": 15,
+      "Minivan": 20,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional de Las Américas (AILA / SDQ) — Ida",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 60,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional de Las Américas (AILA / SDQ) — Ida y Vuelta",
+    "zone": "Aeropuertos",
+    "ref": "Doble vía (Ida y Vuelta)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 100,
+      "Luxury": 200
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional La Isabela / El Higüero (JBQ) — Ida",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 60,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional La Isabela / El Higüero (JBQ) — Ida y Vuelta",
+    "zone": "Aeropuertos",
+    "ref": "Doble vía (Ida y Vuelta)",
+    "local": true,
+    "prices": {
+      "Normal": 50,
+      "Minivan": 100,
+      "Luxury": 200
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional de La Romana (LRM)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · La Romana",
+    "local": false,
+    "prices": {
+      "Normal": 150,
+      "Minivan": 160,
+      "Luxury": 230
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional del Cibao / Santiago (STI)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · Santiago",
+    "local": false,
+    "prices": {
+      "Normal": 180,
+      "Minivan": 200,
+      "Luxury": 250
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional Gregorio Luperón / Puerto Plata (POP)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · Puerto Plata",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional Presidente Juan Bosch / Samaná (AZS)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · Samaná",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional de Punta Cana (PUJ)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · Punta Cana",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Aeropuerto Internacional María Montez / Barahona (BRX)",
+    "zone": "Aeropuertos",
+    "ref": "Una vía (Ida) · Barahona",
+    "local": false,
+    "prices": {
+      "Normal": 220,
+      "Minivan": 240,
+      "Luxury": 320
+    }
+  },
+  {
+    "name": "Puerto Turístico Don Diego",
+    "zone": "Puertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Puerto Turístico Sans Soucí",
+    "zone": "Puertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 25,
+      "Minivan": 30,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Puerto de Haina Oriental",
+    "zone": "Puertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 35,
+      "Minivan": 40,
+      "Luxury": 50
+    }
+  },
+  {
+    "name": "Puerto de Haina Occidental",
+    "zone": "Puertos",
+    "ref": "Una vía (Ida)",
+    "local": true,
+    "prices": {
+      "Normal": 45,
+      "Minivan": 50,
+      "Luxury": 60
+    }
+  },
+  {
+    "name": "Servicio de Taxi por Hora (Mínimo 2 horas)",
+    "zone": "Servicios Especiales",
+    "ref": "Mínimo 2 horas en Santo Domingo",
+    "local": true,
+    "prices": {
+      "Normal": 40,
+      "Minivan": 50,
+      "Luxury": 80
+    }
+  },
+  {
+    "name": "Hora Adicional (Santo Domingo)",
+    "zone": "Servicios Especiales",
+    "ref": "Después de 2 horas mínimas en Santo Domingo",
+    "local": true,
+    "prices": {
+      "Normal": 20,
+      "Minivan": 25,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Servicio de Taxi Mínimo",
+    "zone": "Servicios Especiales",
+    "ref": "Traslados cortos básicos zona central",
+    "local": true,
+    "prices": {
+      "Normal": 10,
+      "Minivan": 15,
+      "Luxury": 40
+    }
+  },
+  {
+    "name": "Servicio de Taxi por Día",
+    "zone": "Servicios Especiales",
+    "ref": "Disposición diaria",
+    "local": true,
+    "prices": {
+      "Normal": 120,
+      "Minivan": 160,
+      "Luxury": 240
+    }
+  },
+  {
+    "name": "Punta Cana",
+    "zone": "Destinos Turísticos · Este",
+    "ref": "La Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 230,
+      "Minivan": 250,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Bávaro / Uvero Alto / Macao / Playa El Cortecito",
+    "zone": "Destinos Turísticos · Este",
+    "ref": "La Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Cap Cana",
+    "zone": "Destinos Turísticos · Este",
+    "ref": "La Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 230,
+      "Minivan": 250,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Bayahíbe",
+    "zone": "Destinos Turísticos · Este",
+    "ref": "La Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 160,
+      "Minivan": 170,
+      "Luxury": 250
+    }
+  },
+  {
+    "name": "Juan Dolio",
+    "zone": "Destinos Turísticos · Este",
+    "ref": "San Pedro de Macorís",
+    "local": false,
+    "prices": {
+      "Normal": 80,
+      "Minivan": 90,
+      "Luxury": 125
+    }
+  },
+  {
+    "name": "Cabarete",
+    "zone": "Destinos Turísticos · Norte (Costa Ámbar y Cibao)",
+    "ref": "Puerto Plata",
+    "local": false,
+    "prices": {
+      "Normal": 270,
+      "Minivan": 290,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Las Galeras",
+    "zone": "Destinos Turísticos · Península de Samaná (Noreste)",
+    "ref": "Samaná",
+    "local": false,
+    "prices": {
+      "Normal": 270,
+      "Minivan": 290,
+      "Luxury": 370
+    }
+  },
+  {
+    "name": "Playa San Rafael",
+    "zone": "Destinos Turísticos · Sur y Suroeste",
+    "ref": "Barahona",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Salinas de Baní",
+    "zone": "Destinos Turísticos · Sur y Suroeste",
+    "ref": "Peravia",
+    "local": false,
+    "prices": {
+      "Normal": 120,
+      "Minivan": 140,
+      "Luxury": 200
+    }
+  },
+  {
+    "name": "Palmar de Ocoa",
+    "zone": "Destinos Turísticos · Sur y Suroeste",
+    "ref": "San José de Ocoa",
+    "local": false,
+    "prices": {
+      "Normal": 130,
+      "Minivan": 150,
+      "Luxury": 160
+    }
+  },
+  {
+    "name": "Puerto Viejo",
+    "zone": "Destinos Turísticos · Sur y Suroeste",
+    "ref": "Azua",
+    "local": false,
+    "prices": {
+      "Normal": 160,
+      "Minivan": 180,
+      "Luxury": 250
+    }
+  },
+  {
+    "name": "Azua",
+    "zone": "Interior · Sur",
+    "ref": "Azua",
+    "local": false,
+    "prices": {
+      "Normal": 140,
+      "Minivan": 160,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "Bahoruco",
+    "zone": "Interior · Sur",
+    "ref": "Bahoruco",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 330
+    }
+  },
+  {
+    "name": "Santa Cruz de Barahona (Barahona)",
+    "zone": "Interior · Sur",
+    "ref": "Barahona Santa Cruz de Barahona",
+    "local": false,
+    "prices": {
+      "Normal": 240,
+      "Minivan": 240,
+      "Luxury": 320
+    }
+  },
+  {
+    "name": "Enriquillo (Barahona)",
+    "zone": "Interior · Sur",
+    "ref": "Barahona Enriquillo",
+    "local": false,
+    "prices": {
+      "Normal": 260,
+      "Minivan": 280,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Dajabón",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Dajabón Dajabón",
+    "local": false,
+    "prices": {
+      "Normal": 330,
+      "Minivan": 350,
+      "Luxury": 450
+    }
+  },
+  {
+    "name": "Restauración (Dajabón)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Dajabón Restauración",
+    "local": false,
+    "prices": {
+      "Normal": 345,
+      "Minivan": 365,
+      "Luxury": 450
+    }
+  },
+  {
+    "name": "Duarte",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Duarte",
+    "local": false,
+    "prices": {
+      "Normal": 160,
+      "Minivan": 180,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "Santa Cruz del Seibo (El Seibo)",
+    "zone": "Interior · Este",
+    "ref": "El Seibo Santa Cruz del Seibo",
+    "local": false,
+    "prices": {
+      "Normal": 150,
+      "Minivan": 170,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "Miches (El Seibo)",
+    "zone": "Interior · Este",
+    "ref": "El Seibo Miches",
+    "local": false,
+    "prices": {
+      "Normal": 215,
+      "Minivan": 230,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Elías Piña",
+    "zone": "Interior · Sur",
+    "ref": "Elías Piña",
+    "local": false,
+    "prices": {
+      "Normal": 300,
+      "Minivan": 320,
+      "Luxury": 380
+    }
+  },
+  {
+    "name": "Espaillat",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Espaillat",
+    "local": false,
+    "prices": {
+      "Normal": 160,
+      "Minivan": 170,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "Hato Mayor del Rey (Hato Mayor)",
+    "zone": "Interior · Este",
+    "ref": "Hato Mayor Hato Mayor del Rey",
+    "local": false,
+    "prices": {
+      "Normal": 130,
+      "Minivan": 145,
+      "Luxury": 200
+    }
+  },
+  {
+    "name": "Sabana de la Mar (Hato Mayor)",
+    "zone": "Interior · Este",
+    "ref": "Hato Mayor Sabana de la Mar",
+    "local": false,
+    "prices": {
+      "Normal": 210,
+      "Minivan": 230,
+      "Luxury": 300
+    }
+  },
+  {
+    "name": "Independencia",
+    "zone": "Interior · Sur",
+    "ref": "Independencia",
+    "local": false,
+    "prices": {
+      "Normal": 350,
+      "Minivan": 370,
+      "Luxury": 450
+    }
+  },
+  {
+    "name": "La Altagracia",
+    "zone": "Interior · Este",
+    "ref": "La Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 170,
+      "Minivan": 185,
+      "Luxury": 260
+    }
+  },
+  {
+    "name": "La Romana",
+    "zone": "Interior · Este",
+    "ref": "La Romana",
+    "local": false,
+    "prices": {
+      "Normal": 140,
+      "Minivan": 160,
+      "Luxury": 225
+    }
+  },
+  {
+    "name": "La Concepción de La Vega (La Vega)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "La Vega La Concepción de La Vega",
+    "local": false,
+    "prices": {
+      "Normal": 150,
+      "Minivan": 170,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "Constanza (La Vega)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "La Vega Constanza",
+    "local": false,
+    "prices": {
+      "Normal": 230,
+      "Minivan": 250,
+      "Luxury": 330
+    }
+  },
+  {
+    "name": "Jarabacoa (La Vega)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "La Vega Jarabacoa",
+    "local": false,
+    "prices": {
+      "Normal": 180,
+      "Minivan": 200,
+      "Luxury": 250
+    }
+  },
+  {
+    "name": "Nagua (María Trinidad Sánchez)",
+    "zone": "Interior · Norte / Noreste",
+    "ref": "María Trinidad Sánchez Nagua",
+    "local": false,
+    "prices": {
+      "Normal": 200,
+      "Minivan": 220,
+      "Luxury": 300
+    }
+  },
+  {
+    "name": "Cabrera (María Trinidad Sánchez)",
+    "zone": "Interior · Norte / Noreste",
+    "ref": "María Trinidad Sánchez Cabrera",
+    "local": false,
+    "prices": {
+      "Normal": 240,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Río San Juan (vía Nagua) (María Trinidad Sánchez)",
+    "zone": "Interior · Norte / Noreste",
+    "ref": "María Trinidad Sánchez Río San Juan (vía Nagua)",
+    "local": false,
+    "prices": {
+      "Normal": 240,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Río San Juan (vía Puerto Plata) (María Trinidad Sánchez)",
+    "zone": "Interior · Norte / Noreste",
+    "ref": "María Trinidad Sánchez Río San Juan (vía Puerto Plata)",
+    "local": false,
+    "prices": {
+      "Normal": 275,
+      "Minivan": 290,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Monseñor Nouel",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Monseñor Nouel",
+    "local": false,
+    "prices": {
+      "Normal": 125,
+      "Minivan": 145,
+      "Luxury": 180
+    }
+  },
+  {
+    "name": "Monte Cristi",
+    "zone": "Interior · Norte / Noroeste",
+    "ref": "Monte Cristi",
+    "local": false,
+    "prices": {
+      "Normal": 300,
+      "Minivan": 350,
+      "Luxury": 400
+    }
+  },
+  {
+    "name": "Monte Plata",
+    "zone": "Interior · Este",
+    "ref": "Monte Plata Monte Plata",
+    "local": false,
+    "prices": {
+      "Normal": 120,
+      "Minivan": 135,
+      "Luxury": 170
+    }
+  },
+  {
+    "name": "Bayaguana (Monte Plata)",
+    "zone": "Interior · Este",
+    "ref": "Monte Plata Bayaguana",
+    "local": false,
+    "prices": {
+      "Normal": 100,
+      "Minivan": 115,
+      "Luxury": 170
+    }
+  },
+  {
+    "name": "Yamasá (Monte Plata)",
+    "zone": "Interior · Este",
+    "ref": "Monte Plata Yamasá",
+    "local": false,
+    "prices": {
+      "Normal": 100,
+      "Minivan": 120,
+      "Luxury": 170
+    }
+  },
+  {
+    "name": "Pedernales",
+    "zone": "Interior · Sur",
+    "ref": "Pedernales Pedernales",
+    "local": false,
+    "prices": {
+      "Normal": 380,
+      "Minivan": 400,
+      "Luxury": 420
+    }
+  },
+  {
+    "name": "Oviedo (Pedernales)",
+    "zone": "Interior · Sur",
+    "ref": "Pedernales Oviedo",
+    "local": false,
+    "prices": {
+      "Normal": 300,
+      "Minivan": 320,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Baní (Peravia)",
+    "zone": "Interior · Sur",
+    "ref": "Peravia Baní",
+    "local": false,
+    "prices": {
+      "Normal": 100,
+      "Minivan": 120,
+      "Luxury": 180
+    }
+  },
+  {
+    "name": "Nizao (Peravia)",
+    "zone": "Interior · Sur",
+    "ref": "Peravia Nizao",
+    "local": false,
+    "prices": {
+      "Normal": 90,
+      "Minivan": 110,
+      "Luxury": 150
+    }
+  },
+  {
+    "name": "San Felipe de Puerto Plata (Puerto Plata)",
+    "zone": "Interior · Norte",
+    "ref": "Puerto Plata San Felipe de Puerto Plata",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Luperón (Puerto Plata)",
+    "zone": "Interior · Norte",
+    "ref": "Puerto Plata Luperón",
+    "local": false,
+    "prices": {
+      "Normal": 265,
+      "Minivan": 285,
+      "Luxury": 370
+    }
+  },
+  {
+    "name": "Sosúa (Puerto Plata)",
+    "zone": "Interior · Norte",
+    "ref": "Puerto Plata Sosúa",
+    "local": false,
+    "prices": {
+      "Normal": 260,
+      "Minivan": 280,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Santa Bárbara de Samaná (Samaná)",
+    "zone": "Interior · Noreste",
+    "ref": "Samaná Santa Bárbara de Samaná",
+    "local": false,
+    "prices": {
+      "Normal": 240,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Las Terrenas (Samaná)",
+    "zone": "Interior · Noreste",
+    "ref": "Samaná Las Terrenas",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "San Cristóbal",
+    "zone": "Interior · Sur",
+    "ref": "San Cristóbal San Cristóbal",
+    "local": false,
+    "prices": {
+      "Normal": 60,
+      "Minivan": 80,
+      "Luxury": 100
+    }
+  },
+  {
+    "name": "Cambita Garabitos (San Cristóbal)",
+    "zone": "Interior · Sur",
+    "ref": "San Cristóbal Cambita Garabitos",
+    "local": false,
+    "prices": {
+      "Normal": 70,
+      "Minivan": 90,
+      "Luxury": 130
+    }
+  },
+  {
+    "name": "Villa Altagracia (San Cristóbal)",
+    "zone": "Interior · Sur",
+    "ref": "San Cristóbal Villa Altagracia",
+    "local": false,
+    "prices": {
+      "Normal": 70,
+      "Minivan": 85,
+      "Luxury": 130
+    }
+  },
+  {
+    "name": "San José de Ocoa",
+    "zone": "Interior · Sur",
+    "ref": "San José de Ocoa",
+    "local": false,
+    "prices": {
+      "Normal": 130,
+      "Minivan": 150,
+      "Luxury": 220
+    }
+  },
+  {
+    "name": "San Juan de la Maguana (San Juan)",
+    "zone": "Interior · Sur",
+    "ref": "San Juan San Juan de la Maguana",
+    "local": false,
+    "prices": {
+      "Normal": 240,
+      "Minivan": 260,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Las Matas de Farfán (San Juan)",
+    "zone": "Interior · Sur",
+    "ref": "San Juan Las Matas de Farfán",
+    "local": false,
+    "prices": {
+      "Normal": 260,
+      "Minivan": 280,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "San Pedro de Macorís",
+    "zone": "Interior · Este",
+    "ref": "San Pedro de Macorís",
+    "local": false,
+    "prices": {
+      "Normal": 100,
+      "Minivan": 120,
+      "Luxury": 150
+    }
+  },
+  {
+    "name": "Sánchez Ramírez",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Sánchez Ramírez",
+    "local": false,
+    "prices": {
+      "Normal": 130,
+      "Minivan": 150,
+      "Luxury": 200
+    }
+  },
+  {
+    "name": "Santiago de los Caballeros (Santiago)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Santiago Santiago de los Caballeros",
+    "local": false,
+    "prices": {
+      "Normal": 180,
+      "Minivan": 200,
+      "Luxury": 250
+    }
+  },
+  {
+    "name": "San José de las Matas (Santiago)",
+    "zone": "Interior · Norte / Cibao",
+    "ref": "Santiago San José de las Matas",
+    "local": false,
+    "prices": {
+      "Normal": 230,
+      "Minivan": 245,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "San Ignacio de Sabaneta (Santiago Rodríguez) (Santiago Rodríguez)",
+    "zone": "Interior · Norte / Noroeste",
+    "ref": "Santiago Rodríguez San Ignacio de Sabaneta (Santiago Rodríguez)",
+    "local": false,
+    "prices": {
+      "Normal": 270,
+      "Minivan": 290,
+      "Luxury": 380
+    }
+  },
+  {
+    "name": "Monción (Santiago Rodríguez)",
+    "zone": "Interior · Norte / Noroeste",
+    "ref": "Santiago Rodríguez Monción",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  },
+  {
+    "name": "Valverde",
+    "zone": "Interior · Norte / Noroeste",
+    "ref": "Valverde",
+    "local": false,
+    "prices": {
+      "Normal": 250,
+      "Minivan": 270,
+      "Luxury": 350
+    }
+  }
+];
 
     const PROMO_CODES = {
       "HELIUM": 0.10,
       "DRRAMIRO": 0.10,
       "10POR100TO": 0.10
     };
+
+    // =========================================================================
+    // NORMALIZACIÓN DE BÚSQUEDA (sin mayúsculas, acentos, símbolos ni ñ)
+    // =========================================================================
+    function normalizeText(str) {
+      if (!str) return "";
+      return str
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // elimina tildes y diéresis
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")     // elimina símbolos, barras, paréntesis y puntuación
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Precalcular texto normalizado de búsqueda para cada destino
+    const INDEXED_DESTINATIONS = DESTINATIONS.map((d, idx) => ({
+      ...d,
+      _id: idx,
+      _normName: normalizeText(d.name),
+      _normAll: normalizeText(`${d.name} ${d.zone} ${d.ref || ""}`)
+    }));
 
     // =========================================================================
     // ESTADO DE LA APLICACIÓN
@@ -662,6 +3619,7 @@
     const originSelect = document.getElementById("originSelect");
 
     const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
     const suggestionsList = document.getElementById("suggestionsList");
     const toggleZoneBtn = document.getElementById("toggleZoneBtn");
     const zoneSelectors = document.getElementById("zoneSelectors");
@@ -676,9 +3634,11 @@
 
     const step3 = document.getElementById("step3");
     const summaryRouteText = document.getElementById("summaryRouteText");
+    const breakdownLines = document.getElementById("breakdownLines");
     const totalAmountText = document.getElementById("totalAmountText");
     const tripDate = document.getElementById("tripDate");
     const payGrid = document.getElementById("payGrid");
+    const cardFeeNote = document.getElementById("cardFeeNote");
     const togglePromoBtn = document.getElementById("togglePromoBtn");
     const promoBox = document.getElementById("promoBox");
     const promoInput = document.getElementById("promoInput");
@@ -687,7 +3647,7 @@
 
     // Inicializar zonas
     function initZones() {
-      const zones = [...new Set(DESTINATIONS.map(d => d.zone))];
+      const zones = [...new Set(INDEXED_DESTINATIONS.map(d => d.zone))];
       zones.forEach(z => {
         const opt = document.createElement("option");
         opt.value = z;
@@ -696,7 +3656,7 @@
       });
     }
 
-    // Cálculo de tarifas por parada
+    // Cálculo de tarifas por parada (mantiene regla de retorno 50% / 100%)
     function calculateStops() {
       let inProvince = false;
       let lastProvinceBase = 0;
@@ -717,7 +3677,7 @@
           lastProvinceBase = basePrice;
           lastProvinceName = dest.name;
         } else {
-          // Destino en Santo Domingo / Aeropuerto
+          // Destino en Gran Santo Domingo / Aeropuerto local / Puerto
           if (inProvince) {
             const returnRate = lastProvinceBase >= 100 ? 0.5 : 1.0;
             const returnCost = lastProvinceBase * returnRate;
@@ -728,7 +3688,9 @@
             lastProvinceName = "";
           } else {
             legPrice = basePrice;
-            detail = dest.zone;
+            detail = dest.ref && dest.ref !== dest.name
+              ? `${dest.zone} · Ref: ${dest.ref}`
+              : dest.zone;
           }
         }
 
@@ -741,22 +3703,36 @@
     }
 
     function getDiscountRate() {
-      const code = state.promoCode.trim().toUpperCase();
+      const code = normalizeText(state.promoCode).toUpperCase().replace(/\s+/g, "");
       return PROMO_CODES[code] || 0;
+    }
+
+    function computeTotals() {
+      const computedStops = calculateStops();
+      const baseSubtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
+      const discountRate = getDiscountRate();
+      const discountAmount = baseSubtotal * discountRate;
+      const afterDiscount = baseSubtotal - discountAmount;
+      const cardFee = state.payment === "Tarjeta" ? afterDiscount * CARD_SURCHARGE_RATE : 0;
+      const total = afterDiscount + cardFee;
+
+      return {
+        computedStops,
+        baseSubtotal,
+        discountRate,
+        discountAmount,
+        cardFee,
+        total
+      };
     }
 
     // Renderizar interfaz completa
     function render() {
-      const computedStops = calculateStops();
-      const subtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
-      const discountRate = getDiscountRate();
-      const total = subtotal * (1 - discountRate);
+      const { computedStops, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
 
-      // Actualizar encabezado de destino
       destinationHeading.textContent =
         state.stops.length === 0 ? "¿A dónde te llevamos?" : "¿Cuál es la siguiente parada?";
 
-      // Mostrar/ocultar itinerario y Paso 3
       if (computedStops.length === 0) {
         itineraryBox.classList.add("hidden");
         step3.classList.add("hidden");
@@ -787,6 +3763,26 @@
       // Resumen limpio y proporcionado
       const routeChain = [state.origin, ...computedStops.map(s => s.name)].join(" → ");
       summaryRouteText.innerHTML = `<strong>Ruta:</strong> ${routeChain}`;
+
+      // Desglose opcional si hay descuento o cargo por tarjeta
+      const notes = [];
+      if (discountRate > 0 || cardFee > 0) {
+        notes.push(`Subtotal ruta: US$ ${baseSubtotal.toFixed(2)}`);
+      }
+      if (discountRate > 0) {
+        notes.push(`Descuento aplicado (-${Math.round(discountRate * 100)}%): -US$ ${discountAmount.toFixed(2)}`);
+      }
+      if (cardFee > 0) {
+        notes.push(`Cargo por pago con tarjeta (+7%): +US$ ${cardFee.toFixed(2)}`);
+      }
+
+      if (notes.length > 0) {
+        breakdownLines.innerHTML = notes.map(n => `<span>${n}</span>`).join("");
+        breakdownLines.classList.remove("hidden");
+      } else {
+        breakdownLines.classList.add("hidden");
+      }
+
       totalAmountText.textContent = `US$ ${total.toFixed(2)}`;
     }
 
@@ -794,6 +3790,7 @@
       const wasEmpty = state.stops.length === 0;
       state.stops.push(dest);
       searchInput.value = "";
+      clearSearchBtn.classList.add("hidden");
       suggestionsList.classList.add("hidden");
       zoneSelect.value = "";
       sectorSelect.innerHTML = '<option value="">Selecciona primero una zona...</option>';
@@ -814,6 +3811,10 @@
       document.querySelectorAll(".vehicle-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       state.vehicle = btn.dataset.vehicle;
+      // Si el selector por zona está abierto, actualizar precios mostrados
+      if (zoneSelect.value) {
+        zoneSelect.dispatchEvent(new Event("change"));
+      }
       render();
     });
 
@@ -830,17 +3831,30 @@
       render();
     });
 
-    // Eventos Paso 2 (Buscador y zonas)
+    // Eventos Paso 2 (Buscador normalizado tolerante)
     searchInput.addEventListener("input", () => {
-      const q = searchInput.value.trim().toLowerCase();
-      if (!q) {
+      const raw = searchInput.value;
+      clearSearchBtn.classList.toggle("hidden", raw.length === 0);
+
+      const normQuery = normalizeText(raw);
+      if (!normQuery) {
         suggestionsList.classList.add("hidden");
         return;
       }
 
-      const matches = DESTINATIONS.filter(
-        d => d.name.toLowerCase().includes(q) || d.zone.toLowerCase().includes(q)
-      );
+      const tokens = normQuery.split(" ");
+
+      const matches = INDEXED_DESTINATIONS
+        .filter(d => tokens.every(tok => d._normAll.includes(tok)))
+        .sort((a, b) => {
+          const aStarts = a._normName.startsWith(normQuery) ? 0 : 1;
+          const bStarts = b._normName.startsWith(normQuery) ? 0 : 1;
+          if (aStarts !== bStarts) return aStarts - bStarts;
+          const aInName = a._normName.includes(normQuery) ? 0 : 1;
+          const bInName = b._normName.includes(normQuery) ? 0 : 1;
+          return aInName - bInName;
+        })
+        .slice(0, 30);
 
       if (matches.length === 0) {
         suggestionsList.innerHTML = '<div class="suggestion-item"><span class="suggestion-zone">No se encontraron resultados</span></div>';
@@ -852,10 +3866,13 @@
       matches.forEach(dest => {
         const item = document.createElement("div");
         item.className = "suggestion-item";
+        const subText = dest.ref && normalizeText(dest.ref) !== dest._normName
+          ? `${dest.zone} · ${dest.ref}`
+          : dest.zone;
         item.innerHTML = `
           <div>
             <div class="suggestion-name">${dest.name}</div>
-            <div class="suggestion-zone">${dest.zone}</div>
+            <div class="suggestion-zone">${subText}</div>
           </div>
           <div class="suggestion-price">US$ ${dest.prices[state.vehicle].toFixed(2)}</div>
         `;
@@ -863,6 +3880,13 @@
         suggestionsList.appendChild(item);
       });
       suggestionsList.classList.remove("hidden");
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearSearchBtn.classList.add("hidden");
+      suggestionsList.classList.add("hidden");
+      searchInput.focus();
     });
 
     document.addEventListener("click", (e) => {
@@ -877,14 +3901,14 @@
 
     zoneSelect.addEventListener("change", () => {
       const selectedZone = zoneSelect.value;
-      sectorSelect.innerHTML = '<option value="">Selecciona un sector...</option>';
+      sectorSelect.innerHTML = '<option value="">Selecciona un sector o destino...</option>';
       if (!selectedZone) {
         sectorSelect.disabled = true;
         return;
       }
-      DESTINATIONS.filter(d => d.zone === selectedZone).forEach(dest => {
+      INDEXED_DESTINATIONS.filter(d => d.zone === selectedZone).forEach(dest => {
         const opt = document.createElement("option");
-        opt.value = dest.name;
+        opt.value = String(dest._id);
         opt.textContent = `${dest.name} — US$ ${dest.prices[state.vehicle]}`;
         sectorSelect.appendChild(opt);
       });
@@ -892,7 +3916,8 @@
     });
 
     sectorSelect.addEventListener("change", () => {
-      const dest = DESTINATIONS.find(d => d.name === sectorSelect.value);
+      if (!sectorSelect.value) return;
+      const dest = INDEXED_DESTINATIONS.find(d => String(d._id) === sectorSelect.value);
       if (dest) addStop(dest);
     });
 
@@ -932,6 +3957,8 @@
       document.querySelectorAll(".pay-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       state.payment = btn.dataset.pay;
+      cardFeeNote.classList.toggle("hidden", state.payment !== "Tarjeta");
+      render();
     });
 
     togglePromoBtn.addEventListener("click", () => {
@@ -944,9 +3971,7 @@
     });
 
     function buildSummaryMessage() {
-      const computedStops = calculateStops();
-      const subtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
-      const total = subtotal * (1 - getDiscountRate());
+      const { computedStops, baseSubtotal, discountRate, discountAmount, cardFee, total } = computeTotals();
 
       const lines = [
         `*Solicitud de Transporte*`,
@@ -960,7 +3985,14 @@
       });
 
       if (tripDate.value) lines.push(`• *Fecha:* ${tripDate.value}`);
-      lines.push(`• *Pago:* ${state.payment}`);
+      lines.push(`• *Pago:* ${state.payment}${state.payment === "Tarjeta" ? " (+7%)" : ""}`);
+      if (discountRate > 0) {
+        lines.push(`• *Subtotal:* US$ ${baseSubtotal.toFixed(2)}`);
+        lines.push(`• *Descuento:* -US$ ${discountAmount.toFixed(2)}`);
+      }
+      if (cardFee > 0) {
+        lines.push(`• *Cargo tarjeta (7%):* +US$ ${cardFee.toFixed(2)}`);
+      }
       lines.push(`• *Total estimado:* US$ ${total.toFixed(2)}`);
       return lines.join("\n");
     }
