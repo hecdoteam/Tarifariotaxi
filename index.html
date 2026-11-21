@@ -1,1982 +1,984 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tarifario de Transporte | Solicitar Traslado</title>
-<meta name="description" content="Consulta tarifas oficiales de transporte en República Dominicana y solicita tu traslado al instante por WhatsApp.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Tarifario de Transporte — Cotiza y Reserva tu Traslado">
-<meta property="og:description" content="Selecciona tu destino, vehículo (Normal, Minivan o Luxury) y método de pago. Calcula tu tarifa al instante y coordina tu viaje por WhatsApp.">
-<meta property="og:locale" content="es_DO">
-<meta property="og:locale:alternate" content="en_US">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Tarifario de Transporte — Cotiza y Reserva tu Traslado">
-<meta name="twitter:description" content="Consulta tarifas al instante y solicita tu traslado por WhatsApp.">
-<style>
-:root{--bg:#f5f6f8;--card:#fff;--text:#1b1f24;--muted:#5f6b7a;--line:#d5dae1;--accent:#128c4a;--accent-text:#fff;--lux:#b47b12;--lux-bg:#fdf7ea;--lux-border:#e6c478;--lux-on:#b47b12;--lux-on-text:#fff;--err:#d93025;--err-bg:#fdecea;--err-border:#f5c2be;--warn-bg:#fff8e6;--warn-border:#f3d27a;--warn-text:#7a5200;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--lux:#f0b940;--lux-bg:#292112;--lux-border:#6b511b;--lux-on:#e0a422;--lux-on-text:#140e02;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;--warn-bg:#2a2210;--warn-border:#66501a;--warn-text:#ffd666;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#101316;--card:#1a1f25;--text:#eef1f4;--muted:#9aa5b1;--line:#2d353e;--accent:#25b866;--accent-text:#06210f;--lux:#f0b940;--lux-bg:#292112;--lux-border:#6b511b;--lux-on:#e0a422;--lux-on-text:#140e02;--err:#ff6b6b;--err-bg:#2d1517;--err-border:#6e262b;--warn-bg:#2a2210;--warn-border:#66501a;--warn-text:#ffd666;color-scheme:dark}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center;padding:20px 16px calc(96px + env(safe-area-inset-bottom,0px))}
-main{width:100%;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
-.top-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
-.top-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-h1{font-size:1.28rem;margin:0;line-height:1.2}
-.multi-btn{padding:6px 10px;font-size:.78rem;font-weight:700;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--muted);cursor:pointer;white-space:nowrap}
-.multi-btn:hover{border-color:var(--accent);color:var(--text)}
-.multi-btn.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
-.lang-btn{padding:6px 10px;font-size:.8rem;font-weight:700;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap;letter-spacing:.3px}
-.lang-btn:hover{border-color:var(--accent)}
-p.sub{margin:0 0 12px;color:var(--muted);font-size:.95rem;line-height:1.4}
-p.note{margin:8px 0 0;color:var(--muted);font-size:.82rem;line-height:1.4}
-label{display:block;font-size:.86rem;font-weight:600;color:var(--muted);margin:15px 0 6px}
-.req{color:var(--err);font-weight:700;margin-left:2px}
-select,input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
-.origin-wrap{display:flex;flex-direction:column;gap:8px}
-.origin-row{display:flex;gap:8px;align-items:stretch}
-.origin-box{flex:1;min-width:0;padding:11px 12px;font-size:.95rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:8px}
-.origin-box span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.origin-badge{font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--card);border:1px solid var(--line);color:var(--muted);white-space:nowrap;flex-shrink:0}
-.btn-swap{width:44px;flex-shrink:0;font-size:1.15rem;font-weight:700;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center}
-.btn-swap:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
-.btn-swap:disabled{opacity:.38;cursor:not-allowed}
-.btn-origin{width:100%;padding:9px 12px;font-size:.84rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--accent);cursor:pointer;text-align:center}
-.btn-origin:hover{border-color:var(--accent)}
-.origin-picker{margin-top:2px}
-.search-wrap{position:relative}
-.q-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:240px;overflow-y:auto}
-.q-item{width:100%;text-align:left;padding:10px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.92rem}
-.q-item:last-child{border-bottom:0}
-.q-item:hover,.q-item:focus{background:var(--bg);outline:none}
-.q-item small{display:block;font-size:.76rem;color:var(--muted);margin-top:2px}
-.q-item strong{font-size:.9rem;color:var(--accent);white-space:nowrap}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.date-row{display:flex;gap:8px;align-items:stretch}
-.date-row input{flex:1;min-width:0}
-.btn-quick{padding:0 12px;font-size:.82rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
-.btn-quick:hover,.btn-quick.on{border-color:var(--accent);color:var(--accent)}
-.code-row{display:flex;gap:8px}
-.code-row input{flex:1}
-.btn-sec{padding:0 16px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;white-space:nowrap}
-.btn-sec:hover{border-color:var(--accent)}
-.btn-add-stop{width:100%;margin-top:12px;padding:11px 12px;font-size:.9rem;font-weight:600;border:1px dashed var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer}
-.btn-add-stop:hover{background:var(--bg)}
-.stops-box{margin-top:14px;padding:12px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
-.stops-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:.82rem;font-weight:700;color:var(--text)}
-.clear-stops{border:0;background:transparent;color:var(--err);font-size:.78rem;font-weight:600;cursor:pointer;padding:2px 4px}
-.stop-item{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.86rem}
-.stop-item:first-of-type{border-top:0;padding-top:2px}
-.stop-info{flex:1;min-width:0}
-.stop-info strong{display:block;color:var(--text);line-height:1.3}
-.stop-info small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px;line-height:1.35}
-.stop-right{display:flex;align-items:center;gap:8px;white-space:nowrap}
-.stop-price{font-weight:700;color:var(--accent);font-size:.88rem}
-.stop-del{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:6px;width:24px;height:24px;line-height:1;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.stop-del:hover{border-color:var(--err);color:var(--err)}
-.hourly-notice{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-text);font-size:.82rem;line-height:1.45;font-weight:600}
-.code-msg{margin:6px 0 0;font-size:.82rem;min-height:1.1em}
-.code-msg.ok{color:var(--accent);font-weight:600}
-.code-msg.err{color:var(--err)}
-.chip{flex:1;min-width:64px;padding:10px;font-size:.92rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer}
-.trip-row .chip{padding:13px 12px;font-size:.96rem;font-weight:700}
-.chip.sm{flex:1 1 calc(50% - 4px);font-size:.86rem;padding:9px 8px}
-.chip.on{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
-.chip.lux{background:var(--lux-bg);color:var(--lux);border-color:var(--lux-border)}
-.chip.lux.on{background:var(--lux-on);color:var(--lux-on-text);border-color:var(--lux-on)}
-.card-warn{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--err-bg);border:1px solid var(--err-border);color:var(--err);font-size:.83rem;line-height:1.45;font-weight:600}
-.cost{margin-top:18px;padding:14px;border-radius:10px;border:1px dashed var(--line);text-align:center}
-.route-summary{font-size:.84rem;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.4}
-.cost span{display:block;font-size:.8rem;color:var(--muted)}
-.cost strong{font-size:1.6rem}
-.cost s{font-size:1rem;color:var(--muted);margin-right:8px;font-weight:400}
-.cost small{display:block;font-size:.78rem;color:var(--err);margin-top:4px;font-weight:600}
-.actions{display:flex;flex-direction:column;gap:8px;margin-top:20px}
-#send{width:100%;padding:14px;font-size:1rem;font-weight:600;border:0;border-radius:10px;background:var(--accent);color:var(--accent-text);cursor:pointer}
-#send:disabled{opacity:.45;cursor:not-allowed}
-#copyBtn{width:100%;padding:12px;font-size:.94rem;font-weight:600;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;transition:border-color .15s,color .15s}
-#copyBtn:hover:not(:disabled){border-color:var(--accent)}
-#copyBtn.copied{border-color:var(--accent);color:var(--accent)}
-#copyBtn:disabled{opacity:.45;cursor:not-allowed}
-.send-hint{margin:4px 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
-.info-box{margin-top:14px;padding:12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:.82rem;color:var(--muted);line-height:1.45}
-.info-box strong{color:var(--text);display:block;margin-bottom:2px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Calculadora de Tarifas de Transporte</title>
+  <style>
+    :root {
+      --bg: #111315;
+      --card: #191c20;
+      --card-inner: #14171a;
+      --border: #2a2f36;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --green-bg: rgba(34, 197, 94, 0.12);
+      --gold: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding: 16px 14px 48px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .header {
+      text-align: left;
+      padding: 4px 2px;
+    }
+
+    .header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      animation: slideDown 0.28s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    /* Vehículo */
+    .vehicle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .vehicle-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 11px 8px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .vehicle-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #07130b;
+    }
+
+    .vehicle-btn.luxury:not(.active) {
+      color: var(--gold);
+    }
+
+    /* Salida */
+    .origin-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      gap: 8px;
+    }
+
+    .origin-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      background: #232830;
+      color: var(--muted);
+      padding: 3px 8px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .link-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Inputs & Selects */
+    .field-group {
+      margin-top: 10px;
+      position: relative;
+    }
+
+    label.field-label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--green);
+    }
+
+    /* Autocomplete */
+    .suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1f242b;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 30;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+    }
+
+    .suggestion-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-item:hover {
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .suggestion-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .suggestion-zone {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .suggestion-price {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .helper-note {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* Itinerario */
+    .itinerary-box {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 14px;
+    }
+
+    .itinerary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .itinerary-header span {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .stop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .stop-item:first-of-type {
+      border-top: none;
+      padding-top: 2px;
+    }
+
+    .stop-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stop-sub {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .stop-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .stop-price {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .remove-stop {
+      background: #232830;
+      border: none;
+      color: var(--muted);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .add-stop-btn {
+      width: 100%;
+      margin-top: 10px;
+      background: transparent;
+      border: 1px dashed var(--green);
+      color: var(--green);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Paso 3: Resumen con tipografía proporcionada */
+    .summary-box {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .summary-route {
+      font-size: 0.94rem;
+      font-weight: 500;
+      color: #d1d5db;
+      line-height: 1.45;
+      margin-bottom: 12px;
+      word-wrap: break-word;
+    }
+
+    .summary-route strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .total-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .total-amount {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    .quick-dates {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .chip-btn.active {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-bg);
+    }
+
+    .pay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .pay-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 11px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pay-btn.active {
+      border-color: var(--green);
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .cta-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      background: var(--green);
+      border: none;
+      color: #05140a;
+      font-size: 0.96rem;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .btn-copy {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 11px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<main>
-  <div class="top-bar">
-    <h1 id="tTitle">Solicitar transporte</h1>
-    <div class="top-actions">
-      <button type="button" class="multi-btn" id="multiToggleBtn" aria-pressed="false">+ Varios destinos</button>
-      <button type="button" class="lang-btn" id="langBtn" aria-label="Cambiar idioma">EN</button>
-    </div>
-  </div>
-  <p class="sub" id="tSub">Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.</p>
+  <div class="app">
+    <header class="header">
+      <h1>Cotizador de Transporte</h1>
+      <p>Calcula tu tarifa paso a paso y coordina por WhatsApp.</p>
+    </header>
 
-  <label id="tVehLab">Vehículo</label>
-  <div class="row" id="veh">
-    <button type="button" class="chip on" data-v="n">Normal</button>
-    <button type="button" class="chip" data-v="v">Minivan</button>
-    <button type="button" class="chip lux" data-v="l">★ Luxury</button>
-  </div>
-
-  <label id="tOriginLab">¿Desde dónde sales?</label>
-  <div class="origin-wrap">
-    <div class="origin-row">
-      <div class="origin-box">
-        <span id="originText">Santo Domingo / Hotel</span>
-        <span class="origin-badge" id="originBadge">Salida habitual</span>
+    <!-- PASO 1: VEHÍCULO Y SALIDA -->
+    <section class="step-card" id="step1">
+      <div class="step-badge">Paso 1 de 3 · Vehículo y salida</div>
+      <div class="section-title">Elige tu tipo de vehículo</div>
+      <div class="vehicle-grid" id="vehicleGrid">
+        <button type="button" class="vehicle-btn active" data-vehicle="Normal">Normal</button>
+        <button type="button" class="vehicle-btn" data-vehicle="Minivan">Minivan</button>
+        <button type="button" class="vehicle-btn luxury" data-vehicle="Luxury">★ Luxury</button>
       </div>
-      <button type="button" class="btn-swap" id="swapRouteBtn" title="Invertir salida y destino" aria-label="Invertir salida y destino" disabled>⇄</button>
-    </div>
-    <button type="button" class="btn-origin" id="toggleOriginBtn">Cambiar provincia de salida</button>
-    <div class="origin-picker" id="originPicker" hidden>
-      <select id="originSel" aria-label="Provincia de salida"></select>
-    </div>
+
+      <label class="field-label">¿Desde dónde sales?</label>
+      <div class="origin-box">
+        <span class="origin-label" id="originText">Santo Domingo / Hotel</span>
+        <span class="pill" id="originBadge">Salida habitual</span>
+      </div>
+
+      <button type="button" class="link-btn" id="toggleOriginBtn">¿Sales desde otra provincia?</button>
+
+      <div class="field-group hidden" id="originSelectorBox">
+        <select id="originSelect">
+          <option value="Santo Domingo / Hotel" data-interurban="false">Santo Domingo / Hotel (Salida habitual)</option>
+          <option value="Aeropuerto Las Américas (AILA)" data-interurban="false">Aeropuerto Las Américas (AILA)</option>
+          <option value="Boca Chica" data-interurban="true">Boca Chica</option>
+          <option value="Juan Dolio" data-interurban="true">Juan Dolio</option>
+          <option value="San Pedro de Macorís" data-interurban="true">San Pedro de Macorís</option>
+          <option value="La Romana / Casa de Campo" data-interurban="true">La Romana / Casa de Campo</option>
+          <option value="Punta Cana / Bávaro" data-interurban="true">Punta Cana / Bávaro</option>
+          <option value="Santiago" data-interurban="true">Santiago</option>
+          <option value="Puerto Plata" data-interurban="true">Puerto Plata</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- PASO 2: DESTINO -->
+    <section class="step-card" id="step2">
+      <div class="step-badge">Paso 2 de 3 · Destino</div>
+      <div class="section-title" id="destinationHeading">¿A dónde te llevamos?</div>
+
+      <div class="field-group" style="margin-top: 0;">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Buscar sector, municipio o aeropuerto..."
+          autocomplete="off"
+        />
+        <div class="suggestions hidden" id="suggestionsList"></div>
+      </div>
+
+      <button type="button" class="link-btn" id="toggleZoneBtn">O elegir de la lista por zona</button>
+
+      <div id="zoneSelectors" class="hidden">
+        <div class="field-group">
+          <label class="field-label">Zona</label>
+          <select id="zoneSelect">
+            <option value="">Selecciona una zona...</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sector / Destino</label>
+          <select id="sectorSelect" disabled>
+            <option value="">Selecciona primero una zona...</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="helper-note">La tarifa aplica a cualquier punto dentro del sector seleccionado.</p>
+
+      <!-- Itinerario (aparece al agregar la primera parada) -->
+      <div class="itinerary-box hidden" id="itineraryBox">
+        <div class="itinerary-header">
+          <span>Itinerario seleccionado</span>
+          <button type="button" class="clear-btn" id="clearRouteBtn">Limpiar ruta</button>
+        </div>
+        <div id="stopsContainer"></div>
+        <button type="button" class="add-stop-btn" id="addStopFocusBtn">+ Agregar parada siguiente</button>
+      </div>
+    </section>
+
+    <!-- PASO 3: RESUMEN, FECHA Y PAGO (aparece hacia abajo al tener >= 1 destino) -->
+    <section class="step-card hidden" id="step3">
+      <div class="step-badge">Paso 3 de 3 · Resumen y confirmación</div>
+
+      <div class="summary-box">
+        <div class="summary-route" id="summaryRouteText"></div>
+        <div class="total-label">Costo total</div>
+        <div class="total-amount" id="totalAmountText">US$ 0.00</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="tripDate">Fecha del servicio (opcional)</label>
+        <input type="date" id="tripDate" />
+        <div class="quick-dates">
+          <button type="button" class="chip-btn" data-date-offset="0">Hoy</button>
+          <button type="button" class="chip-btn" data-date-offset="1">Mañana</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Método de pago</label>
+        <div class="pay-grid" id="payGrid">
+          <button type="button" class="pay-btn active" data-pay="Efectivo">Efectivo</button>
+          <button type="button" class="pay-btn" data-pay="Tarjeta">Tarjeta</button>
+        </div>
+      </div>
+
+      <button type="button" class="link-btn" id="togglePromoBtn">¿Tienes un código promocional?</button>
+      <div class="field-group hidden" id="promoBox">
+        <input type="text" id="promoInput" placeholder="Ingresa tu código..." />
+      </div>
+
+      <div class="cta-group">
+        <button type="button" class="btn-whatsapp" id="sendWhatsappBtn">Enviar solicitud por WhatsApp</button>
+        <button type="button" class="btn-copy" id="copyQuoteBtn">Copiar cotización</button>
+      </div>
+    </section>
   </div>
 
-  <div id="stopsBox" class="stops-box" hidden>
-    <div class="stops-head">
-      <span id="tStopsTitle">Itinerario seleccionado</span>
-      <button type="button" class="clear-stops" id="clearStopsBtn">Limpiar ruta</button>
-    </div>
-    <div id="stopsList"></div>
-  </div>
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN DE TELÉFONO Y TARIFAS (Edita o amplía tus sectores aquí)
+    // =========================================================================
+    const WHATSAPP_NUMBER = "18093167406";
 
-  <label for="q"><span id="tSearchLab">¿Para dónde vas?</span><span class="req">*</span></label>
-  <div class="search-wrap" id="searchWrap">
-    <input type="search" id="q" placeholder="Sector, municipio o aeropuerto…" autocomplete="off">
-    <div class="q-list" id="qList" hidden></div>
-  </div>
+    const DESTINATIONS = [
+      // Ciudad de Santo Domingo (local: true)
+      { name: "Piantini / Naco / Serrallés", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
+      { name: "Gazcue (hasta Av. Independencia y Av. Delgado)", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
+      { name: "Zona Colonial", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
+      { name: "Blue Mall / Acrópolis", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
+      { name: "Novo Centro / Bella Vista", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 15, Minivan: 20, Luxury: 30 } },
+      { name: "Ágora Mall / Galería 360", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 20, Minivan: 25, Luxury: 35 } },
+      { name: "Mirador Sur / El Millón", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 18, Minivan: 23, Luxury: 33 } },
+      { name: "Los Cacicazgos / Anacaona", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 18, Minivan: 23, Luxury: 33 } },
+      { name: "Arroyo Hondo / Jardín Botánico", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 20, Minivan: 25, Luxury: 35 } },
+      { name: "Santo Domingo Este (Zona Oriental)", zone: "Ciudad de Santo Domingo", local: true, prices: { Normal: 25, Minivan: 30, Luxury: 45 } },
 
-  <label for="zona"><span id="tZoneLab">O elige tu destino por zona</span><span class="req">*</span></label>
-  <select id="zona"><option value="">Selecciona…</option></select>
+      // Aeropuertos
+      { name: "Aeropuerto Internacional Las Américas (AILA)", zone: "Aeropuertos", local: true, prices: { Normal: 45, Minivan: 55, Luxury: 75 } },
+      { name: "Aeropuerto La Isabela (El Higüero)", zone: "Aeropuertos", local: true, prices: { Normal: 35, Minivan: 45, Luxury: 65 } },
 
-  <div id="munBox" hidden><label for="mun"><span id="munLab">Municipio</span><span class="req">*</span></label><select id="mun"></select></div>
+      // Interior / Provincias (local: false -> aplica regla de retorno al volver a SD)
+      { name: "Boca Chica", zone: "Interior / Este", local: false, prices: { Normal: 55, Minivan: 65, Luxury: 90 } },
+      { name: "Juan Dolio", zone: "Interior / Este", local: false, prices: { Normal: 75, Minivan: 90, Luxury: 120 } },
+      { name: "San Pedro de Macorís", zone: "Interior / Este", local: false, prices: { Normal: 100, Minivan: 120, Luxury: 160 } },
+      { name: "La Romana / Casa de Campo", zone: "Interior / Este", local: false, prices: { Normal: 140, Minivan: 165, Luxury: 220 } },
+      { name: "Punta Cana / Bávaro", zone: "Interior / Este", local: false, prices: { Normal: 190, Minivan: 225, Luxury: 290 } },
+      { name: "Bonao", zone: "Interior / Cibao", local: false, prices: { Normal: 110, Minivan: 130, Luxury: 175 } },
+      { name: "La Vega", zone: "Interior / Cibao", local: false, prices: { Normal: 145, Minivan: 170, Luxury: 225 } },
+      { name: "Santiago de los Caballeros", zone: "Interior / Cibao", local: false, prices: { Normal: 175, Minivan: 205, Luxury: 270 } },
+      { name: "Puerto Plata", zone: "Interior / Norte", local: false, prices: { Normal: 230, Minivan: 270, Luxury: 350 } },
+      { name: "Samaná / Las Terrenas", zone: "Interior / Nordeste", local: false, prices: { Normal: 240, Minivan: 280, Luxury: 360 } },
+      { name: "Baní", zone: "Interior / Sur", local: false, prices: { Normal: 85, Minivan: 100, Luxury: 135 } },
+      { name: "Barahona", zone: "Interior / Sur", local: false, prices: { Normal: 195, Minivan: 230, Luxury: 300 } }
+    ];
 
-  <button type="button" class="btn-add-stop" id="addStopBtn" hidden>+ Agregar otra parada</button>
-
-  <div id="hourlyNotice" class="hourly-notice" hidden></div>
-
-  <div id="hrBox" hidden><label for="hrs" id="tHrsLab">Horas (mínimo 2, máximo 7)</label><input type="number" id="hrs" min="2" max="16" step="1" value="2"></div>
-
-  <div id="tripBox" hidden>
-    <label id="tTripLab">Tipo de viaje</label>
-    <div class="row trip-row" id="trip"><button type="button" class="chip on" data-v="1" id="tOneWay">✓ Solo ida</button><button type="button" class="chip" data-v="2" id="tRoundTrip">Ida y vuelta</button></div>
-    <p class="note" id="tripNote"></p>
-  </div>
-
-  <p class="note" id="note"></p>
-
-  <div class="cost">
-    <div id="routeSummary" class="route-summary" hidden></div>
-    <span id="tCostLab">Costo total</span>
-    <strong id="cost">—</strong>
-    <span id="costRtNote" style="margin-top:4px;font-weight:600;color:var(--accent)" hidden></span>
-    <small id="costCardNote" hidden></small>
-  </div>
-
-  <label for="fecha" id="tDateLab">Fecha (opcional)</label>
-  <div class="date-row">
-    <input type="date" id="fecha">
-    <button type="button" class="btn-quick" id="btnToday">Hoy</button>
-    <button type="button" class="btn-quick" id="btnTomorrow">Mañana</button>
-  </div>
-
-  <label id="tPayLab">Método de pago</label>
-  <div class="row" id="pay"></div>
-  <div class="card-warn" id="cardWarn" hidden></div>
-
-  <label for="codeInp" id="tCodeLab">Código de descuento (opcional)</label>
-  <div class="code-row">
-    <input type="text" id="codeInp" placeholder="Ingresa tu código" autocomplete="off" autocapitalize="off">
-    <button type="button" class="btn-sec" id="applyCode">Aplicar</button>
-  </div>
-  <p class="code-msg" id="codeMsg" hidden></p>
-
-  <div class="actions">
-    <button id="send" disabled>Enviar por WhatsApp</button>
-    <button type="button" id="copyBtn" disabled>Copiar cotización</button>
-    <p class="send-hint" id="sendHint">* Selecciona un destino o servicio para habilitar el envío.</p>
-  </div>
-
-  <div class="info-box">
-    <strong id="tCoordTitle">Coordinación por WhatsApp:</strong>
-    <span id="tCoordBody">Hora de recogida, dirección exacta, número de vuelo y cualquier otro detalle del traslado se coordinan directamente por WhatsApp al enviar tu solicitud.</span>
-  </div>
-
-  <div class="info-box">
-    <strong id="tPayInfoTitle">Métodos de pago aceptados:</strong>
-    <span id="tPayInfoBody">Efectivo, Tarjeta, Cripto, Transferencias (bancos locales y en Estados Unidos) y PayPal.</span>
-  </div>
-</main>
-<script>
-// ====== EDITA AQUÍ ======
-var WA = "18093167406";   // tu WhatsApp con código de país
-var M = "US$";            // moneda
-var CARD_FEE = 0.07;      // 7% recargo por pago con tarjeta
-
-// Tarifa interurbana entre pueblos del interior (por km de carretera estimado)
-var INTERCITY_RATE = { n: 1.00, v: 1.25, l: 1.75 };
-var INTERCITY_MIN  = { n: 30,   v: 40,   l: 55 };
-
-// Códigos promocionales: código -> porcentaje de descuento
-var CODIGOS_DESCUENTO = {
-  "DrRamiro": 20,
-  "10por100to": 10,
-  "Helium": 10
-};
-
-var METODOS_PAGO = [
-  {id:"cash", es:"Efectivo", en:"Cash"},
-  {id:"card", es:"Tarjeta", en:"Card"},
-  {id:"crypto", es:"Cripto", en:"Crypto"},
-  {id:"local", es:"Transf. banco local", en:"Local bank transfer"},
-  {id:"us", es:"Transf. EE. UU.", en:"US bank transfer"},
-  {id:"paypal", es:"PayPal", en:"PayPal"}
-];
-
-// Servicios sin zona. n = normal, v = minivan, l = luxury, xn/xv/xl = hora adicional, h = pide horas (max 7), d = día completo (8h + $15/h extra), rt = ida y vuelta
-var SPECIAL = [
-  {k:"Taxi por hora (2 a 7 horas, dentro de Santo Domingo)",en:"Hourly taxi (2 to 7 hours, within Santo Domingo)",n:40,v:50,l:40,xn:15,xv:20,xl:20,h:1,tags:"por hora horas hourly"},
-  {k:"Taxi mínimo",en:"Minimum fare taxi",n:10,v:15,l:40,tags:"minimo corta distancia short"},
-  {k:"Taxi por día (8 horas dentro de Santo Domingo)",en:"Full-day taxi (8 hours within Santo Domingo)",n:120,v:160,l:240,xd:15,d:1,tags:"dia completo full day 8 horas"},
-  {k:"Aeropuerto Las Américas (AILA / SDQ)",en:"Las Américas Airport (AILA / SDQ)",n:50,v:60,l:100,rt:1,tags:"aeropuerto internacional jose francisco pena gomez santo domingo boca chica airport"},
-  {k:"Aeropuerto El Higüero / La Isabela (JBQ)",en:"El Higüero / La Isabela Airport (JBQ)",n:50,v:60,l:100,rt:1,tags:"aeropuerto internacional dr joaquin balaguer norte santo domingo airport"}
-];
-
-// #Zona|Etiqueta del campo|texto de aclaración.
-// Destino|Normal|Minivan|Luxury|Tipo
-// Tipo: L = más de 100 km / +2h (ida y vuelta suma +50% del trayecto largo e incluye espera máxima de 3 horas)
-//       R = menos de 100 km / -2h (ida y vuelta cobra trayecto completo de regreso)
-var RAW = `
-#Ciudad de Santo Domingo|Sector|del sector seleccionado
-Piantini|20|25|40
-Evaristo Morales|20|25|40
-Quisqueya|20|25|40
-Julieta|20|25|40
-Paraíso|20|25|40
-Serrallés|20|25|40
-Naco (hasta la Av. Tiradentes)|15|20|40
-Naco (después de la Av. Tiradentes)|15|20|40
-Gazcue (hasta Av. Independencia y Av. Delgado)|15|20|40
-Hacienda|15|20|40
-DGII|15|20|40
-SIB|15|20|40
-SIS|15|20|40
-Banco Central|15|20|40
-Policía Nacional|20|25|40
-Hotel Barcelona|20|25|40
-Torre Popular (Av. Kennedy)|20|25|40
-Caribe Tours|20|25|40
-Ágora Mall|20|25|40
-Transporte Espinal Platinum|20|25|40
-Los Jardines|20|25|40
-Agricultura|20|25|40
-Sambil|20|25|40
-Los Prados|20|25|40
-Los Praderas|20|25|40
-San Gerónimo|20|25|40
-Corripio (hasta parada Km. 9 Autopista Duarte)|20|25|40
-MOPC|20|25|40
-Salud Pública|20|25|40
-Plaza de la Salud|20|25|40
-Estadio Quisqueya|20|25|40
-Villa Juana|20|25|40
-Villa Agrícola|20|25|40
-Villa Consuelo|20|25|40
-Villa Francisca|20|25|40
-Cristo Rey|20|25|40
-Ens. Espaillat|20|25|40
-V-Centenario|20|25|40
-Av. Duarte|20|25|40
-Av. Mella|20|25|40
-Pueblo San Isidro|45|60|70
-Manoguayabo, Ciudad|35|40|50
-Zona Colonial|25|30|40
-Hoteles Malecón|25|30|40
-Palacio Presidencial|25|30|40
-Jardín Botánico|25|30|40
-Zoológico Nacional|25|30|40
-Arroyo Hondo I|15|20|40
-Diamond Mall|15|20|40
-Ikea|15|20|40
-Galería 360|15|20|40
-DHL|15|20|40
-Supermercado Nacional (Arroyo Hondo)|20|25|40
-Cuesta Hermosa I-II-III|25|30|50
-Villa Isabel|25|30|40
-Embajada Americana|25|30|50
-Arroyo Hondo II|25|30|50
-Puerta de Hierro|30|35|50
-Arroyo Manzano|30|35|50
-Las Praderas|30|35|40
-Bella Vista|30|35|40
-Downtown Center|30|35|40
-Mirador Sur|30|35|40
-El Millón|30|35|40
-Manganagua|30|35|40
-Mesón de la Cava|20|25|40
-Parque Mirador|20|25|40
-Ministerio de Defensa y oficinas gubernamentales (27 con Av. Luperón)|20|25|40
-Los Cacicazgos|20|25|40
-Hotel Dominican Fiesta|20|25|40
-Ministerio de Turismo|20|25|40
-Ministerio de Medio Ambiente|20|25|40
-Transporte del Metro|20|25|40
-Plaza Luperón|20|25|40
-Country Club|20|25|50
-Centro de los Héroes|20|25|40
-Congreso|20|25|40
-Lotería|20|25|40
-Banco de Reservas|20|25|40
-Coca Cola|20|25|40
-Dirección de Pasaportes|20|25|40
-Instituto Postal Dominicano (INPOSDOM)|20|25|40
-Honduras|25|30|40
-Cervecería|25|30|40
-Metaldom|25|30|40
-Universidad del Caribe|25|30|40
-Casa España|25|30|40
-Av. Independencia (hasta Av. Luperón)|25|30|40
-#Zonas Francas|Zona franca|de la zona franca seleccionada
-Zona Franca de San Isidro|35|40|70
-Zona Franca de Hainamosa y zonas aledañas|35|40|70
-Zona Franca de Los Alcarrizos|40|50|70
-Zona Franca de Haina, Refinería de Petróleo, Nigua|50|60|80
-Zona Franca de Villa Mella, Buena Vista|35|40|70
-Zona Franca La Isabela, El Polvorín|30|35|60
-Zona Franca de Las Américas, Cartones del Caribe, Ladom|40|45|70
-Parque Industrial Duarte Km. 23|40|50|70
-Zona Franca Hato Nuevo|45|50|70
-Zona Industrial de Herrera|25|30|50
-#Santo Domingo Este|Sector|del sector seleccionado
-Ens. Ozama|30|35|50
-Alma Rosa|30|35|50
-Los Mina|30|35|50
-Megacentro|30|35|50
-Lucerna|30|35|50
-Faro a Colón|30|35|50
-Acuario Nacional|30|35|50
-Parque Los Tres Ojos|30|35|50
-La Isabelita|30|35|50
-Pueblo de San Isidro|45|60|70
-Los Frailes I y II|30|35|60
-Hipódromo V-Centenario|35|40|70
-#Santo Domingo Norte|Sector|del sector seleccionado
-Villa Mella Pueblo|35|40|60
-La Victoria|50|60|80
-Sabana Perdida (antes de la Charles)|30|35|60
-Sabana Perdida (después de la Charles)|35|40|60
-Urb. Buena Vista|25|30|60
-Urb. Máximo Gómez|25|30|60
-El Primaveral|30|35|60
-El Edén|30|35|60
-#Santo Domingo Oeste|Sector|del sector seleccionado
-Herrera|20|25|50
-Las Palmas|20|25|50
-Carrefour|20|25|50
-Tricom|20|25|50
-Banco Promerica|20|25|50
-La Sirena|20|25|60
-Alameda|20|25|50
-Km 13 Autopista Duarte|20|25|50
-Las Caobas|25|30|50
-Cristo Redentor|25|30|50
-Los Girasoles|25|30|50
-Pantoja|30|35|50
-Los Alcarrizos|30|35|50
-Olé|30|35|50
-Cerinca|30|35|50
-Pedro Brand|55|70|100
-#Puertos|Puerto|del puerto seleccionado
-Puerto Turístico Don Diego|25|30|40|R
-Puerto Turístico San Souci|25|30|50|R
-Puerto de Haina Oriental|35|40|50|R
-Puerto de Haina Occidental|45|50|60|R
-#Región Este|Municipio|del municipio seleccionado
-Boca Chica|60|70|110|R
-Juan Dolio|80|90|125|R
-San Pedro de Macorís|100|120|150|R
-La Romana|140|160|225|L
-Bayahibe|160|170|250|L
-Higüey|170|185|260|L
-Punta Cana / Cap Cana / Aeropuerto|230|250|350|L
-Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito|250|270|350|L
-Miches|215|230|350|L
-El Seibo|150|170|220|L
-Hato Mayor|130|145|200|L
-Sabana de la Mar|210|230|300|L
-Guerra|60|75|120|R
-Bayaguana|100|115|170|R
-Yamasá|100|120|170|R
-Monte Plata|120|135|170|R
-#Región Noroeste / Norte|Municipio|del municipio seleccionado
-Puerto Plata|250|270|350|L
-Sosúa|260|280|350|L
-Cabarete|270|290|350|L
-Samaná (ciudad)|240|260|350|L
-Samaná, Las Galeras|270|290|370|L
-Las Terrenas|250|270|350|L
-Río San Juan (por Nagua)|240|260|350|L
-Río San Juan (por Puerto Plata)|275|290|350|L
-Cabrera|240|260|350|L
-Nagua|200|220|300|L
-Luperón|265|285|370|L
-Restauración|345|365|450|L
-Monción|250|270|350|L
-Monte Cristi|300|350|400|L
-Dajabón|330|350|450|L
-#Región Cibao Central|Municipio|del municipio seleccionado
-Jarabacoa|180|200|250|L
-La Vega|150|170|220|L
-Bonao|125|145|180|R
-San Francisco de Macorís|160|180|220|L
-Rosario Dominicana|130|140|220|R
-Villa Altagracia|70|85|130|R
-Mao Valverde|250|270|350|L
-Santiago Rodríguez|270|290|380|L
-Santiago de los Caballeros|180|200|250|L
-San José de las Matas|230|245|350|L
-Moca|160|170|220|L
-Cotuí|130|150|200|L
-Constanza|230|250|330|L
-#Región Sur|Municipio|del municipio seleccionado
-San Cristóbal|60|80|100|R
-Cambita, San Cristóbal|70|90|130|R
-Nizao|90|110|150|R
-Baní|100|120|180|R
-Salinas de Baní|120|140|200|R
-Ocoa|130|150|220|R
-Palmar de Ocoa|130|150|160|R
-Zona Franca de Baní|110|130|170|R
-Azua|140|160|220|L
-Puerto Viejo, Azua|160|180|250|L
-San Juan de la Maguana|240|260|350|L
-Barahona|240|240|320|L
-Jimaní|350|370|450|L
-Playa San Rafael, Barahona|250|270|350|L
-Enriquillo|260|280|350|L
-Oviedo|300|320|350|L
-Pedernales|380|400|420|L
-Elías Piña|300|320|380|L
-Playa Palenque|100|120|170|R
-Toma de San Cristóbal|70|90|150|R
-Las Matas de Farfán|260|280|350|L
-Neiba|250|270|330|L
-`;
-
-// Coordenadas [lat, lon] para cálculo de distancia por carretera entre pueblos del interior
-var COORDS = {
-  "Santo Domingo / Hotel":[18.4719,-69.9369],
-  "Boca Chica":[18.4500,-69.6067],"Juan Dolio":[18.4264,-69.4189],"San Pedro de Macorís":[18.4539,-69.3086],
-  "La Romana":[18.4273,-68.9728],"Bayahibe":[18.3744,-68.8397],"Higüey":[18.6150,-68.7078],
-  "Punta Cana / Cap Cana / Aeropuerto":[18.5674,-68.3634],"Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito":[18.6819,-68.4556],
-  "Miches":[18.9836,-69.0476],"El Seibo":[18.7656,-69.0389],"Hato Mayor":[18.7628,-69.2568],
-  "Sabana de la Mar":[19.0544,-69.3883],"Guerra":[18.5550,-69.7014],"Bayaguana":[18.7503,-69.6353],
-  "Yamasá":[18.7732,-70.0258],"Monte Plata":[18.8070,-69.7840],
-  "Puerto Plata":[19.7934,-70.6884],"Sosúa":[19.7522,-70.5197],"Cabarete":[19.7498,-70.4083],
-  "Samaná (ciudad)":[19.2056,-69.3369],"Samaná, Las Galeras":[19.2931,-69.2019],"Las Terrenas":[19.3110,-69.5428],
-  "Río San Juan (por Nagua)":[19.6439,-70.0761],"Río San Juan (por Puerto Plata)":[19.6439,-70.0761],
-  "Cabrera":[19.6426,-69.9049],"Nagua":[19.3832,-69.8474],"Luperón":[19.8913,-70.9620],
-  "Restauración":[19.3153,-71.6924],"Monción":[19.4106,-71.1647],"Monte Cristi":[19.8482,-71.6460],"Dajabón":[19.5488,-71.7083],
-  "Jarabacoa":[19.1168,-70.6359],"La Vega":[19.2221,-70.5296],"Bonao":[18.9369,-70.4092],
-  "San Francisco de Macorís":[19.3009,-70.2526],"Rosario Dominicana":[18.9430,-70.1810],"Villa Altagracia":[18.6730,-70.1710],
-  "Mao Valverde":[19.5519,-71.0781],"Santiago Rodríguez":[19.4713,-71.3413],"Santiago de los Caballeros":[19.4517,-70.6970],
-  "San José de las Matas":[19.3392,-70.9382],"Moca":[19.3935,-70.5260],"Cotuí":[19.0527,-70.1494],"Constanza":[18.9092,-70.7450],
-  "San Cristóbal":[18.4167,-70.1000],"Cambita, San Cristóbal":[18.4622,-70.1939],"Nizao":[18.2469,-70.2105],
-  "Baní":[18.2796,-70.3318],"Salinas de Baní":[18.2089,-70.5478],"Ocoa":[18.5466,-70.5063],
-  "Palmar de Ocoa":[18.2964,-70.5861],"Zona Franca de Baní":[18.2850,-70.3550],"Azua":[18.4532,-70.7349],
-  "Puerto Viejo, Azua":[18.3425,-70.8389],"San Juan de la Maguana":[18.8059,-71.2299],"Barahona":[18.2085,-71.1008],
-  "Jimaní":[18.4917,-71.8502],"Playa San Rafael, Barahona":[18.0289,-71.1369],"Enriquillo":[17.9000,-71.2333],
-  "Oviedo":[17.8014,-71.4010],"Pedernales":[18.0384,-71.7440],"Elías Piña":[18.8775,-71.7044],
-  "Playa Palenque":[18.2356,-70.1489],"Toma de San Cristóbal":[18.4550,-70.1300],"Las Matas de Farfán":[18.8731,-71.5166],
-  "Neiba":[18.4814,-71.4197]
-};
-
-// Overrides de distancia real por carretera (km) para tramos separados por bahías o cordilleras
-var ROAD_OVERRIDES = {
-  "Sabana de la Mar|Samaná (ciudad)": 155,
-  "Sabana de la Mar|Samaná, Las Galeras": 182,
-  "Sabana de la Mar|Las Terrenas": 145,
-  "Miches|Samaná (ciudad)": 195,
-  "Miches|Samaná, Las Galeras": 222,
-  "Miches|Las Terrenas": 185,
-  "Constanza|Jarabacoa": 52,
-  "Constanza|Ocoa": 68,
-  "Constanza|Bonao": 65,
-  "Jarabacoa|La Vega": 28,
-  "Jarabacoa|Santiago de los Caballeros": 58,
-  "La Vega|Santiago de los Caballeros": 36,
-  "Samaná (ciudad)|Hato Mayor": 215,
-  "Samaná (ciudad)|El Seibo": 235,
-  "Samaná (ciudad)|San Pedro de Macorís": 195,
-  "Samaná (ciudad)|La Romana": 230,
-  "Samaná (ciudad)|Bayahibe": 250,
-  "Samaná (ciudad)|Higüey": 265,
-  "Samaná (ciudad)|Punta Cana / Cap Cana / Aeropuerto": 310,
-  "Samaná (ciudad)|Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito": 325,
-  "Samaná, Las Galeras|Hato Mayor": 242,
-  "Samaná, Las Galeras|El Seibo": 262,
-  "Samaná, Las Galeras|San Pedro de Macorís": 222,
-  "Samaná, Las Galeras|La Romana": 257,
-  "Samaná, Las Galeras|Higüey": 292,
-  "Las Terrenas|Hato Mayor": 205,
-  "Las Terrenas|El Seibo": 225,
-  "Las Terrenas|San Pedro de Macorís": 185,
-  "Puerto Plata|San Francisco de Macorís": 125,
-  "Sosúa|La Vega": 115,
-  "Cabarete|La Vega": 125,
-  "Cabarete|San Francisco de Macorís": 115,
-  "Cabrera|San Francisco de Macorís": 110
-};
-// ========================
-
-var LOCAL_ZONES = {
-  "Ciudad de Santo Domingo": 1,
-  "Zonas Francas": 1,
-  "Santo Domingo Este": 1,
-  "Santo Domingo Norte": 1,
-  "Santo Domingo Oeste": 1,
-  "Puertos": 1
-};
-
-var DEST_EN = {
-  "Agricultura": "Agriculture Ministry (Agricultura)",
-  "Av. Duarte": "Duarte Ave.",
-  "Av. Independencia (hasta Av. Luperón)": "Independencia Ave. (up to Luperón Ave.)",
-  "Av. Mella": "Mella Ave.",
-  "Banco Central": "Central Bank (Banco Central)",
-  "Banco de Reservas": "Banreservas (Banco de Reservas)",
-  "Centro de los Héroes": "Centro de los Héroes (Government Center)",
-  "Cervecería": "Cervecería (National Brewery)",
-  "Congreso": "National Congress (Congreso)",
-  "Corripio (hasta parada Km. 9 Autopista Duarte)": "Corripio (up to Km. 9 Duarte Hwy. stop)",
-  "Dirección de Pasaportes": "Passport Office (Dirección de Pasaportes)",
-  "Embajada Americana": "U.S. Embassy (Embajada Americana)",
-  "Estadio Quisqueya": "Quisqueya Stadium",
-  "Gazcue (hasta Av. Independencia y Av. Delgado)": "Gazcue (up to Independencia & Delgado Ave.)",
-  "Hacienda": "Ministry of Finance (Hacienda)",
-  "Hoteles Malecón": "Malecón Hotels",
-  "Instituto Postal Dominicano (INPOSDOM)": "Dominican Postal Institute (INPOSDOM)",
-  "Jardín Botánico": "National Botanical Garden",
-  "Lotería": "National Lottery (Lotería)",
-  "Manoguayabo, Ciudad": "Manoguayabo City",
-  "Ministerio de Defensa y oficinas gubernamentales (27 con Av. Luperón)": "Ministry of Defense & Gov. Offices (27 de Febrero & Luperón)",
-  "Ministerio de Medio Ambiente": "Ministry of Environment",
-  "Ministerio de Turismo": "Ministry of Tourism",
-  "Naco (después de la Av. Tiradentes)": "Naco (past Tiradentes Ave.)",
-  "Naco (hasta la Av. Tiradentes)": "Naco (up to Tiradentes Ave.)",
-  "Palacio Presidencial": "Presidential Palace",
-  "Parque Mirador": "Mirador Park",
-  "Plaza de la Salud": "Plaza de la Salud Hospital",
-  "Policía Nacional": "National Police HQ",
-  "Pueblo San Isidro": "San Isidro Town",
-  "Salud Pública": "Ministry of Public Health",
-  "Supermercado Nacional (Arroyo Hondo)": "Nacional Supermarket (Arroyo Hondo)",
-  "Torre Popular (Av. Kennedy)": "Torre Popular (Kennedy Ave.)",
-  "Transporte del Metro": "Metro Bus Terminal",
-  "Universidad del Caribe": "UNICARIBE University",
-  "Zona Colonial": "Colonial Zone (Zona Colonial)",
-  "Zoológico Nacional": "National Zoo",
-  "Zona Franca de San Isidro": "San Isidro Free Zone",
-  "Zona Franca de Hainamosa y zonas aledañas": "Hainamosa Free Zone & surrounding areas",
-  "Zona Franca de Los Alcarrizos": "Los Alcarrizos Free Zone",
-  "Zona Franca de Haina, Refinería de Petróleo, Nigua": "Haina Free Zone, Oil Refinery, Nigua",
-  "Zona Franca de Villa Mella, Buena Vista": "Villa Mella Free Zone, Buena Vista",
-  "Zona Franca La Isabela, El Polvorín": "La Isabela Free Zone, El Polvorín",
-  "Zona Franca de Las Américas, Cartones del Caribe, Ladom": "Las Américas Free Zone, Cartones del Caribe, Ladom",
-  "Parque Industrial Duarte Km. 23": "Duarte Industrial Park Km. 23",
-  "Zona Franca Hato Nuevo": "Hato Nuevo Free Zone",
-  "Zona Industrial de Herrera": "Herrera Industrial Zone",
-  "Acuario Nacional": "National Aquarium",
-  "Faro a Colón": "Columbus Lighthouse (Faro a Colón)",
-  "Hipódromo V-Centenario": "V Centenario Racetrack",
-  "Parque Los Tres Ojos": "Los Tres Ojos National Park",
-  "Pueblo de San Isidro": "San Isidro Town",
-  "Sabana Perdida (antes de la Charles)": "Sabana Perdida (before Charles de Gaulle Ave.)",
-  "Sabana Perdida (después de la Charles)": "Sabana Perdida (past Charles de Gaulle Ave.)",
-  "Villa Mella Pueblo": "Villa Mella Town",
-  "Km 13 Autopista Duarte": "Km. 13 Duarte Highway",
-  "Puerto Turístico Don Diego": "Don Diego Cruise Terminal",
-  "Puerto Turístico San Souci": "Sans Souci Cruise Terminal",
-  "Puerto de Haina Oriental": "Haina Oriental Port",
-  "Puerto de Haina Occidental": "Haina Occidental Port",
-  "Punta Cana / Cap Cana / Aeropuerto": "Punta Cana / Cap Cana / Airport (PUJ)",
-  "Bávaro, Uvero Alto, Macao, Friusa, Playa de Cortecito": "Bávaro, Uvero Alto, Macao, Friusa, Cortecito Beach",
-  "Samaná (ciudad)": "Samaná (city)",
-  "Río San Juan (por Nagua)": "Río San Juan (via Nagua)",
-  "Río San Juan (por Puerto Plata)": "Río San Juan (via Puerto Plata)",
-  "Zona Franca de Baní": "Baní Free Zone",
-  "Playa San Rafael, Barahona": "San Rafael Beach, Barahona",
-  "Playa Palenque": "Palenque Beach"
-};
-
-var ZONE_TR = {
-  "Ciudad de Santo Domingo": {en:"Santo Domingo City", lab:"Sector", note:"within the selected sector"},
-  "Zonas Francas": {en:"Free Zones", lab:"Free zone", note:"within the selected free zone"},
-  "Santo Domingo Este": {en:"Santo Domingo East", lab:"Sector", note:"within the selected sector"},
-  "Santo Domingo Norte": {en:"Santo Domingo North", lab:"Sector", note:"within the selected sector"},
-  "Santo Domingo Oeste": {en:"Santo Domingo West", lab:"Sector", note:"within the selected sector"},
-  "Puertos": {en:"Ports", lab:"Port", note:"within the selected port"},
-  "Región Este": {en:"East Region", lab:"Municipality", note:"within the selected municipality"},
-  "Región Noroeste / Norte": {en:"Northwest / North Region", lab:"Municipality", note:"within the selected municipality"},
-  "Región Cibao Central": {en:"Central Cibao Region", lab:"Municipality", note:"within the selected municipality"},
-  "Región Sur": {en:"South Region", lab:"Municipality", note:"within the selected municipality"}
-};
-
-var FREQUENT_DESTS = [
-  "Aeropuerto Las Américas (AILA / SDQ)",
-  "Punta Cana / Cap Cana / Aeropuerto",
-  "Santiago de los Caballeros",
-  "La Romana",
-  "Puerto Plata"
-];
-
-var UI = {
-  es: {
-    langBtn: "EN",
-    multiOff: "+ Varios destinos",
-    multiOn: "✓ Varios destinos",
-    title: "Solicitar transporte",
-    sub: "Calcula tu tarifa y envía tu solicitud. Todos los demás detalles se coordinan por WhatsApp.",
-    vehLab: "Vehículo",
-    originLab: "¿Desde dónde sales?",
-    originDefault: "Santo Domingo / Hotel",
-    originFixedBadge: "Salida habitual",
-    originCustomBadge: "Provincia",
-    changeOriginBtn: "Cambiar provincia de salida",
-    resetOriginBtn: "Volver a Santo Domingo",
-    originDefaultOpt: "Santo Domingo / Hotel (salida habitual)",
-    swapTitle: "Invertir salida y destino",
-    sameOriginTag: " (origen actual)",
-    stopsTitle: "Itinerario seleccionado",
-    clearStops: "Limpiar ruta",
-    addStop: "+ Agregar otra parada",
-    addNextStop: "+ Agregar parada siguiente",
-    hourlyMultiWarn: "Varias paradas dentro de Santo Domingo se cobran como servicio por hora (2 a 7 h) o día completo (8 h o más) dentro de Santo Domingo.",
-    switchedFullDayWarn: "A partir de 8 horas aplica automáticamente la tarifa de Taxi por día (incluye 8 horas dentro de Santo Domingo; cada hora adicional cuesta US$ 15.00).",
-    fullDayInfoNote: "Incluye 8 horas dentro de la ciudad de Santo Domingo. Cada hora adicional tiene un costo de US$ 15.00.",
-    intercityTag: function(km){ return "Tramo interurbano (~" + km + " km por carretera)"; },
-    localRegularTag: "Tarifa regular en Santo Domingo",
-    newInteriorTripTag: "Nuevo viaje regular desde Santo Domingo",
-    closeInteriorSub: function(fromName, pctLabel, backStr, regStr){
-      return "Regreso desde " + fromName + " (" + pctLabel + ": " + backStr + ") + Tarifa regular (" + regStr + ")";
-    },
-    searchLab: "¿Para dónde vas?",
-    searchLabMore: "¿Cuál es la siguiente parada?",
-    searchPh: "Sector, municipio o aeropuerto…",
-    zoneLab: "O elige tu destino por zona",
-    zoneLabMore: "O elige la siguiente parada por zona",
-    selectPh: "Selecciona…",
-    freqGroup: "⭐ Destinos frecuentes",
-    specialGroup: "Aeropuertos y servicios",
-    zoneGroup: "Zonas",
-    hrsLabHourly: "Horas (mínimo 2, máximo 7)",
-    hrsLabFullDay: "Horas totales (mínimo 8)",
-    tripLab: "Tipo de viaje",
-    oneWay: "Solo ida",
-    roundTrip: "Ida y vuelta",
-    halfRtNote: "Ida y vuelta (servicio de US$ 100 o más): suma el 50% adicional para el regreso e incluye espera máxima de 3 horas; después de ese tiempo se cobrará espera adicional.",
-    fullRtNote: "Ida y vuelta (servicio menor a US$ 100): se cobra el 100% del trayecto de regreso.",
-    ratePrefix: "La tarifa aplica a cualquier punto dentro ",
-    costLab: "Costo total",
-    sumSingle: function(tripTxt, orig, dest){
-      return "Viaje <strong>" + tripTxt + "</strong>: <strong>" + orig + "</strong> → <strong>" + dest + "</strong>";
-    },
-    sumMulti: function(count, pathStr){
-      return "Itinerario (<strong>" + count + " paradas</strong>): " + pathStr;
-    },
-    dateLab: "Fecha (opcional)",
-    todayBtn: "Hoy",
-    tomorrowBtn: "Mañana",
-    payLab: "Método de pago",
-    cardWarnEmpty: "El pago con tarjeta tiene un cargo adicional del 7% por procesamiento.",
-    cardWarnDetail: function(sub, fee, tot){
-      return "Cargo por pago con tarjeta (+7%): +" + fee + " sobre " + sub + " (Total: " + tot + ").";
-    },
-    costCardSub: function(fee){ return "Incluye +" + fee + " (7% cargo por tarjeta)"; },
-    codeLab: "Código de descuento (opcional)",
-    codePh: "Ingresa tu código",
-    applyBtn: "Aplicar",
-    codeOk: function(c, p){ return 'Código "' + c + '" aplicado: ' + p + '% de descuento.'; },
-    codeErr: "Código no válido.",
-    sendBtn: "Enviar por WhatsApp",
-    copyBtn: "Copiar cotización",
-    copiedBtn: "✓ ¡Cotización copiada!",
-    sendHint: "* Selecciona un destino o servicio para habilitar el envío.",
-    coordTitle: "Coordinación por WhatsApp:",
-    coordBody: "Hora de recogida, dirección exacta, número de vuelo y cualquier otro detalle del traslado se coordinan directamente por WhatsApp al enviar tu solicitud.",
-    payInfoTitle: "Métodos de pago aceptados:",
-    payInfoBody: "Efectivo, Tarjeta, Cripto, Transferencias (bancos locales y en Estados Unidos) y PayPal.",
-    waIntro: "Hola, quiero solicitar un servicio de transporte.",
-    waVeh: "Vehículo",
-    waOrigin: "Salida",
-    waZone: "Zona",
-    waService: "Servicio",
-    waRoute: "Itinerario",
-    waReturnLeg: function(orig){ return "Regreso a " + orig; },
-    waTrip: "Viaje",
-    waDate: "Fecha",
-    waPay: "Método de pago",
-    waOrig: "Monto sin descuento",
-    waCode: "Código aplicado",
-    waDiscAmt: "Subtotal con descuento",
-    waCardFee: "Cargo por pago con tarjeta (7%)",
-    waAmt: "Total a pagar",
-    hoursWord: "horas",
-    fullDayLabel: "Taxi por día (8 horas dentro de Santo Domingo)",
-    fullDayExtraHours: function(extra){ return "8 horas base + " + extra + " h adicional(es) a US$ 15/h"; },
-    rtHalfExtra: "Ida y vuelta (+50% en servicio de US$ 100 o más, incluye espera máxima de 3 horas; tiempo adicional conlleva cargo por espera)",
-    rtFullExtra: "Ida y vuelta (100% de regreso en servicio menor a US$ 100)",
-    owExtra: "Solo ida",
-    rtBreakdownHalf: function(go, ret){ return "Ida: " + go + " + Regreso (50%): " + ret; },
-    rtBreakdownFull: function(go, ret){ return "Ida: " + go + " + Regreso (100%): " + ret; }
-  },
-  en: {
-    langBtn: "ES",
-    multiOff: "+ Multi-stop",
-    multiOn: "✓ Multi-stop",
-    title: "Request Transportation",
-    sub: "Calculate your rate and send your request. All other details are coordinated via WhatsApp.",
-    vehLab: "Vehicle",
-    originLab: "Where are you departing from?",
-    originDefault: "Santo Domingo / Hotel",
-    originFixedBadge: "Regular pickup",
-    originCustomBadge: "Province",
-    changeOriginBtn: "Change pickup province",
-    resetOriginBtn: "Back to Santo Domingo",
-    originDefaultOpt: "Santo Domingo / Hotel (regular pickup)",
-    swapTitle: "Swap origin and destination",
-    sameOriginTag: " (current origin)",
-    stopsTitle: "Selected itinerary",
-    clearStops: "Clear route",
-    addStop: "+ Add another stop",
-    addNextStop: "+ Add next stop",
-    hourlyMultiWarn: "Multiple stops within Santo Domingo are billed as hourly service (2–7 hrs) or full-day service (8+ hrs) within Santo Domingo.",
-    switchedFullDayWarn: "From 8 hours onward, the Full-Day Taxi rate applies automatically (includes 8 hours within Santo Domingo; each extra hour is US$ 15.00).",
-    fullDayInfoNote: "Includes 8 hours within Santo Domingo city. Each additional hour is US$ 15.00.",
-    intercityTag: function(km){ return "Intercity leg (~" + km + " km by road)"; },
-    localRegularTag: "Regular Santo Domingo rate",
-    newInteriorTripTag: "New regular trip from Santo Domingo",
-    closeInteriorSub: function(fromName, pctLabel, backStr, regStr){
-      return "Return from " + fromName + " (" + pctLabel + ": " + backStr + ") + Regular rate (" + regStr + ")";
-    },
-    searchLab: "Where are you going?",
-    searchLabMore: "What is the next stop?",
-    searchPh: "Neighborhood, town, or airport…",
-    zoneLab: "Or choose destination by zone",
-    zoneLabMore: "Or choose next stop by zone",
-    selectPh: "Select…",
-    freqGroup: "⭐ Popular destinations",
-    specialGroup: "Airports & hourly services",
-    zoneGroup: "Zones",
-    hrsLabHourly: "Hours (minimum 2, maximum 7)",
-    hrsLabFullDay: "Total hours (minimum 8)",
-    tripLab: "Trip type",
-    oneWay: "One way",
-    roundTrip: "Round trip",
-    halfRtNote: "Round trip (service of US$ 100 or more): adds 50% for the return trip and includes a 3-hour max wait; additional waiting time is charged afterward.",
-    fullRtNote: "Round trip (service under US$ 100): full return fare (100%) applies.",
-    ratePrefix: "Rate applies to any point ",
-    costLab: "Total Cost",
-    sumSingle: function(tripTxt, orig, dest){
-      return "<strong>" + tripTxt + "</strong> trip: <strong>" + orig + "</strong> → <strong>" + dest + "</strong>";
-    },
-    sumMulti: function(count, pathStr){
-      return "Itinerary (<strong>" + count + " stops</strong>): " + pathStr;
-    },
-    dateLab: "Date (optional)",
-    todayBtn: "Today",
-    tomorrowBtn: "Tomorrow",
-    payLab: "Payment method",
-    cardWarnEmpty: "Card payments include an additional 7% processing fee.",
-    cardWarnDetail: function(sub, fee, tot){
-      return "Card processing fee (+7%): +" + fee + " on " + sub + " (Total: " + tot + ").";
-    },
-    costCardSub: function(fee){ return "Includes +" + fee + " (7% card processing fee)"; },
-    codeLab: "Promo code (optional)",
-    codePh: "Enter your code",
-    applyBtn: "Apply",
-    codeOk: function(c, p){ return 'Code "' + c + '" applied: ' + p + '% discount.'; },
-    codeErr: "Invalid promo code.",
-    sendBtn: "Send via WhatsApp",
-    copyBtn: "Copy quote",
-    copiedBtn: "✓ Quote copied!",
-    sendHint: "* Select a destination or service to enable sending.",
-    coordTitle: "WhatsApp Coordination:",
-    coordBody: "Pickup time, exact address, flight number, and any other trip details are coordinated directly via WhatsApp once you send your request.",
-    payInfoTitle: "Accepted payment methods:",
-    payInfoBody: "Cash, Card, Crypto, Bank Transfers (local Dominican banks & US banks), and PayPal.",
-    waIntro: "Hello, I would like to request a transportation service.",
-    waVeh: "Vehicle",
-    waOrigin: "Origin",
-    waZone: "Zone",
-    waService: "Service",
-    waRoute: "Itinerary",
-    waReturnLeg: function(orig){ return "Return to " + orig; },
-    waTrip: "Trip",
-    waDate: "Date",
-    waPay: "Payment method",
-    waOrig: "Original amount",
-    waCode: "Promo code",
-    waDiscAmt: "Discounted subtotal",
-    waCardFee: "Card processing fee (7%)",
-    waAmt: "Total to pay",
-    hoursWord: "hours",
-    fullDayLabel: "Full-day taxi (8 hours within Santo Domingo)",
-    fullDayExtraHours: function(extra){ return "8 base hours + " + extra + " extra hr(s) at US$ 15/hr"; },
-    rtHalfExtra: "Round trip (+50% on service of US$ 100 or more, includes 3-hour max wait; extra waiting time incurs additional charge)",
-    rtFullExtra: "Round trip (100% return fare on service under US$ 100)",
-    owExtra: "One way",
-    rtBreakdownHalf: function(go, ret){ return "Outbound: " + go + " + Return (50%): " + ret; },
-    rtBreakdownFull: function(go, ret){ return "Outbound: " + go + " + Return (100%): " + ret; }
-  }
-};
-
-var Z = [];
-var PROVINCE_MAP = {};
-RAW.split("\n").forEach(function(l){
-  l = l.trim(); if(!l) return;
-  if(l[0]=="#"){ var p=l.slice(1).split("|"); Z.push({n:p[0],lab:p[1],note:p[2],d:[]}); }
-  else {
-    var q=l.split("|");
-    var rtType = q[4]=="L" ? "L" : (q[4]=="R" ? "R" : "");
-    var item = {n:q[0],nPrice:+q[1],vPrice:+q[2],lPrice:+q[3],rt:rtType};
-    Z[Z.length-1].d.push(item);
-    var curZone = Z[Z.length-1].n;
-    if(!LOCAL_ZONES[curZone]){
-      PROVINCE_MAP[item.n] = {n:item.n, nPrice:item.nPrice, vPrice:item.vPrice, lPrice:item.lPrice, rt:item.rt, zone:curZone, zi:Z.length-1, di:Z[Z.length-1].d.length-1};
-    }
-  }
-});
-
-var $=function(i){return document.getElementById(i)};
-var zs=$("zona"), mun=$("mun"), fecha=$("fecha"), send=$("send"), copyBtn=$("copyBtn"), cost=$("cost"), q=$("q"), qList=$("qList");
-var codeInp=$("codeInp"), codeMsg=$("codeMsg"), cardWarn=$("cardWarn"), costCardNote=$("costCardNote"), sendHint=$("sendHint");
-var btnToday=$("btnToday"), btnTomorrow=$("btnTomorrow"), addStopBtn=$("addStopBtn"), stopsBox=$("stopsBox"), stopsList=$("stopsList"), hourlyNotice=$("hourlyNotice");
-var hrsInp=$("hrs"), routeSummary=$("routeSummary");
-var originSel=$("originSel"), originPicker=$("originPicker"), toggleOriginBtn=$("toggleOriginBtn"), originText=$("originText"), originBadge=$("originBadge");
-var multiToggleBtn=$("multiToggleBtn"), swapRouteBtn=$("swapRouteBtn");
-var lang="es", veh="n", trip="1", disc=0, appliedCode="", payId=METODOS_PAGO[0].id;
-var codeState="none";
-var stops = [];
-var originProvince = ""; // "" = Santo Domingo / Hotel (por defecto)
-var multiMode = false;   // Bloqueado por defecto; se activa con botón superior
-
-var CODES_NORM={};
-Object.keys(CODIGOS_DESCUENTO).forEach(function(k){
-  CODES_NORM[k.trim().toLowerCase()]={code:k.trim(),pct:CODIGOS_DESCUENTO[k]};
-});
-
-function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
-function zName(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].en : z.n; }
-function zLab(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].lab : z.lab; }
-function zNote(z){ return lang=="en" && ZONE_TR[z.n] ? ZONE_TR[z.n].note : z.note; }
-function sName(s){ return lang=="en" && s.en ? s.en : s.k; }
-function dName(n){ return lang=="en" && DEST_EN[n] ? DEST_EN[n] : n; }
-function vehLabel(v){ return v=="n" ? "Normal" : (v=="v" ? "Minivan" : "Luxury"); }
-function payLabel(id){
-  var m=METODOS_PAGO.filter(function(x){return x.id==id;})[0];
-  return m ? m[lang] : id;
-}
-
-function getPrice(obj, v){
-  if(!obj) return 0;
-  var val;
-  if(v=="n") val = (obj.nPrice !== undefined) ? obj.nPrice : (obj.a !== undefined ? obj.a : obj.n);
-  else if(v=="v") val = (obj.vPrice !== undefined) ? obj.vPrice : (obj.b !== undefined ? obj.b : obj.v);
-  else val = (obj.lPrice !== undefined) ? obj.lPrice : obj.l;
-  var num = Number(val);
-  return Number.isFinite(num) ? num : 0;
-}
-function getExtraHrPrice(sObj, v){
-  if(!sObj) return 0;
-  var val = (v=="n") ? sObj.xn : ((v=="v") ? sObj.xv : sObj.xl);
-  var num = Number(val);
-  return Number.isFinite(num) ? num : 0;
-}
-
-var ITEMS=[];
-SPECIAL.forEach(function(s,i){
-  ITEMS.push({t:"s",i:i,s:s,nPrice:s.n,vPrice:s.v,lPrice:s.l,key:norm(s.k+" "+(s.en||"")+" "+(s.tags||""))});
-});
-Z.forEach(function(z,zi){
-  var znEn = ZONE_TR[z.n] ? ZONE_TR[z.n].en : "";
-  z.d.forEach(function(d,di){
-    var dnEn = DEST_EN[d.n] || "";
-    ITEMS.push({t:"z",zi:zi,di:di,dObj:d,z:z,nPrice:d.nPrice,vPrice:d.vPrice,lPrice:d.lPrice,key:norm(d.n+" "+dnEn+" "+z.n+" "+znEn)});
-  });
-});
-
-function buildOriginOptions(){
-  var prev = originSel.value;
-  originSel.innerHTML = "";
-  originSel.add(new Option(UI[lang].originDefaultOpt, ""));
-  Z.forEach(function(z){
-    if(LOCAL_ZONES[z.n]) return;
-    var og = document.createElement("optgroup");
-    og.label = zName(z);
-    z.d.forEach(function(d){
-      og.appendChild(new Option(dName(d.n), d.n));
-    });
-    originSel.appendChild(og);
-  });
-  originSel.value = prev;
-}
-
-function buildZones(){
-  var prev=zs.value;
-  zs.innerHTML="";
-  zs.add(new Option(UI[lang].selectPh,""));
-
-  // Destinos frecuentes arriba para selección rápida
-  var gFreq=document.createElement("optgroup");
-  gFreq.label=UI[lang].freqGroup;
-  FREQUENT_DESTS.forEach(function(fname){
-    if(originProvince && fname === originProvince) return;
-    var sIdx = -1;
-    SPECIAL.forEach(function(s, i){ if(s.k === fname) sIdx = i; });
-    if(sIdx !== -1){
-      gFreq.appendChild(new Option(sName(SPECIAL[sIdx]), "f_s" + sIdx));
-      return;
-    }
-    var pm = PROVINCE_MAP[fname];
-    if(pm){
-      gFreq.appendChild(new Option(dName(fname), "f_z" + pm.zi + "_" + pm.di));
-    }
-  });
-  if(gFreq.children.length > 0) zs.appendChild(gFreq);
-
-  var g1=document.createElement("optgroup"); g1.label=UI[lang].specialGroup;
-  SPECIAL.forEach(function(s,i){ g1.appendChild(new Option(sName(s),"s"+i)); });
-  var g2=document.createElement("optgroup"); g2.label=UI[lang].zoneGroup;
-  Z.forEach(function(z,i){ g2.appendChild(new Option(zName(z),"z"+i)); });
-  zs.appendChild(g1); zs.appendChild(g2);
-  zs.value=prev;
-}
-
-function buildMunOptions(zz, selectedVal){
-  mun.length=0;
-  mun.add(new Option(UI[lang].selectPh,""));
-  zz.d.forEach(function(d,i){
-    var isSameOrigin = (originProvince && d.n === originProvince);
-    var label = dName(d.n) + (isSameOrigin ? UI[lang].sameOriginTag : "");
-    var opt = new Option(label, i);
-    if(isSameOrigin) opt.disabled = true;
-    mun.add(opt);
-  });
-  if(selectedVal !== undefined && selectedVal !== ""){
-    var chosen = zz.d[+selectedVal];
-    if(chosen && originProvince && chosen.n === originProvince){
-      mun.value = "";
-    } else {
-      mun.value = selectedVal;
-    }
-  }
-}
-
-function buildPay(){
-  var box=$("pay");
-  box.innerHTML="";
-  METODOS_PAGO.forEach(function(m){
-    var b=document.createElement("button");
-    b.type="button";
-    b.className="chip sm";
-    b.dataset.v=m.id;
-    b.textContent=m[lang];
-    box.appendChild(b);
-  });
-}
-
-function localISO(offsetDays){
-  var d=new Date(Date.now() + (offsetDays||0)*86400000 - new Date().getTimezoneOffset()*60000);
-  return d.toISOString().slice(0,10);
-}
-
-fecha.min=localISO(0);
-
-btnToday.onclick=function(){ fecha.value=localISO(0); render(); };
-btnTomorrow.onclick=function(){ fecha.value=localISO(1); render(); };
-
-function fmt(n){return M+" "+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function r2(n){var x=Number(n); return Number.isFinite(x) ? Math.round(x*100)/100 : 0;}
-function mark(id,v){[].forEach.call($(id).children,function(b){var on=b.dataset.v==v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);});}
-
-function roadKm(nameA, nameB){
-  if(!nameA || !nameB || nameA === nameB) return 0;
-  var k1 = nameA + "|" + nameB, k2 = nameB + "|" + nameA;
-  if(ROAD_OVERRIDES[k1]) return ROAD_OVERRIDES[k1];
-  if(ROAD_OVERRIDES[k2]) return ROAD_OVERRIDES[k2];
-  var c1 = COORDS[nameA], c2 = COORDS[nameB];
-  if(!c1 || !c2) return 0;
-  var R = 6371, toRad = Math.PI / 180;
-  var dLat = (c2[0] - c1[0]) * toRad;
-  var dLon = (c2[1] - c1[1]) * toRad;
-  var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
-          Math.cos(c1[0]*toRad)*Math.cos(c2[0]*toRad)*Math.sin(dLon/2)*Math.sin(dLon/2);
-  var straight = 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.max(10, Math.round(straight * 1.38));
-}
-
-function originDisplayName(){
-  return originProvince ? dName(originProvince) : UI[lang].originDefault;
-}
-
-// Calcula el tramo desde el origen seleccionado hasta una parada específica
-function legFromOrigin(stopObj){
-  var t = UI[lang];
-  var origProv = originProvince ? PROVINCE_MAP[originProvince] : null;
-
-  // Origen por defecto: Santo Domingo / Hotel
-  if(!origProv){
-    return {
-      price: stopObj.basePrice,
-      supportsRt: !!(stopObj.rt || stopObj.isAirport),
-      sub: ""
+    const PROMO_CODES = {
+      "HELIUM": 0.10,
+      "DRRAMIRO": 0.10,
+      "10POR100TO": 0.10
     };
-  }
 
-  var origBase = getPrice(origProv, veh);
-
-  // Destino dentro de Santo Domingo (sectores, zonas francas, puertos, aeropuertos SDQ/JBQ)
-  // Mismo precio que Santo Domingo -> Provincia de origen
-  if(stopObj.isLocal || stopObj.isAirport){
-    return {
-      price: origBase,
-      supportsRt: true,
-      sub: ""
+    // =========================================================================
+    // ESTADO DE LA APLICACIÓN
+    // =========================================================================
+    let state = {
+      vehicle: "Normal",
+      origin: "Santo Domingo / Hotel",
+      stops: [],
+      payment: "Efectivo",
+      promoCode: ""
     };
-  }
 
-  // Destino es la misma provincia de salida
-  if(stopObj.rawName === origProv.n){
-    return {
-      price: INTERCITY_MIN[veh],
-      supportsRt: true,
-      sub: ""
-    };
-  }
+    // Referencias DOM
+    const vehicleGrid = document.getElementById("vehicleGrid");
+    const originText = document.getElementById("originText");
+    const originBadge = document.getElementById("originBadge");
+    const toggleOriginBtn = document.getElementById("toggleOriginBtn");
+    const originSelectorBox = document.getElementById("originSelectorBox");
+    const originSelect = document.getElementById("originSelect");
 
-  // Provincia de salida -> otra provincia del interior
-  var km = roadKm(origProv.n, stopObj.rawName);
-  if(km > 0){
-    var calcKm = Math.round(km * INTERCITY_RATE[veh]);
-    var p = Math.max(INTERCITY_MIN[veh], calcKm);
-    return {
-      price: p,
-      supportsRt: true,
-      sub: t.intercityTag(km)
-    };
-  }
+    const searchInput = document.getElementById("searchInput");
+    const suggestionsList = document.getElementById("suggestionsList");
+    const toggleZoneBtn = document.getElementById("toggleZoneBtn");
+    const zoneSelectors = document.getElementById("zoneSelectors");
+    const zoneSelect = document.getElementById("zoneSelect");
+    const sectorSelect = document.getElementById("sectorSelect");
+    const destinationHeading = document.getElementById("destinationHeading");
 
-  return {
-    price: stopObj.basePrice,
-    supportsRt: true,
-    sub: ""
-  };
-}
+    const itineraryBox = document.getElementById("itineraryBox");
+    const stopsContainer = document.getElementById("stopsContainer");
+    const clearRouteBtn = document.getElementById("clearRouteBtn");
+    const addStopFocusBtn = document.getElementById("addStopFocusBtn");
 
-function calcHourlyOrDay(h){
-  var t = UI[lang];
-  if(h >= 8){
-    var dayObj = SPECIAL[2]; // Taxi por día (8h)
-    var extra = Math.max(0, h - 8);
-    var amt = getPrice(dayObj, veh) + extra * dayObj.xd;
-    return {
-      isFullDay: true,
-      hours: h,
-      extraHours: extra,
-      amount: amt,
-      label: t.fullDayLabel + (extra > 0 ? " + " + extra + " " + t.hoursWord : ""),
-      subNote: extra > 0 ? t.fullDayExtraHours(extra) : ""
-    };
-  }
-  var hrObj = SPECIAL[0]; // Taxi por hora (2-7h)
-  var clampedH = Math.max(2, Math.min(7, h));
-  var hrAmt = getPrice(hrObj, veh) + (clampedH - 2) * getExtraHrPrice(hrObj, veh);
-  return {
-    isFullDay: false,
-    hours: clampedH,
-    extraHours: 0,
-    amount: hrAmt,
-    label: sName(hrObj).split("(")[0].trim() + " (" + clampedH + " " + t.hoursWord + ")",
-    subNote: ""
-  };
-}
+    const step3 = document.getElementById("step3");
+    const summaryRouteText = document.getElementById("summaryRouteText");
+    const totalAmountText = document.getElementById("totalAmountText");
+    const tripDate = document.getElementById("tripDate");
+    const payGrid = document.getElementById("payGrid");
+    const togglePromoBtn = document.getElementById("togglePromoBtn");
+    const promoBox = document.getElementById("promoBox");
+    const promoInput = document.getElementById("promoInput");
+    const sendWhatsappBtn = document.getElementById("sendWhatsappBtn");
+    const copyQuoteBtn = document.getElementById("copyQuoteBtn");
 
-function currentStopObj(){
-  var z=zs.value; if(!z) return null;
-  var idx=+z.slice(1);
-  if(z[0]=="s") return {t:"s", i:idx};
-  if(z[0]=="z"){
-    if(mun.value==="") return null;
-    var zz = Z[idx];
-    var d = zz ? zz.d[+mun.value] : null;
-    if(!d || (originProvince && d.n === originProvince)) return null;
-    return {t:"z", zi:idx, di:+mun.value};
-  }
-  return null;
-}
-
-function resolveStop(st){
-  if(st.t=="s"){
-    var s = SPECIAL[st.i];
-    return {
-      t: "s",
-      rawName: s.k,
-      name: sName(s),
-      zone: "",
-      isLocal: !s.rt,
-      isAirport: !!s.rt,
-      isIntercity: false,
-      isHourly: !!s.h,
-      isFullDay: !!s.d,
-      basePrice: getPrice(s, veh),
-      rt: s.rt ? "R" : "",
-      sObj: s
-    };
-  }
-  var zz = Z[st.zi], d = zz ? zz.d[st.di] : null;
-  if(!d) return {t:"z", rawName:"", name:"", zone:"", isLocal:true, isAirport:false, isIntercity:false, isHourly:false, isFullDay:false, basePrice:0, rt:"", zz:zz, dObj:null};
-  var isLoc = !!LOCAL_ZONES[zz.n];
-  return {
-    t: "z",
-    rawName: d.n,
-    name: dName(d.n),
-    zone: zName(zz),
-    isLocal: isLoc,
-    isAirport: false,
-    isIntercity: !isLoc,
-    isHourly: false,
-    isFullDay: false,
-    basePrice: getPrice(d, veh),
-    rt: d.rt || "",
-    zz: zz,
-    dObj: d
-  };
-}
-
-function getEffectiveStops(){
-  var list = multiMode ? stops.slice() : [];
-  var cur = currentStopObj();
-  if(cur) list.push(cur);
-  return list;
-}
-
-function evaluateRoute(){
-  var t = UI[lang];
-  var eff = getEffectiveStops();
-  if(!eff.length) return null;
-
-  var resolved = eff.map(resolveStop);
-  var rawH = Math.floor(+hrsInp.value) || 2;
-  var hasCustomOrigin = !!originProvince;
-
-  // Caso 1: 1 solo destino/servicio
-  if(resolved.length === 1){
-    var one = resolved[0];
-    if(one.isHourly || one.isFullDay){
-      var minAllowed = one.isFullDay ? 8 : 2;
-      var effH = Math.max(minAllowed, rawH);
-      var hd = calcHourlyOrDay(effH);
-      return {
-        mode: "single",
-        items: [{name: hd.label, zone: "", price: hd.amount, sub: hd.subNote}],
-        subtotal: hd.amount,
-        rtMode: "",
-        extra: "",
-        hourlyMulti: false,
-        showHours: true,
-        hoursMode: hd.isFullDay ? "fullday" : "hourly",
-        autoSwitchedFullDay: (one.isHourly && effH >= 8),
-        isFullDayService: hd.isFullDay
-      };
+    // Inicializar zonas
+    function initZones() {
+      const zones = [...new Set(DESTINATIONS.map(d => d.zone))];
+      zones.forEach(z => {
+        const opt = document.createElement("option");
+        opt.value = z;
+        opt.textContent = z;
+        zoneSelect.appendChild(opt);
+      });
     }
 
-    var firstLeg = legFromOrigin(one);
-    var oneWayAmt = firstLeg.price;
-    var supportsRt = !!firstLeg.supportsRt;
-    // Nueva regla: servicios de US$ 100 o más -> 50% regreso; menores a US$ 100 -> 100% regreso
-    var isHalfReturn = (oneWayAmt >= 100);
-    var rtMode = supportsRt ? (isHalfReturn ? "HALF" : "FULL") : "";
-    var amt = oneWayAmt;
-    var retAmtSingle = 0;
-    var ex = "";
-    var rtBreakdown = "";
+    // Cálculo de tarifas por parada
+    function calculateStops() {
+      let inProvince = false;
+      let lastProvinceBase = 0;
+      let lastProvinceName = "";
 
-    if(supportsRt){
-      if(trip === "2"){
-        retAmtSingle = isHalfReturn ? r2(oneWayAmt * 0.5) : r2(oneWayAmt);
-        amt = r2(oneWayAmt + retAmtSingle);
-        ex = isHalfReturn ? t.rtHalfExtra : t.rtFullExtra;
-        rtBreakdown = isHalfReturn ? t.rtBreakdownHalf(fmt(oneWayAmt), fmt(retAmtSingle)) : t.rtBreakdownFull(fmt(oneWayAmt), fmt(retAmtSingle));
-      } else {
-        ex = t.owExtra;
-      }
-    }
+      return state.stops.map((dest, idx) => {
+        const basePrice = dest.prices[state.vehicle];
+        let legPrice = basePrice;
+        let detail = "";
 
-    return {
-      mode: "single",
-      items: [{name: one.name, zone: one.zone, price: amt, sub: firstLeg.sub}],
-      oneWayAmt: oneWayAmt,
-      returnAmt: retAmtSingle,
-      rtBreakdown: rtBreakdown,
-      subtotal: amt,
-      rtMode: rtMode,
-      extra: ex,
-      hourlyMulti: false,
-      showHours: false,
-      hoursMode: "",
-      autoSwitchedFullDay: false,
-      isFullDayService: false
-    };
-  }
-
-  // Caso 2: Múltiples paradas — todas locales dentro del Gran Santo Domingo (y origen Santo Domingo)
-  var allLocal = !hasCustomOrigin && resolved.every(function(x){ return x.isLocal && !x.isHourly && !x.isFullDay; });
-  if(allLocal){
-    var effH2 = Math.max(2, rawH);
-    var hd2 = calcHourlyOrDay(effH2);
-    var locItems = resolved.map(function(x){
-      return {name: x.name, zone: x.zone, price: null, sub: ""};
-    });
-    return {
-      mode: "hourly_multi",
-      items: locItems,
-      serviceLabel: hd2.label,
-      subtotal: hd2.amount,
-      rtMode: "",
-      extra: "",
-      hourlyMulti: true,
-      showHours: true,
-      hoursMode: hd2.isFullDay ? "fullday" : "hourly",
-      autoSwitchedFullDay: (effH2 >= 8),
-      isFullDayService: hd2.isFullDay
-    };
-  }
-
-  // Caso 3: Múltiples paradas con destinos interurbanos / aeropuertos / puertos / origen provincial
-  // Reglas:
-  // - Los puntos dentro de Santo Domingo NUNCA se cobran por km, siempre a su tarifa regular.
-  // - Si se va al interior y luego se selecciona un punto en Santo Domingo, se cierra el viaje anterior
-  //   cobrando el regreso desde ese destino del interior (50% si >= $100, 100% si < $100) + la tarifa regular
-  //   del punto en Santo Domingo.
-  // - Si después se elige otro destino del interior, inicia como un nuevo viaje regular desde Santo Domingo
-  //   (no por km) y vuelve a generar su cargo de regreso al finalizar.
-  // - El cálculo por km se aplica únicamente entre dos puntos consecutivos que estén ambos en el interior.
-  var legs = [];
-  var sum = 0;
-  var hasTimeService = false;
-  var anyFullDay = false;
-  var anySwitched = false;
-
-  var inSantoDomingo = !hasCustomOrigin;
-  var activeInterior = null;
-
-  for(var i = 0; i < resolved.length; i++){
-    var cur = resolved[i];
-    var legPrice = cur.basePrice;
-    var legName = cur.name;
-    var subText = "";
-
-    if(cur.isHourly || cur.isFullDay){
-      hasTimeService = true;
-      var minH = cur.isFullDay ? 8 : 2;
-      var effH3 = Math.max(minH, rawH);
-      var hd3 = calcHourlyOrDay(effH3);
-      legPrice = hd3.amount;
-      legName = hd3.label;
-      subText = hd3.subNote;
-      if(hd3.isFullDay) anyFullDay = true;
-      if(cur.isHourly && effH3 >= 8) anySwitched = true;
-    } else if(i === 0 && hasCustomOrigin){
-      var fLeg = legFromOrigin(cur);
-      legPrice = fLeg.price;
-      subText = fLeg.sub;
-      if(cur.isLocal || cur.isAirport){
-        inSantoDomingo = true;
-        activeInterior = null;
-      } else {
-        inSantoDomingo = false;
-        activeInterior = { name: cur.name, rawName: cur.rawName, basePrice: cur.basePrice };
-      }
-    } else if(cur.isLocal || cur.isAirport){
-      // Punto dentro de Santo Domingo (sector, zona franca, puerto o aeropuerto SDQ/JBQ)
-      if(!inSantoDomingo && activeInterior){
-        // Venía del interior: cerrar ese tramo cobrando regreso + tarifa regular de este punto en SD
-        var retPct = (activeInterior.basePrice >= 100) ? 0.5 : 1.0;
-        var backPrice = r2(activeInterior.basePrice * retPct);
-        var regLocalPrice = cur.basePrice;
-        legPrice = r2(backPrice + regLocalPrice);
-        subText = t.closeInteriorSub(activeInterior.name, retPct === 0.5 ? "50%" : "100%", fmt(backPrice), fmt(regLocalPrice));
-      } else {
-        // Ya estaba en Santo Domingo: tarifa regular sin cálculo por km
-        legPrice = cur.basePrice;
-        subText = t.localRegularTag;
-      }
-      inSantoDomingo = true;
-      activeInterior = null;
-    } else {
-      // Destino en el interior del país (cur.isIntercity)
-      if(inSantoDomingo || !activeInterior){
-        // Sale desde Santo Domingo (inicio o tras haber cerrado en un punto de Santo Domingo): tarifa regular
-        legPrice = cur.basePrice;
-        subText = (i > 0) ? t.newInteriorTripTag : "";
-      } else {
-        // Tramo directo entre dos destinos del interior: cálculo por kilómetros de carretera
-        if(cur.rawName === activeInterior.rawName){
-          legPrice = INTERCITY_MIN[veh];
+        if (!dest.local) {
+          // Viaje hacia el interior
+          legPrice = basePrice;
+          detail = idx === 0
+            ? `Tarifa regular desde ${state.origin}`
+            : "Nuevo viaje interurbano desde Santo Domingo";
+          inProvince = true;
+          lastProvinceBase = basePrice;
+          lastProvinceName = dest.name;
         } else {
-          var km = roadKm(activeInterior.rawName, cur.rawName);
-          if(km > 0){
-            var calcKm = Math.round(km * INTERCITY_RATE[veh]);
-            legPrice = Math.max(INTERCITY_MIN[veh], calcKm);
-            subText = t.intercityTag(km);
+          // Destino en Santo Domingo / Aeropuerto
+          if (inProvince) {
+            const returnRate = lastProvinceBase >= 100 ? 0.5 : 1.0;
+            const returnCost = lastProvinceBase * returnRate;
+            legPrice = returnCost + basePrice;
+            detail = `Regreso desde ${lastProvinceName} (${returnRate * 100}%: US$ ${returnCost.toFixed(2)}) + Tarifa regular (US$ ${basePrice.toFixed(2)})`;
+            inProvince = false;
+            lastProvinceBase = 0;
+            lastProvinceName = "";
           } else {
-            legPrice = cur.basePrice;
+            legPrice = basePrice;
+            detail = dest.zone;
           }
         }
+
+        return {
+          ...dest,
+          legPrice,
+          detail
+        };
+      });
+    }
+
+    function getDiscountRate() {
+      const code = state.promoCode.trim().toUpperCase();
+      return PROMO_CODES[code] || 0;
+    }
+
+    // Renderizar interfaz completa
+    function render() {
+      const computedStops = calculateStops();
+      const subtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
+      const discountRate = getDiscountRate();
+      const total = subtotal * (1 - discountRate);
+
+      // Actualizar encabezado de destino
+      destinationHeading.textContent =
+        state.stops.length === 0 ? "¿A dónde te llevamos?" : "¿Cuál es la siguiente parada?";
+
+      // Mostrar/ocultar itinerario y Paso 3
+      if (computedStops.length === 0) {
+        itineraryBox.classList.add("hidden");
+        step3.classList.add("hidden");
+        return;
       }
-      inSantoDomingo = false;
-      activeInterior = { name: cur.name, rawName: cur.rawName, basePrice: cur.basePrice };
+
+      itineraryBox.classList.remove("hidden");
+      step3.classList.remove("hidden");
+
+      // Lista de paradas
+      stopsContainer.innerHTML = "";
+      computedStops.forEach((stop, index) => {
+        const row = document.createElement("div");
+        row.className = "stop-item";
+        row.innerHTML = `
+          <div>
+            <div class="stop-title">${index + 1}. ${stop.name}</div>
+            <div class="stop-sub">${stop.detail}</div>
+          </div>
+          <div class="stop-right">
+            <span class="stop-price">US$ ${stop.legPrice.toFixed(2)}</span>
+            <button type="button" class="remove-stop" data-index="${index}" aria-label="Eliminar">✕</button>
+          </div>
+        `;
+        stopsContainer.appendChild(row);
+      });
+
+      // Resumen limpio y proporcionado
+      const routeChain = [state.origin, ...computedStops.map(s => s.name)].join(" → ");
+      summaryRouteText.innerHTML = `<strong>Ruta:</strong> ${routeChain}`;
+      totalAmountText.textContent = `US$ ${total.toFixed(2)}`;
     }
 
-    sum = r2(sum + legPrice);
-    legs.push({
-      name: legName,
-      zone: cur.zone,
-      price: legPrice,
-      sub: subText
-    });
-  }
-
-  // Cálculo del regreso final al punto de salida (Ida y vuelta)
-  var rtModeMulti = "";
-  var retAmt = 0;
-  var ex = "";
-  var last = resolved[resolved.length - 1];
-
-  if(!hasCustomOrigin){
-    if(activeInterior){
-      // Quedó en el interior al final de la ruta: aplica regreso desde activeInterior
-      var isHalfMulti = (activeInterior.basePrice >= 100);
-      rtModeMulti = isHalfMulti ? "HALF" : "FULL";
-      if(trip === "2"){
-        retAmt = isHalfMulti ? r2(activeInterior.basePrice * 0.5) : r2(activeInterior.basePrice);
-        sum = r2(sum + retAmt);
-        ex = isHalfMulti ? t.rtHalfExtra : t.rtFullExtra;
-      } else {
-        ex = t.owExtra;
-      }
-    } else {
-      // Ya regresó a Santo Domingo en la última parada: no duplicar regreso
-      rtModeMulti = "";
-    }
-  } else {
-    var returnLegInfo = legFromOrigin(last);
-    var isHalfCustom = (returnLegInfo.price >= 100);
-    rtModeMulti = isHalfCustom ? "HALF" : "FULL";
-    if(trip === "2"){
-      retAmt = isHalfCustom ? r2(returnLegInfo.price * 0.5) : r2(returnLegInfo.price);
-      sum = r2(sum + retAmt);
-      ex = isHalfCustom ? t.rtHalfExtra : t.rtFullExtra;
-    } else {
-      ex = t.owExtra;
-    }
-  }
-
-  return {
-    mode: "multi",
-    items: legs,
-    returnAmt: retAmt,
-    lastName: activeInterior ? activeInterior.name : last.name,
-    subtotal: sum,
-    rtMode: rtModeMulti,
-    extra: ex,
-    hourlyMulti: false,
-    showHours: hasTimeService,
-    hoursMode: anyFullDay ? "fullday" : "hourly",
-    autoSwitchedFullDay: anySwitched,
-    isFullDayService: anyFullDay
-  };
-}
-
-function updateCodeMsg(){
-  var t=UI[lang];
-  if(codeState=="ok"){
-    codeMsg.textContent=t.codeOk(appliedCode,disc);
-    codeMsg.className="code-msg ok";
-    codeMsg.hidden=false;
-  } else if(codeState=="err"){
-    codeMsg.textContent=t.codeErr;
-    codeMsg.className="code-msg err";
-    codeMsg.hidden=false;
-  } else {
-    codeMsg.hidden=true;
-  }
-}
-
-function checkCode(silent){
-  var raw=codeInp.value.trim().toLowerCase();
-  if(!raw){
-    disc=0; appliedCode=""; codeState="none";
-    updateCodeMsg();
-    render();
-    return;
-  }
-  var found=CODES_NORM[raw];
-  if(found){
-    disc=found.pct;
-    appliedCode=found.code;
-    codeState="ok";
-  } else {
-    disc=0;
-    appliedCode="";
-    codeState=silent?"none":"err";
-  }
-  updateCodeMsg();
-  render();
-}
-
-$("applyCode").onclick=function(){ checkCode(false); };
-codeInp.oninput=function(){ checkCode(true); };
-codeInp.onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); checkCode(false); } };
-
-function previewSearchPrice(it){
-  if(!originProvince) return getPrice(it, veh);
-  if(it.t === "s"){
-    var s = SPECIAL[it.i];
-    if(s.h || s.d) return getPrice(s, veh);
-    var prov = PROVINCE_MAP[originProvince];
-    return prov ? getPrice(prov, veh) : getPrice(s, veh);
-  }
-  var resolved = resolveStop({t:"z", zi:it.zi, di:it.di});
-  return legFromOrigin(resolved).price;
-}
-
-function showSearch(){
-  var val=norm(q.value.trim());
-  qList.innerHTML="";
-  if(val.length<2){ qList.hidden=true; return; }
-  var matches=ITEMS.filter(function(it){
-    if(originProvince && it.t === "z" && it.dObj.n === originProvince) return false;
-    return it.key.indexOf(val)!==-1;
-  }).slice(0,8);
-  if(!matches.length){ qList.hidden=true; return; }
-  matches.forEach(function(it){
-    var b=document.createElement("button");
-    b.type="button";
-    b.className="q-item";
-    var price=previewSearchPrice(it);
-    var title=it.t=="s"?sName(it.s):dName(it.dObj.n);
-    var sub=it.t=="s"?UI[lang].specialGroup:zName(it.z);
-    b.innerHTML='<span>'+title+'<small>'+sub+'</small></span><strong>'+fmt(price)+'</strong>';
-    b.onclick=function(){
-      if(it.t=="s"){
-        zs.value="s"+it.i;
-        zs.onchange();
-      } else {
-        zs.value="z"+it.zi;
-        zs.onchange();
-        mun.value=String(it.di);
-        mun.onchange();
-      }
-      q.value="";
-      qList.hidden=true;
-    };
-    qList.appendChild(b);
-  });
-  qList.hidden=false;
-}
-
-q.oninput=showSearch;
-q.onfocus=showSearch;
-document.addEventListener("click",function(e){
-  if(!$("searchWrap").contains(e.target)) qList.hidden=true;
-});
-
-multiToggleBtn.onclick=function(){
-  multiMode = !multiMode;
-  if(!multiMode){
-    stops = [];
-  }
-  render();
-};
-
-toggleOriginBtn.onclick=function(){
-  if(originPicker.hidden){
-    originPicker.hidden = false;
-    originSel.focus();
-  } else {
-    originProvince = "";
-    originSel.value = "";
-    originPicker.hidden = true;
-    buildZones();
-    if(zs.value && zs.value[0]=="z"){
-      var zz=Z[+zs.value.slice(1)];
-      buildMunOptions(zz, mun.value);
-    }
-    render();
-  }
-};
-
-originSel.onchange=function(){
-  originProvince = originSel.value;
-  if(!originProvince) originPicker.hidden = true;
-  // Si el destino actual coincide con la nueva provincia de salida, limpiarlo
-  if(originProvince && zs.value && zs.value[0]=="z" && mun.value!==""){
-    var zzCur = Z[+zs.value.slice(1)];
-    var dCur = zzCur ? zzCur.d[+mun.value] : null;
-    if(dCur && dCur.n === originProvince){
-      zs.value = "";
-      mun.length = 0;
-    }
-  }
-  buildZones();
-  if(zs.value && zs.value[0]=="z"){
-    var zz=Z[+zs.value.slice(1)];
-    buildMunOptions(zz, mun.value);
-  }
-  render();
-  if(!qList.hidden) showSearch();
-};
-
-swapRouteBtn.onclick=function(){
-  if(swapRouteBtn.disabled) return;
-  var z = zs.value;
-  var curProvDest = "";
-  var curIsLocalOrAirport = false;
-
-  if(z && z[0] === "s"){
-    var sObj = SPECIAL[+z.slice(1)];
-    if(sObj && sObj.rt) curIsLocalOrAirport = true;
-  } else if(z && z[0] === "z" && mun.value !== ""){
-    var zz = Z[+z.slice(1)];
-    var d = zz ? zz.d[+mun.value] : null;
-    if(d){
-      if(LOCAL_ZONES[zz.n]) curIsLocalOrAirport = true;
-      else curProvDest = d.n;
-    }
-  }
-
-  if(!originProvince && curProvDest){
-    // Santo Domingo -> Provincia  ===>  Provincia -> Santo Domingo
-    originProvince = curProvDest;
-    originSel.value = curProvDest;
-    originPicker.hidden = true;
-    buildZones();
-    zs.value = "z0";
-    var zz0 = Z[0];
-    $("munLab").textContent = zLab(zz0);
-    buildMunOptions(zz0, "0");
-    render();
-  } else if(originProvince && (curIsLocalOrAirport || !z)){
-    // Provincia -> Santo Domingo  ===>  Santo Domingo -> Provincia
-    var prevOrig = originProvince;
-    var pm = PROVINCE_MAP[prevOrig];
-    originProvince = "";
-    originSel.value = "";
-    originPicker.hidden = true;
-    buildZones();
-    if(pm){
-      zs.value = "z" + pm.zi;
-      var zzTarget = Z[pm.zi];
-      $("munLab").textContent = zLab(zzTarget);
-      buildMunOptions(zzTarget, String(pm.di));
-    }
-    render();
-  } else if(originProvince && curProvDest && originProvince !== curProvDest){
-    // Provincia A -> Provincia B  ===>  Provincia B -> Provincia A
-    var oldOrig = originProvince;
-    var pmOld = PROVINCE_MAP[oldOrig];
-    originProvince = curProvDest;
-    originSel.value = curProvDest;
-    originPicker.hidden = true;
-    buildZones();
-    if(pmOld){
-      zs.value = "z" + pmOld.zi;
-      var zzOld = Z[pmOld.zi];
-      $("munLab").textContent = zLab(zzOld);
-      buildMunOptions(zzOld, String(pmOld.di));
-    }
-    render();
-  }
-};
-
-addStopBtn.onclick=function(){
-  if(!multiMode) return;
-  var cur = currentStopObj();
-  if(cur){
-    stops.push(cur);
-    zs.value = "";
-    mun.length = 0;
-    render();
-    q.focus();
-  }
-};
-
-$("clearStopsBtn").onclick=function(){
-  stops = [];
-  zs.value = "";
-  mun.length = 0;
-  trip = "1";
-  render();
-};
-
-function calcTotals(ev){
-  var base = ev.subtotal;
-  var afterDisc = disc ? r2(base * (100 - disc) / 100) : base;
-  var cardAmt = (payId === "card") ? r2(afterDisc * CARD_FEE) : 0;
-  var finalTotal = r2(afterDisc + cardAmt);
-  return {base: base, afterDisc: afterDisc, cardAmt: cardAmt, finalTotal: finalTotal};
-}
-
-function buildMessage(includeDate){
-  var ev=evaluateRoute(); if(!ev) return "";
-  var t=UI[lang];
-  var c=calcTotals(ev);
-  var origName = originDisplayName();
-  var L=[t.waIntro, t.waVeh+": "+vehLabel(veh), t.waOrigin+": "+origName];
-
-  if(ev.mode === "single"){
-    var it = ev.items[0];
-    if(it.zone){ L.push(t.waZone+": "+it.zone); L.push(t.waService+": "+it.name); }
-    else { L.push(t.waService+": "+it.name); }
-    if(it.sub) L.push("  ("+it.sub+")");
-    if(ev.extra) L.push(t.waTrip+": "+ev.extra);
-    if(ev.rtBreakdown) L.push("  ("+ev.rtBreakdown+")");
-  } else if(ev.mode === "hourly_multi"){
-    L.push(t.waService+": "+ev.serviceLabel);
-    L.push(t.waRoute+":");
-    ev.items.forEach(function(it, idx){
-      L.push("  "+(idx+1)+". "+it.name+(it.zone?" ("+it.zone+")":""));
-    });
-  } else {
-    L.push(t.waRoute+":");
-    ev.items.forEach(function(it, idx){
-      var line = "  "+(idx+1)+". "+it.name+" — "+fmt(it.price);
-      if(it.sub) line += " ["+it.sub+"]";
-      L.push(line);
-    });
-    if(trip === "2" && ev.returnAmt > 0){
-      L.push("  "+(ev.items.length+1)+". "+t.waReturnLeg(origName)+" — "+fmt(ev.returnAmt));
-    }
-    if(ev.extra) L.push(t.waTrip+": "+ev.extra);
-  }
-
-  if(includeDate && fecha.value){
-    L.push(t.waDate+": "+fecha.value.split("-").reverse().join("/"));
-  }
-  L.push(t.waPay+": "+payLabel(payId));
-  if(disc){
-    L.push(t.waOrig+": "+fmt(c.base));
-    L.push(t.waCode+": "+appliedCode+" ("+disc+"%)");
-    L.push(t.waDiscAmt+": "+fmt(c.afterDisc));
-  }
-  if(payId === "card"){
-    if(!disc) L.push(t.waOrig+": "+fmt(c.base));
-    L.push(t.waCardFee+": +"+fmt(c.cardAmt));
-  }
-  L.push(t.waAmt+": "+fmt(c.finalTotal));
-  return L.join("\n");
-}
-
-function applyLang(){
-  var t=UI[lang];
-  document.documentElement.lang=lang;
-  $("langBtn").textContent=t.langBtn;
-  $("tTitle").textContent=t.title;
-  $("tSub").textContent=t.sub;
-  $("tVehLab").textContent=t.vehLab;
-  $("tOriginLab").textContent=t.originLab;
-  swapRouteBtn.title=t.swapTitle;
-  swapRouteBtn.setAttribute("aria-label", t.swapTitle);
-  $("tStopsTitle").textContent=t.stopsTitle;
-  $("clearStopsBtn").textContent=t.clearStops;
-  q.placeholder=t.searchPh;
-  $("tTripLab").textContent=t.tripLab;
-  $("tCostLab").textContent=t.costLab;
-  $("tDateLab").textContent=t.dateLab;
-  btnToday.textContent=t.todayBtn;
-  btnTomorrow.textContent=t.tomorrowBtn;
-  $("tPayLab").textContent=t.payLab;
-  $("tCodeLab").textContent=t.codeLab;
-  codeInp.placeholder=t.codePh;
-  $("applyCode").textContent=t.applyBtn;
-  send.textContent=t.sendBtn;
-  copyBtn.textContent=t.copyBtn;
-  sendHint.textContent=t.sendHint;
-  $("tCoordTitle").textContent=t.coordTitle;
-  $("tCoordBody").textContent=t.coordBody;
-  $("tPayInfoTitle").textContent=t.payInfoTitle;
-  $("tPayInfoBody").textContent=t.payInfoBody;
-
-  buildOriginOptions();
-  var prevMun=mun.value;
-  buildZones();
-  if(zs.value && zs.value[0]=="z"){
-    var zz=Z[+zs.value.slice(1)];
-    $("munLab").textContent=zLab(zz);
-    buildMunOptions(zz, prevMun);
-  }
-  buildPay();
-  updateCodeMsg();
-  render();
-}
-
-function renderStopsBox(ev){
-  var t = UI[lang];
-  var eff = getEffectiveStops();
-  if(!multiMode || eff.length < 1){
-    stopsBox.hidden = true;
-    return;
-  }
-  stopsBox.hidden = false;
-  stopsList.innerHTML = "";
-  var items = ev ? ev.items : [];
-  var showSingleSplit = (ev && ev.mode === "single" && trip === "2" && ev.returnAmt > 0);
-  items.forEach(function(it, idx){
-    var row = document.createElement("div");
-    row.className = "stop-item";
-    var dispPrice = showSingleSplit ? ev.oneWayAmt : it.price;
-    var priceHtml = (dispPrice !== null && dispPrice !== undefined) ? '<span class="stop-price">'+fmt(dispPrice)+'</span>' : '';
-    var subHtml = it.sub ? '<small>'+it.sub+'</small>' : (it.zone ? '<small>'+it.zone+'</small>' : '');
-    row.innerHTML = '<div class="stop-info"><strong>'+(idx+1)+'. '+it.name+'</strong>'+subHtml+'</div>' +
-                    '<div class="stop-right">'+priceHtml+'<button type="button" class="stop-del" data-idx="'+idx+'" aria-label="Eliminar">✕</button></div>';
-    row.querySelector(".stop-del").onclick = function(){
-      if(idx < stops.length){
-        stops.splice(idx, 1);
-      } else {
-        zs.value = "";
-        mun.length = 0;
-      }
+    function addStop(dest) {
+      const wasEmpty = state.stops.length === 0;
+      state.stops.push(dest);
+      searchInput.value = "";
+      suggestionsList.classList.add("hidden");
+      zoneSelect.value = "";
+      sectorSelect.innerHTML = '<option value="">Selecciona primero una zona...</option>';
+      sectorSelect.disabled = true;
       render();
-    };
-    stopsList.appendChild(row);
-  });
 
-  if(ev && (ev.mode === "multi" || ev.mode === "single") && trip === "2" && ev.returnAmt > 0){
-    var fromLbl = ev.lastName || (items[0] ? items[0].name : "");
-    var retRow = document.createElement("div");
-    retRow.className = "stop-item";
-    retRow.innerHTML = '<div class="stop-info"><strong>'+(items.length+1)+'. '+t.waReturnLeg(originDisplayName())+'</strong><small>'+fromLbl+'</small></div>' +
-                       '<div class="stop-right"><span class="stop-price">'+fmt(ev.returnAmt)+'</span><button type="button" class="stop-del" aria-label="Quitar regreso">✕</button></div>';
-    retRow.querySelector(".stop-del").onclick = function(){
-      trip = "1";
-      render();
-    };
-    stopsList.appendChild(retRow);
-  }
-}
-
-function canSwapRoute(){
-  if(multiMode && stops.length > 0) return false;
-  var z = zs.value;
-  if(originProvince) return true;
-  if(z && z[0] === "z" && mun.value !== ""){
-    var zz = Z[+z.slice(1)];
-    if(zz && !LOCAL_ZONES[zz.n]) return true;
-  }
-  return false;
-}
-
-function render(){
-  var t=UI[lang];
-  var z=zs.value, sp=z&&z[0]=="s", d=null, zz=null, sObj=null;
-  if(z&&sp){ sObj=SPECIAL[+z.slice(1)]; }
-  if(z&&!sp){ zz=Z[+z.slice(1)]; if(mun.value!=="") d=zz.d[+mun.value]; }
-
-  // Botón superior de Varios destinos
-  multiToggleBtn.textContent = multiMode ? t.multiOn : t.multiOff;
-  multiToggleBtn.classList.toggle("on", multiMode);
-  multiToggleBtn.setAttribute("aria-pressed", multiMode ? "true" : "false");
-
-  // Actualizar barra de salida
-  originText.textContent = originDisplayName();
-  originBadge.textContent = originProvince ? t.originCustomBadge : t.originFixedBadge;
-  toggleOriginBtn.textContent = (!originPicker.hidden || originProvince) ? t.resetOriginBtn : t.changeOriginBtn;
-  swapRouteBtn.disabled = !canSwapRoute();
-
-  var cur = currentStopObj();
-  var ev = evaluateRoute();
-
-  $("tSearchLab").textContent = (multiMode && stops.length > 0) ? t.searchLabMore : t.searchLab;
-  $("tZoneLab").textContent   = (multiMode && stops.length > 0) ? t.zoneLabMore   : t.zoneLab;
-
-  $("munBox").hidden = !(z && !sp);
-  addStopBtn.hidden = !(multiMode && cur);
-  addStopBtn.textContent = (stops.length > 0) ? t.addNextStop : t.addStop;
-
-  var showHrs = ev ? ev.showHours : (sp && sObj && (sObj.h || sObj.d));
-  $("hrBox").hidden = !showHrs;
-  if(showHrs){
-    var isFD = ev ? (ev.hoursMode === "fullday") : (sObj && sObj.d);
-    $("tHrsLab").textContent = isFD ? t.hrsLabFullDay : t.hrsLabHourly;
-  }
-
-  var notices = [];
-  if(ev && ev.hourlyMulti) notices.push(t.hourlyMultiWarn);
-  if(ev && ev.autoSwitchedFullDay) notices.push(t.switchedFullDayWarn);
-  if(notices.length){
-    hourlyNotice.textContent = notices.join(" ");
-    hourlyNotice.hidden = false;
-  } else {
-    hourlyNotice.hidden = true;
-  }
-
-  var rtMode = ev ? ev.rtMode : "";
-  if(!rtMode) trip = "1";
-  $("tripBox").hidden = !rtMode;
-  $("tOneWay").textContent = (trip === "1" ? "✓ " : "") + t.oneWay;
-  $("tRoundTrip").textContent = (trip === "2" ? "✓ " : "") + t.roundTrip;
-  $("tripNote").textContent = rtMode=="HALF" ? t.halfRtNote : (rtMode=="FULL" ? t.fullRtNote : "");
-
-  if(ev && ev.isFullDayService){
-    $("note").textContent = t.fullDayInfoNote;
-  } else if(d){
-    $("note").textContent = t.ratePrefix + zNote(zz) + ".";
-  } else {
-    $("note").textContent = "";
-  }
-
-  btnToday.classList.toggle("on", fecha.value === localISO(0));
-  btnTomorrow.classList.toggle("on", fecha.value === localISO(1));
-
-  mark("veh",veh); mark("trip",trip); mark("pay",payId);
-  renderStopsBox(ev);
-
-  var isCard = (payId === "card");
-  var costRtNote=$("costRtNote");
-
-  if(!ev){
-    routeSummary.hidden=true;
-    cost.textContent="—";
-    costRtNote.hidden=true;
-    costCardNote.hidden=true;
-    cardWarn.hidden=!isCard;
-    if(isCard) cardWarn.textContent=t.cardWarnEmpty;
-  } else {
-    // Frase clara de confirmación encima del precio
-    var origName = originDisplayName();
-    if(ev.mode === "single"){
-      var tripTxt = (rtMode && trip === "2") ? t.roundTrip : t.oneWay;
-      routeSummary.innerHTML = t.sumSingle(tripTxt, origName, ev.items[0].name);
-      routeSummary.hidden = false;
-    } else {
-      var names = [origName].concat(ev.items.map(function(x){ return x.name; }));
-      if(ev.mode === "multi" && trip === "2" && ev.returnAmt > 0){
-        names.push(origName);
+      if (wasEmpty) {
+        setTimeout(() => {
+          step3.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 120);
       }
-      var boldNames = names.map(function(nm){ return "<strong>" + nm + "</strong>"; }).join(" → ");
-      routeSummary.innerHTML = t.sumMulti(ev.items.length, boldNames);
-      routeSummary.hidden = false;
     }
 
-    var c=calcTotals(ev);
-    if(disc){
-      cost.innerHTML="<s>"+fmt(c.base)+"</s>"+fmt(c.finalTotal);
-    } else {
-      cost.textContent=fmt(c.finalTotal);
+    // Eventos Paso 1
+    vehicleGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".vehicle-btn");
+      if (!btn) return;
+      document.querySelectorAll(".vehicle-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.vehicle = btn.dataset.vehicle;
+      render();
+    });
+
+    toggleOriginBtn.addEventListener("click", () => {
+      originSelectorBox.classList.toggle("hidden");
+    });
+
+    originSelect.addEventListener("change", () => {
+      state.origin = originSelect.value;
+      originText.textContent = state.origin;
+      originBadge.textContent =
+        state.origin === "Santo Domingo / Hotel" ? "Salida habitual" : "Salida personalizada";
+      originSelectorBox.classList.add("hidden");
+      render();
+    });
+
+    // Eventos Paso 2 (Buscador y zonas)
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) {
+        suggestionsList.classList.add("hidden");
+        return;
+      }
+
+      const matches = DESTINATIONS.filter(
+        d => d.name.toLowerCase().includes(q) || d.zone.toLowerCase().includes(q)
+      );
+
+      if (matches.length === 0) {
+        suggestionsList.innerHTML = '<div class="suggestion-item"><span class="suggestion-zone">No se encontraron resultados</span></div>';
+        suggestionsList.classList.remove("hidden");
+        return;
+      }
+
+      suggestionsList.innerHTML = "";
+      matches.forEach(dest => {
+        const item = document.createElement("div");
+        item.className = "suggestion-item";
+        item.innerHTML = `
+          <div>
+            <div class="suggestion-name">${dest.name}</div>
+            <div class="suggestion-zone">${dest.zone}</div>
+          </div>
+          <div class="suggestion-price">US$ ${dest.prices[state.vehicle].toFixed(2)}</div>
+        `;
+        item.addEventListener("click", () => addStop(dest));
+        suggestionsList.appendChild(item);
+      });
+      suggestionsList.classList.remove("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#step2")) {
+        suggestionsList.classList.add("hidden");
+      }
+    });
+
+    toggleZoneBtn.addEventListener("click", () => {
+      zoneSelectors.classList.toggle("hidden");
+    });
+
+    zoneSelect.addEventListener("change", () => {
+      const selectedZone = zoneSelect.value;
+      sectorSelect.innerHTML = '<option value="">Selecciona un sector...</option>';
+      if (!selectedZone) {
+        sectorSelect.disabled = true;
+        return;
+      }
+      DESTINATIONS.filter(d => d.zone === selectedZone).forEach(dest => {
+        const opt = document.createElement("option");
+        opt.value = dest.name;
+        opt.textContent = `${dest.name} — US$ ${dest.prices[state.vehicle]}`;
+        sectorSelect.appendChild(opt);
+      });
+      sectorSelect.disabled = false;
+    });
+
+    sectorSelect.addEventListener("change", () => {
+      const dest = DESTINATIONS.find(d => d.name === sectorSelect.value);
+      if (dest) addStop(dest);
+    });
+
+    stopsContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".remove-stop");
+      if (!btn) return;
+      const idx = Number(btn.dataset.index);
+      state.stops.splice(idx, 1);
+      render();
+    });
+
+    clearRouteBtn.addEventListener("click", () => {
+      state.stops = [];
+      render();
+    });
+
+    addStopFocusBtn.addEventListener("click", () => {
+      searchInput.focus();
+      searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    // Eventos Paso 3
+    document.querySelectorAll("[data-date-offset]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const offset = Number(btn.dataset.dateOffset);
+        const d = new Date();
+        d.setDate(d.getDate() + offset);
+        tripDate.value = d.toISOString().split("T")[0];
+        document.querySelectorAll("[data-date-offset]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    payGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".pay-btn");
+      if (!btn) return;
+      document.querySelectorAll(".pay-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.payment = btn.dataset.pay;
+    });
+
+    togglePromoBtn.addEventListener("click", () => {
+      promoBox.classList.toggle("hidden");
+    });
+
+    promoInput.addEventListener("input", () => {
+      state.promoCode = promoInput.value;
+      render();
+    });
+
+    function buildSummaryMessage() {
+      const computedStops = calculateStops();
+      const subtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
+      const total = subtotal * (1 - getDiscountRate());
+
+      const lines = [
+        `*Solicitud de Transporte*`,
+        `• *Vehículo:* ${state.vehicle}`,
+        `• *Salida:* ${state.origin}`,
+        `• *Itinerario:*`
+      ];
+
+      computedStops.forEach((s, i) => {
+        lines.push(`   ${i + 1}. ${s.name} (US$ ${s.legPrice.toFixed(2)})`);
+      });
+
+      if (tripDate.value) lines.push(`• *Fecha:* ${tripDate.value}`);
+      lines.push(`• *Pago:* ${state.payment}`);
+      lines.push(`• *Total estimado:* US$ ${total.toFixed(2)}`);
+      return lines.join("\n");
     }
-    if(ev.rtBreakdown){
-      costRtNote.textContent=ev.rtBreakdown;
-      costRtNote.hidden=false;
-    } else {
-      costRtNote.hidden=true;
-    }
-    if(isCard){
-      costCardNote.textContent=t.costCardSub(fmt(c.cardAmt));
-      costCardNote.hidden=false;
-      cardWarn.textContent=t.cardWarnDetail(fmt(c.afterDisc), fmt(c.cardAmt), fmt(c.finalTotal));
-      cardWarn.hidden=false;
-    } else {
-      costCardNote.hidden=true;
-      cardWarn.hidden=true;
-    }
-  }
 
-  send.disabled=!ev;
-  copyBtn.disabled=!ev;
-  sendHint.hidden=!!ev;
-}
+    sendWhatsappBtn.addEventListener("click", () => {
+      const msg = encodeURIComponent(buildSummaryMessage());
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
+    });
 
-$("langBtn").onclick=function(){
-  lang=(lang=="es"?"en":"es");
-  applyLang();
-  if(!qList.hidden) showSearch();
-};
+    copyQuoteBtn.addEventListener("click", async () => {
+      const msg = buildSummaryMessage().replace(/\*/g, "");
+      await navigator.clipboard.writeText(msg);
+      const orig = copyQuoteBtn.textContent;
+      copyQuoteBtn.textContent = "¡Cotización copiada!";
+      setTimeout(() => (copyQuoteBtn.textContent = orig), 2000);
+    });
 
-zs.onchange=function(){
-  mun.length=0;
-  var z=zs.value;
-  // Normalizar accesos directos de "Destinos frecuentes"
-  if(z && z.indexOf("f_s") === 0){
-    z = "s" + z.slice(3);
-    zs.value = z;
-  } else if(z && z.indexOf("f_z") === 0){
-    var parts = z.slice(3).split("_");
-    zs.value = "z" + parts[0];
-    var zzFreq = Z[+parts[0]];
-    $("munLab").textContent = zLab(zzFreq);
-    buildMunOptions(zzFreq, parts[1]);
-    render();
-    return;
-  }
-
-  if(z&&z[0]=="s"){
-    var sObj = SPECIAL[+z.slice(1)];
-    if(sObj && sObj.d && (+hrsInp.value || 0) < 8) hrsInp.value = 8;
-    if(sObj && sObj.h && (+hrsInp.value || 0) >= 8) hrsInp.value = 2;
-  }
-  if(z&&z[0]=="z"){
-    var zz=Z[+z.slice(1)];
-    $("munLab").textContent=zLab(zz);
-    buildMunOptions(zz, "");
-  }
-  render();
-};
-mun.onchange=function(){ render(); };
-hrsInp.oninput=render; fecha.onchange=render; fecha.oninput=render;
-$("veh").onclick=function(e){var b=e.target.closest("button"); if(b){veh=b.dataset.v; render(); if(!qList.hidden) showSearch();}};
-$("trip").onclick=function(e){var b=e.target.closest("button"); if(b){trip=b.dataset.v; render();}};
-$("pay").onclick=function(e){var b=e.target.closest("button"); if(b){payId=b.dataset.v; render();}};
-
-send.onclick=function(){
-  var msg=buildMessage(true); if(!msg) return;
-  window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(msg),"_blank");
-};
-
-copyBtn.onclick=function(){
-  var msg=buildMessage(true); if(!msg) return;
-  function done(){
-    copyBtn.textContent=UI[lang].copiedBtn;
-    copyBtn.classList.add("copied");
-    setTimeout(function(){
-      copyBtn.textContent=UI[lang].copyBtn;
-      copyBtn.classList.remove("copied");
-    }, 2200);
-  }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(msg).then(done).catch(fallbackCopy);
-  } else {
-    fallbackCopy();
-  }
-  function fallbackCopy(){
-    var ta=document.createElement("textarea");
-    ta.value=msg;
-    ta.style.position="fixed";
-    ta.style.opacity="0";
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand("copy"); done(); }catch(e){}
-    document.body.removeChild(ta);
-  }
-};
-
-applyLang();
-</script>
+    initZones();
+  </script>
 </body>
 </html>
