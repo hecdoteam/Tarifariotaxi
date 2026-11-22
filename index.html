@@ -611,25 +611,36 @@
         <span class="pill" id="originBadge">Salida habitual</span>
       </div>
 
-      <button type="button" class="link-btn" id="toggleOriginBtn">¿Sales desde otra provincia o aeropuerto?</button>
+      <button type="button" class="link-btn" id="toggleOriginBtn">¿Sales desde otro lugar, aeropuerto o provincia?</button>
 
       <div class="field-group hidden" id="originSelectorBox">
-        <select id="originSelect">
-          <option value="Santo Domingo / Hotel">Santo Domingo / Hotel (Salida habitual)</option>
-          <option value="Aeropuerto Las Américas (AILA / SDQ)">Aeropuerto Las Américas (AILA / SDQ)</option>
-          <option value="Aeropuerto La Isabela / El Higüero (JBQ)">Aeropuerto La Isabela / El Higüero (JBQ)</option>
-          <option value="Boca Chica">Boca Chica</option>
+        <div class="search-wrap">
+          <input
+            type="text"
+            id="originSearchInput"
+            placeholder="Buscar sector, plaza, aeropuerto o provincia de salida..."
+            autocomplete="off"
+          />
+          <button type="button" class="clear-search hidden" id="clearOriginSearchBtn" aria-label="Limpiar búsqueda de salida">✕</button>
+          <div class="suggestions hidden" id="originSuggestionsList"></div>
+        </div>
+
+        <select id="originSelect" style="margin-top: 8px;">
+          <option value="DEFAULT">Santo Domingo / Hotel (Salida habitual)</option>
+          <option value="Aeropuerto Internacional de Las Américas (AILA / SDQ)">Aeropuerto Las Américas (AILA / SDQ)</option>
+          <option value="Aeropuerto Internacional La Isabela / El Higüero (JBQ)">Aeropuerto La Isabela / El Higüero (JBQ)</option>
+          <option value="Playa de Boca Chica">Boca Chica</option>
           <option value="Juan Dolio">Juan Dolio</option>
           <option value="San Pedro de Macorís">San Pedro de Macorís</option>
-          <option value="La Romana / Casa de Campo">La Romana / Casa de Campo</option>
+          <option value="La Romana">La Romana / Casa de Campo</option>
           <option value="Bayahíbe">Bayahíbe</option>
-          <option value="Punta Cana / Bávaro">Punta Cana / Bávaro</option>
-          <option value="Samaná / Las Terrenas">Samaná / Las Terrenas</option>
-          <option value="Jarabacoa / Constanza">Jarabacoa / Constanza</option>
-          <option value="Santiago de los Caballeros">Santiago de los Caballeros</option>
-          <option value="Puerto Plata / Sosúa / Cabarete">Puerto Plata / Sosúa / Cabarete</option>
-          <option value="Baní">Baní</option>
-          <option value="Barahona">Barahona</option>
+          <option value="Punta Cana">Punta Cana / Bávaro</option>
+          <option value="Las Terrenas (Samaná)">Samaná / Las Terrenas</option>
+          <option value="Jarabacoa (La Vega)">Jarabacoa / Constanza</option>
+          <option value="Santiago de los Caballeros (Santiago)">Santiago de los Caballeros</option>
+          <option value="San Felipe de Puerto Plata (Puerto Plata)">Puerto Plata / Sosúa / Cabarete</option>
+          <option value="Baní (Peravia)">Baní</option>
+          <option value="Santa Cruz de Barahona (Barahona)">Barahona</option>
         </select>
       </div>
     </section>
@@ -5648,6 +5659,7 @@
     let state = {
       vehicle: "Normal",
       origin: "Santo Domingo / Hotel",
+      originObj: null,
       stops: [],
       roundTrip: false,
       payment: "Efectivo",
@@ -5660,6 +5672,9 @@
     const originBadge = document.getElementById("originBadge");
     const toggleOriginBtn = document.getElementById("toggleOriginBtn");
     const originSelectorBox = document.getElementById("originSelectorBox");
+    const originSearchInput = document.getElementById("originSearchInput");
+    const clearOriginSearchBtn = document.getElementById("clearOriginSearchBtn");
+    const originSuggestionsList = document.getElementById("originSuggestionsList");
     const originSelect = document.getElementById("originSelect");
 
     const searchInput = document.getElementById("searchInput");
@@ -5696,6 +5711,171 @@
     const sendWhatsappBtn = document.getElementById("sendWhatsappBtn");
     const copyQuoteBtn = document.getElementById("copyQuoteBtn");
 
+    // =========================================================================
+    // MOTOR DE CÁLCULO SIMÉTRICO Y ESTIMACIÓN POR DISTANCIA
+    // =========================================================================
+    const MIN_RATE = { Normal: 10, Minivan: 15, Luxury: 40 };
+    const CORE_BASE = { Normal: 15, Minivan: 20, Luxury: 40 };
+
+    function floorTo5(val) {
+      return Math.floor(val / 5) * 5;
+    }
+
+    function isAirportOrPort(d) {
+      return (d.zone === "Aeropuertos" || d.zone === "Puertos") && d.local !== false;
+    }
+
+    function isInterior(d) {
+      return d.local === false;
+    }
+
+    function isGranSD(d) {
+      return d.local !== false && !isAirportOrPort(d) && d.zone !== "Servicios Especiales";
+    }
+
+    function getMacroArea(d) {
+      const txt = normalizeText(`${d.zone} ${d.ref || ""} ${d.name}`);
+      if (
+        txt.includes("boca chica") ||
+        txt.includes("guerra") ||
+        txt.includes("santo domingo este") ||
+        txt.includes("ozama") ||
+        txt.includes("alma rosa") ||
+        txt.includes("san isidro") ||
+        txt.includes("invivienda") ||
+        txt.includes("juan bosch") ||
+        txt.includes("coral mall") ||
+        txt.includes("megacentro") ||
+        txt.includes("los mina")
+      ) {
+        return "EAST";
+      }
+      if (
+        txt.includes("santo domingo norte") ||
+        txt.includes("villa mella") ||
+        txt.includes("sabana perdida") ||
+        txt.includes("higuero") ||
+        txt.includes("la victoria") ||
+        txt.includes("charles de gaulle") ||
+        txt.includes("mirabal")
+      ) {
+        return "NORTH";
+      }
+      if (
+        txt.includes("santo domingo oeste") ||
+        txt.includes("alcarrizos") ||
+        txt.includes("pedro brand") ||
+        txt.includes("manoguayabo") ||
+        txt.includes("herrera") ||
+        txt.includes("hato nuevo") ||
+        txt.includes("guayiga")
+      ) {
+        return "WEST";
+      }
+      return "CENTER";
+    }
+
+    function estimateLegPrice(fromObj, toObj, vehicle) {
+      // Salida habitual (Santo Domingo / Hotel) o servicios especiales
+      if (!fromObj || toObj.zone === "Servicios Especiales") {
+        return toObj.prices[vehicle];
+      }
+
+      // Mismo origen y destino -> tarifa mínima del vehículo
+      if (fromObj._id === toObj._id) {
+        return MIN_RATE[vehicle];
+      }
+
+      // 1. Simetría Aeropuerto/Puerto <-> Gran Santo Domingo (Ida = Vuelta)
+      if ((isAirportOrPort(fromObj) && isGranSD(toObj)) || (isGranSD(fromObj) && isAirportOrPort(toObj))) {
+        const ap = isAirportOrPort(fromObj) ? fromObj : toObj;
+        const sd = isAirportOrPort(fromObj) ? toObj : fromObj;
+        // Cercanía inmediata AILA <-> Boca Chica
+        if (normalizeText(ap.name).includes("aila") && normalizeText(`${sd.zone} ${sd.name}`).includes("boca chica")) {
+          return Math.max(MIN_RATE[vehicle], floorTo5(sd.prices[vehicle] * 0.45));
+        }
+        return Math.max(ap.prices[vehicle], sd.prices[vehicle]);
+      }
+
+      // Aeropuerto/Puerto <-> Aeropuerto/Puerto
+      if (isAirportOrPort(fromObj) && isAirportOrPort(toObj)) {
+        if (normalizeText(fromObj.name).includes("aeropuerto") && normalizeText(toObj.name).includes("aeropuerto")) {
+          return Math.max(MIN_RATE[vehicle], floorTo5((fromObj.prices[vehicle] + toObj.prices[vehicle]) * 0.75));
+        }
+        return Math.max(fromObj.prices[vehicle], toObj.prices[vehicle]);
+      }
+
+      // 2. Simetría Interior <-> Gran Santo Domingo o Aeropuerto/Puerto (Ida = Vuelta)
+      if (isInterior(fromObj) && !isInterior(toObj)) {
+        return fromObj.prices[vehicle];
+      }
+      if (!isInterior(fromObj) && isInterior(toObj)) {
+        return toObj.prices[vehicle];
+      }
+
+      // Interior <-> Interior
+      if (isInterior(fromObj) && isInterior(toObj)) {
+        return fromObj.prices[vehicle] + toObj.prices[vehicle];
+      }
+
+      // 3. Punto a punto dentro de Gran Santo Domingo (estimación por distancia y redondeo hacia abajo)
+      const areaA = getMacroArea(fromObj);
+      const areaB = getMacroArea(toObj);
+      const pA = fromObj.prices[vehicle];
+      const pB = toObj.prices[vehicle];
+
+      if (areaA === areaB) {
+        if (areaA === "CENTER") {
+          const est = floorTo5(((pA + pB) / 2) * 0.70);
+          return Math.max(MIN_RATE[vehicle], est);
+        }
+        const est = floorTo5(Math.abs(pA - pB) + CORE_BASE[vehicle] * 0.75);
+        return Math.max(MIN_RATE[vehicle], est);
+      }
+
+      if (areaA === "CENTER" || areaB === "CENTER") {
+        const pCenter = areaA === "CENTER" ? pA : pB;
+        const pOuter = areaA === "CENTER" ? pB : pA;
+        const est = floorTo5(pOuter + Math.max(0, pCenter - CORE_BASE[vehicle]) * 0.5);
+        return Math.max(MIN_RATE[vehicle], est);
+      }
+
+      // Cruce entre extremos de Gran Santo Domingo (Ej. Este <-> Oeste / Norte)
+      const crossEst = floorTo5((pA + pB - CORE_BASE[vehicle]) * 0.85);
+      return Math.max(MIN_RATE[vehicle], crossEst);
+    }
+
+    function getCurrentDeparturePoint() {
+      if (state.stops.length > 0 && state.originObj) {
+        return state.stops[state.stops.length - 1];
+      }
+      return state.originObj;
+    }
+
+    function setCustomOrigin(destObj) {
+      if (!destObj) {
+        state.origin = "Santo Domingo / Hotel";
+        state.originObj = null;
+        originText.textContent = state.origin;
+        originBadge.textContent = "Salida habitual";
+        originSelect.value = "DEFAULT";
+      } else {
+        state.origin = destObj.name;
+        state.originObj = destObj;
+        originText.textContent = state.origin;
+        originBadge.textContent = "Salida personalizada";
+      }
+      originSearchInput.value = "";
+      clearOriginSearchBtn.classList.add("hidden");
+      originSuggestionsList.classList.add("hidden");
+      originSelectorBox.classList.add("hidden");
+
+      if (zoneSelect.value) {
+        zoneSelect.dispatchEvent(new Event("change"));
+      }
+      render();
+    }
+
     // Inicializar zonas
     function initZones() {
       const zones = [...new Set(INDEXED_DESTINATIONS.map(d => d.zone))];
@@ -5707,8 +5887,23 @@
       });
     }
 
-    // Cálculo de tarifas por parada (mantiene regla de retorno 50% / 100%)
+    // Cálculo de tarifas por parada
     function calculateStops() {
+      // Si se eligió un punto de salida específico, calcular tramo a tramo desde ese origen
+      if (state.originObj) {
+        return state.stops.map((dest, idx) => {
+          const fromPoint = idx === 0 ? state.originObj : state.stops[idx - 1];
+          const legPrice = estimateLegPrice(fromPoint, dest, state.vehicle);
+          const detail = `Desde ${fromPoint.name}`;
+          return {
+            ...dest,
+            legPrice,
+            detail
+          };
+        });
+      }
+
+      // Salida habitual (Santo Domingo / Hotel): mantiene regla de retorno 50% / 100%
       let inProvince = false;
       let lastProvinceBase = 0;
       let lastProvinceName = "";
@@ -5719,7 +5914,6 @@
         let detail = "";
 
         if (!dest.local) {
-          // Viaje hacia el interior
           legPrice = basePrice;
           detail = idx === 0
             ? `Tarifa regular desde ${state.origin}`
@@ -5728,7 +5922,6 @@
           lastProvinceBase = basePrice;
           lastProvinceName = dest.name;
         } else {
-          // Destino en Gran Santo Domingo / Aeropuerto local / Puerto
           if (inProvince) {
             const returnRate = lastProvinceBase >= 100 ? 0.5 : 1.0;
             const returnCost = lastProvinceBase * returnRate;
@@ -5768,7 +5961,6 @@
       const computedStops = calculateStops();
       const stopsSubtotal = computedStops.reduce((sum, s) => sum + s.legPrice, 0);
 
-      // Validar compatibilidad de Ida y vuelta con la última parada seleccionada
       const allowed = isRoundTripAllowed();
       if (!allowed && state.roundTrip) {
         state.roundTrip = false;
@@ -5777,10 +5969,11 @@
       let returnInfo = null;
       if (state.roundTrip && computedStops.length > 0) {
         const lastStop = computedStops[computedStops.length - 1];
-        const lastBase = lastStop.prices[state.vehicle];
-        // Menor de 100 USD -> 100% del servicio de ida; 100 USD o más -> 50%
-        const rate = lastBase >= 100 ? 0.5 : 1.0;
-        const cost = lastBase * rate;
+        const returnBase = state.originObj
+          ? estimateLegPrice(lastStop, state.originObj, state.vehicle)
+          : lastStop.prices[state.vehicle];
+        const rate = returnBase >= 100 ? 0.5 : 1.0;
+        const cost = returnBase * rate;
         returnInfo = {
           from: lastStop.name,
           to: state.origin,
@@ -5854,8 +6047,11 @@
       if (!allowed) {
         tripModeHint.textContent = "No aplica para este servicio";
       } else {
-        const lastBase = computedStops[computedStops.length - 1].prices[state.vehicle];
-        tripModeHint.textContent = lastBase >= 100 ? "Regreso al 50%" : "Regreso al 100%";
+        const lastStop = computedStops[computedStops.length - 1];
+        const returnBase = state.originObj
+          ? estimateLegPrice(lastStop, state.originObj, state.vehicle)
+          : lastStop.prices[state.vehicle];
+        tripModeHint.textContent = returnBase >= 100 ? "Regreso al 50%" : "Regreso al 100%";
       }
 
       // Mostrar/ocultar detalle del regreso en el itinerario
@@ -5924,7 +6120,6 @@
       document.querySelectorAll(".vehicle-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       state.vehicle = btn.dataset.vehicle;
-      // Si el selector por zona está abierto, actualizar precios mostrados
       if (zoneSelect.value) {
         zoneSelect.dispatchEvent(new Event("change"));
       }
@@ -5933,15 +6128,85 @@
 
     toggleOriginBtn.addEventListener("click", () => {
       originSelectorBox.classList.toggle("hidden");
+      if (!originSelectorBox.classList.contains("hidden")) {
+        originSearchInput.focus();
+      }
+    });
+
+    originSearchInput.addEventListener("input", () => {
+      const raw = originSearchInput.value;
+      clearOriginSearchBtn.classList.toggle("hidden", raw.length === 0);
+
+      const normQuery = normalizeText(raw);
+      if (!normQuery) {
+        originSuggestionsList.classList.add("hidden");
+        return;
+      }
+
+      const tokens = normQuery.split(" ");
+      const matches = INDEXED_DESTINATIONS
+        .filter(d => d.zone !== "Servicios Especiales" && tokens.every(tok => d._normAll.includes(tok)))
+        .sort((a, b) => {
+          const aStarts = a._normName.startsWith(normQuery) ? 0 : 1;
+          const bStarts = b._normName.startsWith(normQuery) ? 0 : 1;
+          if (aStarts !== bStarts) return aStarts - bStarts;
+          const aInName = a._normName.includes(normQuery) ? 0 : 1;
+          const bInName = b._normName.includes(normQuery) ? 0 : 1;
+          return aInName - bInName;
+        })
+        .slice(0, 30);
+
+      if (matches.length === 0) {
+        originSuggestionsList.innerHTML = '<div class="suggestion-item"><span class="suggestion-zone">No se encontraron resultados</span></div>';
+        originSuggestionsList.classList.remove("hidden");
+        return;
+      }
+
+      originSuggestionsList.innerHTML = "";
+      matches.forEach(dest => {
+        const item = document.createElement("div");
+        item.className = "suggestion-item";
+        const subText = dest.ref && normalizeText(dest.ref) !== dest._normName
+          ? `${dest.zone} · ${dest.ref}`
+          : dest.zone;
+        item.innerHTML = `
+          <div>
+            <div class="suggestion-name">${dest.name}</div>
+            <div class="suggestion-zone">${subText}</div>
+          </div>
+          <div class="suggestion-price">Salida</div>
+        `;
+        item.addEventListener("click", () => {
+          originSelect.value = "DEFAULT";
+          setCustomOrigin(dest);
+        });
+        originSuggestionsList.appendChild(item);
+      });
+      originSuggestionsList.classList.remove("hidden");
+    });
+
+    clearOriginSearchBtn.addEventListener("click", () => {
+      originSearchInput.value = "";
+      clearOriginSearchBtn.classList.add("hidden");
+      originSuggestionsList.classList.add("hidden");
+      originSearchInput.focus();
     });
 
     originSelect.addEventListener("change", () => {
-      state.origin = originSelect.value;
-      originText.textContent = state.origin;
-      originBadge.textContent =
-        state.origin === "Santo Domingo / Hotel" ? "Salida habitual" : "Salida personalizada";
-      originSelectorBox.classList.add("hidden");
-      render();
+      const val = originSelect.value;
+      if (val === "DEFAULT") {
+        setCustomOrigin(null);
+        return;
+      }
+      const normVal = normalizeText(val);
+      const found =
+        INDEXED_DESTINATIONS.find(d => d.name === val) ||
+        INDEXED_DESTINATIONS.find(d => d._normName.includes(normVal));
+      if (found) {
+        setCustomOrigin(found);
+      } else {
+        setCustomOrigin(null);
+      }
     });
 
     // Eventos Paso 2 (Buscador normalizado tolerante)
@@ -5956,6 +6221,7 @@
       }
 
       const tokens = normQuery.split(" ");
+      const departurePoint = getCurrentDeparturePoint();
 
       const matches = INDEXED_DESTINATIONS
         .filter(d => tokens.every(tok => d._normAll.includes(tok)))
@@ -5982,12 +6248,13 @@
         const subText = dest.ref && normalizeText(dest.ref) !== dest._normName
           ? `${dest.zone} · ${dest.ref}`
           : dest.zone;
+        const estPrice = estimateLegPrice(departurePoint, dest, state.vehicle);
         item.innerHTML = `
           <div>
             <div class="suggestion-name">${dest.name}</div>
             <div class="suggestion-zone">${subText}</div>
           </div>
-          <div class="suggestion-price">US$ ${dest.prices[state.vehicle].toFixed(2)}</div>
+          <div class="suggestion-price">US$ ${estPrice.toFixed(2)}</div>
         `;
         item.addEventListener("click", () => addStop(dest));
         suggestionsList.appendChild(item);
@@ -6003,6 +6270,9 @@
     });
 
     document.addEventListener("click", (e) => {
+      if (!e.target.closest("#step1")) {
+        originSuggestionsList.classList.add("hidden");
+      }
       if (!e.target.closest("#step2")) {
         suggestionsList.classList.add("hidden");
       }
@@ -6019,10 +6289,12 @@
         sectorSelect.disabled = true;
         return;
       }
+      const departurePoint = getCurrentDeparturePoint();
       INDEXED_DESTINATIONS.filter(d => d.zone === selectedZone).forEach(dest => {
         const opt = document.createElement("option");
         opt.value = String(dest._id);
-        opt.textContent = `${dest.name} — US$ ${dest.prices[state.vehicle]}`;
+        const estPrice = estimateLegPrice(departurePoint, dest, state.vehicle);
+        opt.textContent = `${dest.name} — US$ ${estPrice}`;
         sectorSelect.appendChild(opt);
       });
       sectorSelect.disabled = false;
@@ -6039,6 +6311,9 @@
       if (!btn) return;
       const idx = Number(btn.dataset.index);
       state.stops.splice(idx, 1);
+      if (zoneSelect.value) {
+        zoneSelect.dispatchEvent(new Event("change"));
+      }
       render();
     });
 
@@ -6052,6 +6327,9 @@
     clearRouteBtn.addEventListener("click", () => {
       state.stops = [];
       state.roundTrip = false;
+      if (zoneSelect.value) {
+        zoneSelect.dispatchEvent(new Event("change"));
+      }
       render();
     });
 
